@@ -1,0 +1,8 @@
+.DS_Store
+*.log
+.idea/
+.vscode/
+build/
+node_modules/
+.gradle/
+local.properties
