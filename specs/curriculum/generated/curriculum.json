@@ -275,8 +275,8 @@
   "per_representation": {
    "visual": 335,
    "symbolic": 315,
-   "verbal": 189,
-   "physical": 98
+   "verbal": 190,
+   "physical": 99
   }
  },
  "nodes": [
@@ -3973,7 +3973,13 @@
     "factor-pairs",
     "rectangle-arrays"
    ],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "prime-call",
+     "text": "Called a prime on the first try",
+     "kind": "no-hints"
+    }
+   ],
    "depth": 12
   },
   {
@@ -4015,7 +4021,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "fewest-gears",
+     "text": "Built the rule with the fewest gears possible",
+     "kind": "shortcut"
+    }
+   ],
    "depth": 10
   },
   {
@@ -4058,7 +4070,18 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "bundle-up",
+     "text": "Bundled your way to ten times bigger",
+     "kind": "strategy"
+    },
+    {
+     "id": "one-shift",
+     "text": "Moved every digit one place in a single pull",
+     "kind": "shortcut"
+    }
+   ],
    "depth": 10
   },
   {
@@ -4125,7 +4148,8 @@
    ],
    "representations": [
     "visual",
-    "symbolic"
+    "symbolic",
+    "verbal"
    ],
    "engines": [
     "fluency",
@@ -4142,7 +4166,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "midpoint-call",
+     "text": "Found the midpoint before deciding which way to round",
+     "kind": "strategy"
+    }
+   ],
    "depth": 12
   },
   {
@@ -4234,8 +4264,8 @@
    ],
    "secret_goals": [
     {
-     "id": "area-model-ace",
-     "text": "Solved with an area model and explained each piece",
+     "id": "four-partials",
+     "text": "Built and labeled all four partial products before locking in",
      "kind": "strategy"
     }
    ],
@@ -4285,7 +4315,13 @@
     "think-multiplication",
     "area-model"
    ],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "remainder-tray",
+     "text": "Every remainder went straight to the tray",
+     "kind": "streak"
+    }
+   ],
    "depth": 12
   },
   {
@@ -4328,7 +4364,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "same-edge",
+     "text": "Made an equivalent fraction without moving the shaded edge",
+     "kind": "strategy"
+    }
+   ],
    "depth": 11
   },
   {
@@ -4417,7 +4459,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "two-ways-unit",
+     "text": "One of your two ways used only unit fractions",
+     "kind": "strategy"
+    }
+   ],
    "depth": 9
   },
   {
@@ -4444,7 +4492,8 @@
    "representations": [
     "visual",
     "symbolic",
-    "verbal"
+    "verbal",
+    "physical"
    ],
    "engines": [
     "manipulate",
@@ -4506,7 +4555,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "copies",
+     "text": "Built it by copying the fraction instead of counting pieces",
+     "kind": "strategy"
+    }
+   ],
    "depth": 10
   },
   {
@@ -4547,7 +4602,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "trade-strip",
+     "text": "Traded a tenth for ten hundredths to finish",
+     "kind": "strategy"
+    }
+   ],
    "depth": 12
   },
   {
@@ -4589,7 +4650,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "tenths-first",
+     "text": "Found the tenth before zooming in, every time",
+     "kind": "strategy"
+    }
+   ],
    "depth": 13
   },
   {
@@ -4756,7 +4823,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "same-area-two-ways",
+     "text": "Built two different rectangles with the same area",
+     "kind": "shortcut"
+    }
+   ],
    "depth": 12
   },
   {
@@ -4839,7 +4912,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "full-circle",
+     "text": "Went all the way around and read 360",
+     "kind": "custom"
+    }
+   ],
    "depth": 9
   },
   {
@@ -4881,7 +4960,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "zero-first",
+     "text": "Lined up zero before every reading",
+     "kind": "strategy"
+    }
+   ],
    "depth": 10
   },
   {
@@ -5005,7 +5090,13 @@
     ]
    },
    "strategies": [],
-   "secret_goals": [],
+   "secret_goals": [
+    {
+     "id": "different-each-time",
+     "text": "Three shapes in a row, none of them alike",
+     "kind": "streak"
+    }
+   ],
    "depth": 11
   },
   {

@@ -34,6 +34,8 @@ nodes:
     representations: [visual, symbolic, physical]
     engines: [build, sort, fluency]
     strategies: [factor-pairs, rectangle-arrays]
+    secret_goals:
+      - { id: prime-call, text: Called a prime on the first try, kind: no-hints }
 
   - id: w04.oa.patterns-and-rules
     title: Rule machines
@@ -42,6 +44,8 @@ nodes:
     prerequisites: [w03.oa.arithmetic-patterns]
     representations: [visual, symbolic, verbal]
     engines: [sim, build]
+    secret_goals:
+      - { id: fewest-gears, text: Built the rule with the fewest gears possible, kind: shortcut }
 
   # ---- Number & Operations in Base Ten ----
   - id: w04.nbt.place-value-ten-times
@@ -51,6 +55,9 @@ nodes:
     prerequisites: [w03.nbt.multiply-by-multiples-of-10]
     representations: [visual, symbolic, physical]
     engines: [manipulate, build]
+    secret_goals:
+      - { id: bundle-up, text: Bundled your way to ten times bigger, kind: strategy }
+      - { id: one-shift, text: Moved every digit one place in a single pull, kind: shortcut }
 
   - id: w04.nbt.read-write-compare-multidigit
     title: Big numbers
@@ -65,8 +72,10 @@ nodes:
     description: Round multi-digit whole numbers to any place.
     ccss: [4.NBT.A.3]
     prerequisites: [w03.nbt.round-to-10-100, w04.nbt.read-write-compare-multidigit]
-    representations: [visual, symbolic]
+    representations: [visual, symbolic, verbal]
     engines: [fluency, manipulate]
+    secret_goals:
+      - { id: midpoint-call, text: Found the midpoint before deciding which way to round, kind: strategy }
 
   - id: w04.nbt.add-sub-multidigit-fluent
     title: Column adding and subtracting
@@ -86,7 +95,7 @@ nodes:
     engines: [build, strategy]
     strategies: [area-model, partial-products, distributive]
     secret_goals:
-      - { id: area-model-ace, text: Solved with an area model and explained each piece, kind: strategy }
+      - { id: four-partials, text: Built and labeled all four partial products before locking in, kind: strategy }
 
   - id: w04.nbt.divide-by-one-digit
     title: Divide bigger numbers
@@ -96,6 +105,8 @@ nodes:
     representations: [visual, symbolic]
     engines: [build, strategy]
     strategies: [partial-quotients, think-multiplication, area-model]
+    secret_goals:
+      - { id: remainder-tray, text: Every remainder went straight to the tray, kind: streak }
 
   # ---- Number & Operations — Fractions ----
   - id: w04.nf.fraction-equivalence
@@ -105,6 +116,8 @@ nodes:
     prerequisites: [w03.nf.equivalent-fractions]
     representations: [visual, symbolic, verbal]
     engines: [manipulate, strategy]
+    secret_goals:
+      - { id: same-edge, text: Made an equivalent fraction without moving the shaded edge, kind: strategy }
 
   - id: w04.nf.compare-unlike-fractions
     title: Compare any fractions
@@ -122,13 +135,15 @@ nodes:
     prerequisites: [w03.nf.unit-fractions]
     representations: [visual, symbolic, physical]
     engines: [build, manipulate]
+    secret_goals:
+      - { id: two-ways-unit, text: One of your two ways used only unit fractions, kind: strategy }
 
   - id: w04.nf.add-sub-like-denominators
     title: Add and subtract same-size pieces
     description: Add and subtract fractions and mixed numbers with like denominators, including in story problems.
     ccss: [4.NF.B.3.c, 4.NF.B.3.d]
     prerequisites: [w04.nf.decompose-fractions]
-    representations: [visual, symbolic, verbal]
+    representations: [visual, symbolic, verbal, physical]
     engines: [manipulate, story, fluency]
     strategies: [regroup-a-whole]
 
@@ -139,6 +154,8 @@ nodes:
     prerequisites: [w04.nf.decompose-fractions, w03.oa.multiplication-as-groups]
     representations: [visual, symbolic, verbal]
     engines: [build, story]
+    secret_goals:
+      - { id: copies, text: Built it by copying the fraction instead of counting pieces, kind: strategy }
 
   - id: w04.nf.tenths-and-hundredths
     title: Tenths and hundredths
@@ -147,6 +164,8 @@ nodes:
     prerequisites: [w04.nf.fraction-equivalence]
     representations: [visual, symbolic]
     engines: [manipulate, build]
+    secret_goals:
+      - { id: trade-strip, text: Traded a tenth for ten hundredths to finish, kind: strategy }
 
   - id: w04.nf.decimal-notation
     title: Decimals
@@ -155,6 +174,8 @@ nodes:
     prerequisites: [w04.nf.tenths-and-hundredths]
     representations: [visual, symbolic, verbal]
     engines: [manipulate, sort]
+    secret_goals:
+      - { id: tenths-first, text: "Found the tenth before zooming in, every time", kind: strategy }
 
   - id: w04.nf.compare-decimals
     title: Compare decimals
@@ -188,6 +209,8 @@ nodes:
     prerequisites: [w03.md.area-by-multiplying, w03.md.perimeter]
     representations: [symbolic, visual, verbal]
     engines: [story, build]
+    secret_goals:
+      - { id: same-area-two-ways, text: Built two different rectangles with the same area, kind: shortcut }
 
   - id: w04.md.line-plots-fractions
     title: Line plots with eighths
@@ -204,6 +227,8 @@ nodes:
     prerequisites: [w03.nf.unit-fractions]
     representations: [visual, physical, symbolic]
     engines: [manipulate, sim]
+    secret_goals:
+      - { id: full-circle, text: Went all the way around and read 360, kind: custom }
 
   - id: w04.md.measure-angles
     title: Measure angles
@@ -212,6 +237,8 @@ nodes:
     prerequisites: [w04.md.angles-concept]
     representations: [visual, physical, symbolic]
     engines: [manipulate, build]
+    secret_goals:
+      - { id: zero-first, text: Lined up zero before every reading, kind: strategy }
 
   - id: w04.md.additive-angles
     title: Angles add up
@@ -237,6 +264,8 @@ nodes:
     prerequisites: [w04.g.lines-and-angles, w03.g.quadrilaterals]
     representations: [visual, verbal]
     engines: [sort, build]
+    secret_goals:
+      - { id: different-each-time, text: "Three shapes in a row, none of them alike", kind: streak }
 
   - id: w04.g.line-symmetry
     title: Mirror lines

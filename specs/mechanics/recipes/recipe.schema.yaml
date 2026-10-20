@@ -1,0 +1,74 @@
+# Schema for a recipe file (specs/mechanics/recipes/world-NN.yaml).
+# A recipe binds one curriculum node to one engine. Validated by tools/recipes.py,
+# which also cross-checks every recipe against the curriculum and the engine specs.
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "math-game/recipe-file"
+title: Recipe file
+type: object
+required: [world, recipes]
+additionalProperties: false
+properties:
+  world: { type: integer, minimum: 1, maximum: 12 }
+  recipes:
+    type: array
+    minItems: 1
+    items: { $ref: "#/$defs/recipe" }
+
+$defs:
+  recipe:
+    type: object
+    required: [node, engine, representations, target, generator, hints]
+    additionalProperties: false
+    properties:
+      node:
+        type: string
+        pattern: "^w(0[1-9]|1[0-2])\\.[a-z]+\\.[a-z0-9-]+$"
+      engine:
+        type: string
+        enum: [build, manipulate, story, fluency, strategy, sort, sim]
+      kit:
+        type: string
+        description: "build only; one of the kits in engine-build.md §3"
+      instrument:
+        type: string
+        description: "manipulate only; one of the instruments in engine-manipulate.md §3"
+      instrument2:
+        type: string
+        description: "manipulate only; a second instrument for match targets"
+      target:
+        type: string
+        description: "One of the engine's target types"
+      representations:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items: { type: string, enum: [symbolic, visual, verbal, physical] }
+      frame:
+        type: string
+        description: "Optional one-line framing suggestion for the tier"
+      generator:
+        type: object
+        description: "Engine-specific parameters. Either a single parameter set, or {low, mid, high} band sets."
+      tolerance:
+        type: object
+        description: "manipulate only; overrides of instrument defaults"
+      strategies:
+        type: object
+        description: "Node strategy name -> engine detection rule id"
+        additionalProperties: { type: string }
+      hints:
+        type: object
+        description: "The engine's three hint rungs with recipe detail"
+        minProperties: 3
+        maxProperties: 3
+        additionalProperties: { type: string }
+      secret_goals:
+        type: array
+        items:
+          type: object
+          required: [id, condition]
+          additionalProperties: false
+          properties:
+            id: { type: string, description: "A goal id from the node's secret_goals" }
+            condition: { type: string, description: "The engine-observable condition that achieves it" }
