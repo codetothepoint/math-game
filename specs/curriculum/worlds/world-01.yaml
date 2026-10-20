@@ -1,0 +1,233 @@
+world: 1
+name: Grade 1
+tier: playground
+notes: >
+  Entry world. Nodes with no prerequisites assume kindergarten readiness (counting to 20,
+  comparing small groups, naming basic shapes). Kindergarten is not a world; a parent who
+  starts a player here is saying that readiness is in place.
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [2, 7, 21] }
+
+nodes:
+  # ---- Operations & Algebraic Thinking ----
+  - id: w01.oa.count-on
+    title: Count on
+    description: Use counting to add and subtract, starting from a number instead of from one.
+    ccss: [1.OA.C.5]
+    prerequisites: []
+    representations: [physical, visual, symbolic]
+    engines: [manipulate, fluency]
+    strategies: [count-on, count-back]
+
+  - id: w01.oa.add-within-10
+    title: Add within 10
+    description: Add two numbers with a sum up to 10, quickly and in any order.
+    ccss: [1.OA.C.6]
+    prerequisites: [w01.oa.count-on]
+    representations: [physical, visual, symbolic]
+    engines: [fluency, manipulate, build]
+    mastery: { fluency_ms: 3000 }
+    strategies: [count-on, doubles, five-and-some-more]
+    secret_goals:
+      - { id: doubles-three, text: Used a double three times, kind: strategy }
+
+  - id: w01.oa.subtract-within-10
+    title: Subtract within 10
+    description: Take away or find the difference within 10.
+    ccss: [1.OA.C.6]
+    prerequisites: [w01.oa.add-within-10]
+    representations: [physical, visual, symbolic]
+    engines: [fluency, manipulate]
+    mastery: { fluency_ms: 3500 }
+    strategies: [count-back, think-addition]
+
+  - id: w01.oa.properties-of-addition
+    title: Switch and group
+    description: Add numbers in any order and group them any way without changing the sum.
+    ccss: [1.OA.B.3]
+    prerequisites: [w01.oa.add-within-10]
+    representations: [physical, visual, symbolic]
+    engines: [build, strategy, sort]
+    strategies: [commutative, associative]
+
+  - id: w01.oa.add-within-20
+    title: Add within 20
+    description: Add two numbers with a sum up to 20 using a strategy, not just counting.
+    ccss: [1.OA.C.6]
+    prerequisites: [w01.oa.add-within-10, w01.oa.properties-of-addition]
+    representations: [physical, visual, symbolic, verbal]
+    engines: [fluency, manipulate, strategy]
+    mastery: { fluency_ms: 4000 }
+    strategies: [make-ten, doubles, doubles-plus-one, count-on]
+    secret_goals:
+      - { id: make-ten-five, text: Made a ten five times, kind: strategy }
+      - { id: no-counters, text: Finished without the counters, kind: representation }
+
+  - id: w01.oa.subtract-within-20
+    title: Subtract within 20
+    description: Subtract within 20 by decomposing to ten or thinking addition.
+    ccss: [1.OA.C.6]
+    prerequisites: [w01.oa.add-within-20, w01.oa.subtract-within-10]
+    representations: [physical, visual, symbolic, verbal]
+    engines: [fluency, manipulate, strategy]
+    mastery: { fluency_ms: 4500 }
+    strategies: [decompose-to-ten, think-addition, count-back]
+
+  - id: w01.oa.unknown-addend
+    title: What's missing?
+    description: Understand subtraction as finding the unknown addend (10 − 8 is "8 plus what makes 10").
+    ccss: [1.OA.B.4]
+    prerequisites: [w01.oa.add-within-20, w01.oa.subtract-within-10]
+    representations: [physical, visual, symbolic]
+    engines: [manipulate, strategy]
+    strategies: [think-addition]
+
+  - id: w01.oa.add-three-numbers
+    title: Add three numbers
+    description: Add three whole numbers with a sum within 20, choosing a helpful order.
+    ccss: [1.OA.A.2]
+    prerequisites: [w01.oa.add-within-20, w01.oa.properties-of-addition]
+    representations: [physical, visual, symbolic, verbal]
+    engines: [strategy, story, fluency]
+    strategies: [make-ten, doubles, reorder]
+
+  - id: w01.oa.word-problems-within-20
+    title: Story problems within 20
+    description: Solve adding-to, taking-from, putting-together, taking-apart, and comparing situations within 20.
+    ccss: [1.OA.A.1]
+    prerequisites: [w01.oa.add-within-20, w01.oa.subtract-within-20]
+    representations: [verbal, visual, symbolic, physical]
+    engines: [story, manipulate]
+    strategies: [draw-it, write-equation]
+
+  - id: w01.oa.equal-sign
+    title: Is it true?
+    description: Understand the equal sign as "the same amount as" and judge whether equations are true.
+    ccss: [1.OA.D.7]
+    prerequisites: [w01.oa.add-within-10]
+    representations: [visual, symbolic, physical]
+    engines: [sort, manipulate]
+    secret_goals:
+      - { id: both-sides, text: Balanced an equation with sums on both sides, kind: custom }
+
+  - id: w01.oa.missing-number-equations
+    title: Fill the blank
+    description: Find the unknown number in an addition or subtraction equation.
+    ccss: [1.OA.D.8]
+    prerequisites: [w01.oa.equal-sign, w01.oa.unknown-addend]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, fluency]
+
+  # ---- Number & Operations in Base Ten ----
+  - id: w01.nbt.count-to-120
+    title: Count to 120
+    description: Count to 120 from any number, and read and write numerals.
+    ccss: [1.NBT.A.1]
+    prerequisites: []
+    representations: [verbal, visual, symbolic]
+    engines: [fluency, manipulate]
+
+  - id: w01.nbt.tens-and-ones
+    title: Tens and ones
+    description: See a two-digit number as tens and ones; a ten is a bundle of ten ones.
+    ccss: [1.NBT.B.2]
+    prerequisites: [w01.nbt.count-to-120]
+    representations: [physical, visual, symbolic]
+    engines: [build, manipulate]
+    strategies: [bundle-tens]
+
+  - id: w01.nbt.compare-two-digit
+    title: More or less
+    description: Compare two two-digit numbers using tens and ones, with <, >, and =.
+    ccss: [1.NBT.B.3]
+    prerequisites: [w01.nbt.tens-and-ones]
+    representations: [visual, symbolic, physical]
+    engines: [sort, fluency]
+
+  - id: w01.nbt.ten-more-ten-less
+    title: Ten more, ten less
+    description: Mentally find ten more or ten less than a two-digit number.
+    ccss: [1.NBT.C.5]
+    prerequisites: [w01.nbt.tens-and-ones]
+    representations: [visual, symbolic, verbal]
+    engines: [fluency, manipulate]
+    mastery: { fluency_ms: 3000 }
+
+  - id: w01.nbt.add-within-100
+    title: Add within 100
+    description: Add a two-digit number to a one-digit number or a multiple of ten, sometimes making a new ten.
+    ccss: [1.NBT.C.4]
+    prerequisites: [w01.nbt.tens-and-ones, w01.oa.add-within-20]
+    representations: [physical, visual, symbolic]
+    engines: [manipulate, build, strategy]
+    strategies: [add-tens-then-ones, make-ten]
+
+  - id: w01.nbt.subtract-multiples-of-ten
+    title: Subtract tens
+    description: Subtract multiples of ten from multiples of ten within 100.
+    ccss: [1.NBT.C.6]
+    prerequisites: [w01.nbt.ten-more-ten-less, w01.oa.subtract-within-10]
+    representations: [physical, visual, symbolic]
+    engines: [manipulate, fluency]
+
+  # ---- Measurement & Data ----
+  - id: w01.md.order-lengths
+    title: Shortest to longest
+    description: Order three objects by length and compare two lengths using a third.
+    ccss: [1.MD.A.1]
+    prerequisites: []
+    representations: [physical, visual, verbal]
+    engines: [sort, manipulate]
+
+  - id: w01.md.measure-with-units
+    title: Measure with units
+    description: Measure a length by laying same-size units end to end with no gaps or overlaps.
+    ccss: [1.MD.A.2]
+    prerequisites: [w01.md.order-lengths, w01.nbt.count-to-120]
+    representations: [physical, visual, symbolic]
+    engines: [manipulate, build]
+    secret_goals:
+      - { id: no-gaps, text: Measured with no gaps and no overlaps on the first try, kind: custom }
+
+  - id: w01.md.tell-time-hour-half
+    title: O'clock and half past
+    description: Tell and write time in hours and half-hours on analog and digital clocks.
+    ccss: [1.MD.B.3]
+    prerequisites: [w01.nbt.count-to-120]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, fluency]
+
+  - id: w01.md.organize-data
+    title: Sort and count
+    description: Organize objects into up to three categories and answer how many in each and how many more.
+    ccss: [1.MD.C.4]
+    prerequisites: [w01.nbt.count-to-120, w01.oa.subtract-within-10]
+    representations: [physical, visual, verbal]
+    engines: [sort, story]
+
+  # ---- Geometry ----
+  - id: w01.g.shape-attributes
+    title: What makes a shape
+    description: Tell defining attributes (sides, corners) from non-defining ones (color, size, orientation).
+    ccss: [1.G.A.1]
+    prerequisites: []
+    representations: [visual, physical, verbal]
+    engines: [sort, build]
+
+  - id: w01.g.compose-shapes
+    title: Build new shapes
+    description: Put two-dimensional and three-dimensional shapes together to make bigger shapes.
+    ccss: [1.G.A.2]
+    prerequisites: [w01.g.shape-attributes]
+    representations: [physical, visual]
+    engines: [build, manipulate]
+    secret_goals:
+      - { id: two-ways, text: Built the same shape two different ways, kind: shortcut }
+
+  - id: w01.g.halves-and-fourths
+    title: Halves and fourths
+    description: Split circles and rectangles into two or four equal shares and name them.
+    ccss: [1.G.A.3]
+    prerequisites: [w01.g.shape-attributes]
+    representations: [physical, visual, verbal]
+    engines: [manipulate, sort]

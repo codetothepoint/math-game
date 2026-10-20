@@ -1,0 +1,226 @@
+world: 7
+name: Grade 7
+tier: workshop
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [2, 7, 21] }
+
+nodes:
+  # ---- Ratios & Proportional Relationships ----
+  - id: w07.rp.unit-rates-with-fractions
+    title: Rates with fractions
+    description: Compute unit rates from ratios of fractions, such as miles per hour when both are fractional.
+    ccss: [7.RP.A.1]
+    prerequisites: [w06.rp.unit-rate-problems, w06.ns.divide-fractions]
+    representations: [symbolic, verbal, visual]
+    engines: [story, fluency]
+
+  - id: w07.rp.identify-proportional
+    title: Is it proportional?
+    description: Decide whether two quantities are proportional from a table or graph and find the constant of proportionality.
+    ccss: [7.RP.A.2.a, 7.RP.A.2.b]
+    prerequisites: [w06.rp.ratio-tables, w06.ee.dependent-independent-variables]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, sim]
+    strategies: [check-equivalent-ratios, line-through-origin]
+
+  - id: w07.rp.proportional-equations
+    title: y = kx
+    description: Represent proportional relationships with equations and explain what points on the graph mean.
+    ccss: [7.RP.A.2.c, 7.RP.A.2.d]
+    prerequisites: [w07.rp.identify-proportional, w06.ee.one-step-equations]
+    representations: [symbolic, visual, verbal]
+    engines: [build, sim]
+
+  - id: w07.rp.percent-problems
+    title: Percent in the wild
+    description: "Solve multi-step ratio and percent problems: tax, markup, discount, interest, percent change and error."
+    ccss: [7.RP.A.3]
+    prerequisites: [w06.rp.percent, w07.rp.unit-rates-with-fractions]
+    representations: [verbal, symbolic, visual]
+    engines: [story, sim]
+    strategies: [multiply-by-one-plus-rate, double-number-line]
+    secret_goals:
+      - { id: one-step-percent, text: Found a 15% increase with a single multiplication, kind: shortcut }
+
+  # ---- The Number System ----
+  - id: w07.ns.add-sub-rationals
+    title: Add and subtract rationals
+    description: Add and subtract rational numbers on the number line, using opposites and distance.
+    ccss: [7.NS.A.1]
+    prerequisites: [w06.ns.order-and-absolute-value, w06.ns.coordinate-distances]
+    representations: [visual, symbolic, physical, verbal]
+    engines: [manipulate, fluency, story]
+    mastery: { fluency_ms: 6000 }
+    strategies: [number-line-jumps, add-the-opposite, zero-pairs]
+
+  - id: w07.ns.multiply-divide-rationals
+    title: Multiply and divide rationals
+    description: Multiply and divide rational numbers, explain the sign rules, and convert fractions to decimals.
+    ccss: [7.NS.A.2]
+    prerequisites: [w07.ns.add-sub-rationals, w06.ns.decimal-operations-fluent]
+    representations: [symbolic, visual, verbal]
+    engines: [fluency, strategy, sim]
+    mastery: { fluency_ms: 6000 }
+    strategies: [pattern-of-signs, distributive]
+    secret_goals:
+      - { id: why-negative-times-negative, text: Explained why a negative times a negative is positive, kind: strategy }
+
+  - id: w07.ns.rational-operations-problems
+    title: Rational number stories
+    description: Solve real-world problems with the four operations on rational numbers.
+    ccss: [7.NS.A.3]
+    prerequisites: [w07.ns.multiply-divide-rationals]
+    representations: [verbal, symbolic, visual]
+    engines: [story, sim]
+
+  # ---- Expressions & Equations ----
+  - id: w07.ee.linear-expressions
+    title: Linear expressions
+    description: Add, subtract, factor, and expand linear expressions with rational coefficients.
+    ccss: [7.EE.A.1]
+    prerequisites: [w06.ee.equivalent-expressions, w07.ns.add-sub-rationals]
+    representations: [symbolic, visual, physical]
+    engines: [build, fluency, strategy]
+    strategies: [distribute, factor-out, combine-like-terms]
+
+  - id: w07.ee.rewrite-for-insight
+    title: Rewrite to see it
+    description: Rewrite an expression in a different form to reveal how quantities relate (e.g., a + 0.05a = 1.05a).
+    ccss: [7.EE.A.2]
+    prerequisites: [w07.ee.linear-expressions, w06.rp.percent]
+    representations: [symbolic, verbal]
+    engines: [sort, strategy]
+
+  - id: w07.ee.multistep-rational-problems
+    title: Multi-step with rationals
+    description: Solve multi-step problems with positive and negative rationals in any form, estimating to check.
+    ccss: [7.EE.B.3]
+    prerequisites: [w07.ns.rational-operations-problems, w07.rp.percent-problems]
+    representations: [verbal, symbolic, visual]
+    engines: [story, strategy]
+    strategies: [estimate-first, convert-forms]
+
+  - id: w07.ee.two-step-equations
+    title: Two-step equations
+    description: Solve px + q = r and p(x + q) = r fluently and compare algebraic and arithmetic solutions.
+    ccss: [7.EE.B.4.a]
+    prerequisites: [w06.ee.one-step-equations, w07.ee.linear-expressions]
+    representations: [symbolic, visual, physical, verbal]
+    engines: [manipulate, fluency, story]
+    mastery: { fluency_ms: 12000 }
+    strategies: [balance, undo-in-reverse]
+
+  - id: w07.ee.two-step-inequalities
+    title: Two-step inequalities
+    description: Solve px + q > r and px + q < r, graph the solutions, and interpret them in context.
+    ccss: [7.EE.B.4.b]
+    prerequisites: [w07.ee.two-step-equations, w06.ee.inequalities-intro]
+    representations: [symbolic, visual, verbal]
+    engines: [manipulate, story]
+    secret_goals:
+      - { id: flip-the-sign, text: Flipped the inequality when dividing by a negative without a hint, kind: no-hints }
+
+  # ---- Geometry ----
+  - id: w07.g.scale-drawings
+    title: Scale drawings
+    description: Solve problems with scale drawings, including computing lengths and areas and redrawing at a different scale.
+    ccss: [7.G.A.1]
+    prerequisites: [w07.rp.proportional-equations, w06.g.area-polygons]
+    representations: [visual, symbolic, physical]
+    engines: [build, manipulate]
+
+  - id: w07.g.construct-triangles
+    title: Can you build it?
+    description: Draw triangles from given angles and sides and decide when conditions give one triangle, many, or none.
+    ccss: [7.G.A.2]
+    prerequisites: [w04.md.measure-angles, w05.g.classify-2d-hierarchy]
+    representations: [physical, visual, verbal]
+    engines: [build, sim]
+    secret_goals:
+      - { id: impossible-triangle, text: Proved a triangle could not exist before trying every option, kind: strategy }
+
+  - id: w07.g.cross-sections
+    title: Slicing solids
+    description: Describe the two-dimensional figures that result from slicing prisms and pyramids.
+    ccss: [7.G.A.3]
+    prerequisites: [w06.g.nets-surface-area]
+    representations: [visual, physical, verbal]
+    engines: [sim, sort]
+
+  - id: w07.g.circles
+    title: Circles
+    description: Use the formulas for area and circumference of a circle and explain how they relate.
+    ccss: [7.G.B.4]
+    prerequisites: [w06.g.area-polygons, w07.ns.multiply-divide-rationals]
+    representations: [visual, symbolic, physical]
+    engines: [build, sim, story]
+    secret_goals:
+      - { id: find-pi, text: Measured circumference over diameter and got close to pi, kind: custom }
+
+  - id: w07.g.angle-relationships
+    title: Angle pairs
+    description: Use supplementary, complementary, vertical, and adjacent angles to write and solve equations for unknown angles.
+    ccss: [7.G.B.5]
+    prerequisites: [w04.md.additive-angles, w07.ee.two-step-equations]
+    representations: [visual, symbolic]
+    engines: [manipulate, story]
+
+  - id: w07.g.area-volume-surface-area
+    title: Area, volume, surface area
+    description: Solve real problems involving area, volume, and surface area of two- and three-dimensional objects.
+    ccss: [7.G.B.6]
+    prerequisites: [w06.g.volume-fractional-edges, w06.g.nets-surface-area, w07.g.circles]
+    representations: [visual, symbolic, verbal]
+    engines: [story, build]
+
+  # ---- Statistics & Probability ----
+  - id: w07.sp.sampling
+    title: Samples and inferences
+    description: Understand that a random sample supports inferences about a population and gauge how much estimates vary.
+    ccss: [7.SP.A.1, 7.SP.A.2]
+    prerequisites: [w06.sp.summarize-distributions]
+    representations: [verbal, visual, symbolic]
+    engines: [sim, story]
+
+  - id: w07.sp.compare-populations
+    title: Compare two groups
+    description: Compare two populations using measures of center and variability, expressed in multiples of spread.
+    ccss: [7.SP.B.3, 7.SP.B.4]
+    prerequisites: [w07.sp.sampling]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, sort]
+
+  - id: w07.sp.probability-concept
+    title: How likely
+    description: Understand probability as a number from 0 to 1 and what likely, unlikely, and even chances mean.
+    ccss: [7.SP.C.5]
+    prerequisites: [w06.rp.percent]
+    representations: [verbal, visual, symbolic]
+    engines: [sort, sim]
+
+  - id: w07.sp.experimental-probability
+    title: Run the experiment
+    description: Approximate probability from relative frequency and predict counts for many trials.
+    ccss: [7.SP.C.6]
+    prerequisites: [w07.sp.probability-concept, w07.rp.identify-proportional]
+    representations: [visual, symbolic, physical]
+    engines: [sim]
+    secret_goals:
+      - { id: law-of-large, text: Noticed the estimate settling down as trials grew, kind: custom }
+
+  - id: w07.sp.probability-models
+    title: Probability models
+    description: Build uniform and observed probability models and compare predictions to results.
+    ccss: [7.SP.C.7]
+    prerequisites: [w07.sp.experimental-probability]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, build]
+
+  - id: w07.sp.compound-events
+    title: Compound events
+    description: Find probabilities of compound events with lists, tables, tree diagrams, and simulation.
+    ccss: [7.SP.C.8]
+    prerequisites: [w07.sp.probability-models]
+    representations: [visual, symbolic]
+    engines: [build, sim]
+    strategies: [tree-diagram, organized-list]

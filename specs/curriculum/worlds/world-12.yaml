@@ -1,0 +1,272 @@
+world: 12
+name: Precalculus, Statistics, and the Edge of Calculus
+tier: lab
+notes: >
+  Fourth year. Backbone: the CCSSM (+) standards that Appendix A leaves for a fourth course
+  (vectors, matrices, complex plane, conic sections, trig identities, inverse trig, laws of
+  sines and cosines, probability distributions). Original nodes add sequences and limits,
+  continuity, instantaneous rate of change, and accumulation: the ideas calculus is built on,
+  presented as games about change rather than as a calculus course.
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [3, 10, 30] }
+
+nodes:
+  # ---- Number & Quantity ----
+  - id: w12.n.complex-plane
+    title: The complex plane
+    description: Represent complex numbers in rectangular and polar form, interpret operations geometrically, and find distance and midpoint.
+    ccss: [N.CN.B.4, N.CN.B.5, N.CN.B.6]
+    prerequisites: [w11.n.complex-numbers, w11.f.unit-circle]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+    secret_goals:
+      - { id: rotate-by-i, text: Showed that multiplying by i is a quarter turn, kind: strategy }
+
+  - id: w12.n.fundamental-theorem-algebra
+    title: Fundamental theorem of algebra
+    description: Extend polynomial identities to the complex numbers and know every polynomial has as many complex roots as its degree.
+    ccss: [N.CN.C.8, N.CN.C.9]
+    prerequisites: [w11.a.quadratics-complex-roots, w11.a.polynomial-zeros-graphs]
+    representations: [symbolic, visual, verbal]
+    engines: [strategy, sim]
+
+  - id: w12.n.vectors
+    title: Vectors
+    description: Represent vectors with magnitude and direction, find components, and model velocity and other vector quantities.
+    ccss: [N.VM.A.1, N.VM.A.2, N.VM.A.3]
+    prerequisites: [w10.g.solve-right-triangles, w06.ns.coordinate-distances]
+    representations: [visual, symbolic, physical, verbal]
+    engines: [manipulate, sim, story]
+
+  - id: w12.n.vector-operations
+    title: Vector arithmetic
+    description: Add, subtract, and scale vectors geometrically and by components, including the parallelogram rule.
+    ccss: [N.VM.B.4, N.VM.B.5]
+    prerequisites: [w12.n.vectors]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, build]
+
+  - id: w12.n.matrices
+    title: Matrices
+    description: Use matrices to represent data and networks, scale them, and add and multiply matrices of appropriate dimensions.
+    ccss: [N.VM.C.6, N.VM.C.7, N.VM.C.8, N.VM.C.9]
+    prerequisites: [w11.a.systems-three-variables]
+    representations: [symbolic, visual]
+    engines: [build, fluency, story]
+
+  - id: w12.n.matrices-transformations
+    title: Matrices move the plane
+    description: Use identity and inverse matrices, the determinant as area scale factor, and 2×2 matrices as transformations of vectors.
+    ccss: [N.VM.C.10, N.VM.C.11, N.VM.C.12]
+    prerequisites: [w12.n.matrices, w12.n.vector-operations, w10.g.transformations-as-functions]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+    secret_goals:
+      - { id: det-zero, text: Found a matrix that squashes the whole plane onto a line, kind: shortcut }
+
+  # ---- Algebra ----
+  - id: w12.a.binomial-theorem
+    title: Binomial theorem
+    description: Expand (x + y)ⁿ with Pascal's triangle and the binomial theorem.
+    ccss: [A.APR.C.5]
+    prerequisites: [w11.a.polynomial-identities]
+    representations: [symbolic, visual]
+    engines: [build, fluency]
+
+  - id: w12.a.matrix-systems
+    title: Solve systems with matrices
+    description: Represent a linear system as a matrix equation and solve it with an inverse matrix.
+    ccss: [A.REI.C.8, A.REI.C.9]
+    prerequisites: [w12.n.matrices-transformations]
+    representations: [symbolic, visual]
+    engines: [manipulate, strategy]
+
+  # ---- Functions ----
+  - id: w12.f.graph-rational-functions
+    title: Graph rational functions
+    description: Graph rational functions showing zeros, asymptotes, and end behavior.
+    ccss: [F.IF.C.7.d]
+    prerequisites: [w11.a.rational-expressions, w11.f.graph-polynomials]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w12.f.composition
+    title: Compose functions
+    description: Compose functions to model situations, such as temperature as a function of altitude as a function of time.
+    ccss: [F.BF.A.1.c]
+    prerequisites: [w11.f.combine-functions]
+    representations: [symbolic, verbal, visual]
+    engines: [build, story]
+
+  - id: w12.f.inverses-advanced
+    title: Inverses, properly
+    description: Verify inverses by composition, read an inverse from a graph or table, and restrict a domain to make a function invertible.
+    ccss: [F.BF.B.4.b, F.BF.B.4.c, F.BF.B.4.d]
+    prerequisites: [w12.f.composition, w11.f.inverse-functions]
+    representations: [symbolic, visual]
+    engines: [manipulate, strategy]
+
+  - id: w12.f.exponential-log-inverse
+    title: Exponentials and logs, together
+    description: Use the inverse relationship between exponentials and logarithms to solve problems.
+    ccss: [F.BF.B.5]
+    prerequisites: [w11.f.logarithms, w12.f.inverses-advanced]
+    representations: [symbolic, visual, verbal]
+    engines: [story, fluency]
+
+  - id: w12.f.special-angles
+    title: Special angles
+    description: Use special triangles to find sine, cosine, and tangent of π/3, π/4, π/6 and their reflections around the circle.
+    ccss: [F.TF.A.3]
+    prerequisites: [w11.f.unit-circle]
+    representations: [visual, symbolic]
+    engines: [fluency, manipulate]
+    mastery: { fluency_ms: 5000 }
+
+  - id: w12.f.trig-symmetry-periodicity
+    title: Symmetry and period
+    description: Use the unit circle to explain the symmetry and periodicity of trigonometric functions.
+    ccss: [F.TF.A.4]
+    prerequisites: [w12.f.special-angles]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, sort]
+
+  - id: w12.f.inverse-trig
+    title: Inverse trig
+    description: Restrict domains to define inverse trig functions and use them to solve equations in context.
+    ccss: [F.TF.B.6, F.TF.B.7]
+    prerequisites: [w12.f.trig-symmetry-periodicity, w12.f.inverses-advanced]
+    representations: [visual, symbolic]
+    engines: [manipulate, story]
+
+  - id: w12.f.trig-identities
+    title: Sum and difference identities
+    description: Prove the addition and subtraction formulas for sine, cosine, and tangent and use them.
+    ccss: [F.TF.C.9]
+    prerequisites: [w11.f.pythagorean-identity, w12.f.special-angles]
+    representations: [symbolic, visual]
+    engines: [strategy, build]
+
+  # ---- Geometry ----
+  - id: w12.g.laws-of-sines-cosines
+    title: Laws of sines and cosines
+    description: Derive the area formula ½ab·sin C and the laws of sines and cosines, and solve any triangle.
+    ccss: [G.SRT.D.9, G.SRT.D.10, G.SRT.D.11]
+    prerequisites: [w10.g.solve-right-triangles, w11.f.unit-circle]
+    representations: [visual, symbolic, verbal]
+    engines: [story, build]
+
+  - id: w12.g.conic-sections
+    title: Conic sections
+    description: Derive the equations of parabolas, ellipses, and hyperbolas from their focus and directrix definitions.
+    ccss: [G.GPE.A.2, G.GPE.A.3]
+    prerequisites: [w10.g.circle-equations, w09.f.quadratic-forms]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, build, sim]
+    secret_goals:
+      - { id: string-and-pins, text: Drew an ellipse with two pins and a string, kind: representation }
+
+  - id: w12.g.cavalieri
+    title: Cavalieri's principle
+    description: Give an informal argument using Cavalieri's principle for the volume of a sphere and other solids.
+    ccss: [G.GMD.A.2]
+    prerequisites: [w10.g.volume-arguments]
+    representations: [visual, verbal]
+    engines: [sim, strategy]
+
+  # ---- Statistics & Probability ----
+  - id: w12.s.random-variables
+    title: Random variables
+    description: Define a random variable, graph its probability distribution, and compute expected value.
+    ccss: [S.MD.A.1, S.MD.A.2]
+    prerequisites: [w11.s.probability-decisions, w11.s.normal-distribution]
+    representations: [visual, symbolic, verbal]
+    engines: [build, sim]
+
+  - id: w12.s.expected-value-decisions
+    title: Expected value in decisions
+    description: Build theoretical and empirical probability distributions and weigh outcomes by expected value to choose.
+    ccss: [S.MD.A.3, S.MD.A.4, S.MD.B.5]
+    prerequisites: [w12.s.random-variables]
+    representations: [verbal, symbolic, visual]
+    engines: [sim, story, strategy]
+    secret_goals:
+      - { id: beat-the-house, text: Found the one bet with positive expected value, kind: shortcut }
+
+  - id: w12.s.permutations-combinations
+    title: Count the ways
+    description: Use permutations and combinations to compute probabilities of compound events.
+    ccss: [S.CP.B.9]
+    prerequisites: [w10.s.probability-rules, w12.a.binomial-theorem]
+    representations: [symbolic, visual, verbal]
+    engines: [fluency, build, story]
+
+  # ---- Original: the edge of calculus ----
+  - id: w12.f.sequences-and-limits
+    title: Where sequences go
+    description: Explore sequences that settle toward a value, diverge, or oscillate, and build an informal idea of a limit.
+    source: original
+    ccss: []
+    prerequisites: [w11.a.geometric-series, w11.f.combine-functions]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, sort]
+    secret_goals:
+      - { id: zeno, text: Showed the halving sequence never passes its limit, kind: custom }
+
+  - id: w12.f.limits-of-functions
+    title: Limits of functions
+    description: Estimate limits graphically and numerically, including one-sided limits, and see asymptotes as limits.
+    source: original
+    ccss: []
+    prerequisites: [w12.f.sequences-and-limits, w12.f.graph-rational-functions]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, sim]
+
+  - id: w12.f.continuity
+    title: Continuity
+    description: Recognize where a function is continuous and classify the ways it can fail, using piecewise and rational examples.
+    source: original
+    ccss: []
+    prerequisites: [w12.f.limits-of-functions, w09.f.graph-piecewise-absolute]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, manipulate]
+
+  - id: w12.f.instantaneous-rate-of-change
+    title: Speed right now
+    description: Shrink the interval of an average rate of change until the secant becomes a tangent, and read the derivative as a limit.
+    source: original
+    ccss: []
+    prerequisites: [w12.f.limits-of-functions, w11.f.key-features-advanced]
+    representations: [visual, symbolic, verbal, physical]
+    engines: [manipulate, sim]
+    secret_goals:
+      - { id: zoom-to-line, text: Zoomed until the curve looked straight and read the slope, kind: representation }
+
+  - id: w12.f.derivative-rules-intro
+    title: First derivative rules
+    description: Discover the power rule from patterns and use basic derivatives to describe where a function rises, falls, and turns.
+    source: original
+    ccss: []
+    prerequisites: [w12.f.instantaneous-rate-of-change]
+    representations: [symbolic, visual]
+    engines: [sim, fluency, strategy]
+
+  - id: w12.f.accumulation-intro
+    title: Area under a curve
+    description: Approximate the area under a curve with rectangles, refine the approximation, and connect accumulated change to rate.
+    source: original
+    ccss: []
+    prerequisites: [w12.f.limits-of-functions, w12.g.cavalieri]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, sim]
+    secret_goals:
+      - { id: thinner-bars, text: Made the bars thin enough to get within 1% of the true area, kind: shortcut }
+
+  - id: w12.f.parametric-and-polar
+    title: Parametric and polar
+    description: Describe curves with parametric equations and polar coordinates and convert between forms.
+    source: original
+    ccss: []
+    prerequisites: [w12.n.complex-plane, w12.f.trig-symmetry-periodicity]
+    representations: [visual, symbolic]
+    engines: [manipulate, build, sim]

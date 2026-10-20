@@ -1,0 +1,214 @@
+world: 5
+name: Grade 5
+tier: adventure
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [2, 7, 21] }
+
+nodes:
+  # ---- Operations & Algebraic Thinking ----
+  - id: w05.oa.order-of-operations
+    title: Parentheses first
+    description: Evaluate expressions with parentheses, brackets, and braces.
+    ccss: [5.OA.A.1]
+    prerequisites: [w04.oa.multistep-word-problems]
+    representations: [symbolic, visual]
+    engines: [fluency, build]
+    mastery: { fluency_ms: 8000 }
+
+  - id: w05.oa.numerical-expressions
+    title: Say it in symbols
+    description: Write and interpret numerical expressions without evaluating them (e.g., "3 times the sum of 8 and 7").
+    ccss: [5.OA.A.2]
+    prerequisites: [w05.oa.order-of-operations]
+    representations: [verbal, symbolic, visual]
+    engines: [sort, build]
+
+  - id: w05.oa.patterns-ordered-pairs
+    title: Two patterns, one graph
+    description: Generate two patterns from rules, pair the terms, and graph the pairs.
+    ccss: [5.OA.B.3]
+    prerequisites: [w04.oa.patterns-and-rules, w05.g.coordinate-plane]
+    representations: [visual, symbolic]
+    engines: [sim, build]
+
+  # ---- Number & Operations in Base Ten ----
+  - id: w05.nbt.place-value-powers-of-10
+    title: Powers of ten
+    description: Explain place-value patterns when multiplying or dividing by powers of 10 and use whole-number exponents for them.
+    ccss: [5.NBT.A.1, 5.NBT.A.2]
+    prerequisites: [w04.nbt.place-value-ten-times, w04.nf.decimal-notation]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+
+  - id: w05.nbt.decimals-to-thousandths
+    title: Decimals to thousandths
+    description: Read, write, and compare decimals to thousandths in numerals, names, and expanded form.
+    ccss: [5.NBT.A.3]
+    prerequisites: [w05.nbt.place-value-powers-of-10, w04.nf.compare-decimals]
+    representations: [verbal, visual, symbolic]
+    engines: [sort, fluency]
+
+  - id: w05.nbt.round-decimals
+    title: Round decimals
+    description: Round decimals to any place.
+    ccss: [5.NBT.A.4]
+    prerequisites: [w05.nbt.decimals-to-thousandths, w04.nbt.round-multidigit]
+    representations: [visual, symbolic]
+    engines: [fluency, manipulate]
+
+  - id: w05.nbt.multiply-multidigit-fluent
+    title: Multiply with the algorithm
+    description: Multiply multi-digit whole numbers fluently with the standard algorithm.
+    ccss: [5.NBT.B.5]
+    prerequisites: [w04.nbt.multiply-multidigit]
+    representations: [symbolic, visual]
+    engines: [fluency, strategy]
+    mastery: { fluency_ms: 20000 }
+
+  - id: w05.nbt.divide-by-two-digit
+    title: Divide by two digits
+    description: Divide up to four-digit dividends by two-digit divisors using place value, properties, and area models.
+    ccss: [5.NBT.B.6]
+    prerequisites: [w04.nbt.divide-by-one-digit, w05.nbt.multiply-multidigit-fluent]
+    representations: [symbolic, visual]
+    engines: [strategy, build]
+    strategies: [partial-quotients, estimate-first]
+
+  - id: w05.nbt.decimal-operations
+    title: Decimal arithmetic
+    description: Add, subtract, multiply, and divide decimals to hundredths with models and explain the reasoning.
+    ccss: [5.NBT.B.7]
+    prerequisites: [w05.nbt.decimals-to-thousandths, w05.nbt.multiply-multidigit-fluent, w04.nf.tenths-and-hundredths]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, strategy, story]
+    strategies: [estimate-first, place-value]
+
+  # ---- Number & Operations — Fractions ----
+  - id: w05.nf.add-sub-unlike-fractions
+    title: Add and subtract any fractions
+    description: Add and subtract fractions and mixed numbers with unlike denominators using equivalent fractions.
+    ccss: [5.NF.A.1]
+    prerequisites: [w04.nf.fraction-equivalence, w04.nf.add-sub-like-denominators]
+    representations: [visual, symbolic]
+    engines: [manipulate, fluency, strategy]
+    strategies: [common-denominator, benchmark-estimate]
+
+  - id: w05.nf.fraction-word-problems-add-sub
+    title: Fraction stories
+    description: Solve story problems with adding and subtracting fractions, using benchmarks to judge reasonableness.
+    ccss: [5.NF.A.2]
+    prerequisites: [w05.nf.add-sub-unlike-fractions, w04.nf.compare-unlike-fractions]
+    representations: [verbal, visual, symbolic]
+    engines: [story, strategy]
+
+  - id: w05.nf.fraction-as-division
+    title: Fractions are division
+    description: Interpret a/b as a ÷ b and solve sharing problems whose answers are fractions.
+    ccss: [5.NF.B.3]
+    prerequisites: [w04.nbt.divide-by-one-digit, w03.nf.whole-numbers-as-fractions]
+    representations: [visual, symbolic, verbal, physical]
+    engines: [story, manipulate]
+
+  - id: w05.nf.multiply-fractions
+    title: Fraction times fraction
+    description: Multiply a fraction by a whole number or a fraction, using partitioning to explain the product.
+    ccss: [5.NF.B.4.a]
+    prerequisites: [w04.nf.multiply-fraction-by-whole]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+    strategies: [area-model]
+
+  - id: w05.nf.area-with-fractional-sides
+    title: Fractional rectangles
+    description: Find areas of rectangles with fractional side lengths by tiling and by multiplying.
+    ccss: [5.NF.B.4.b]
+    prerequisites: [w05.nf.multiply-fractions, w04.md.area-perimeter-formulas]
+    representations: [visual, symbolic, physical]
+    engines: [build, story]
+
+  - id: w05.nf.multiplication-as-scaling
+    title: Scaling up and down
+    description: Predict whether a product is bigger or smaller than a factor from the size of the other factor.
+    ccss: [5.NF.B.5]
+    prerequisites: [w05.nf.multiply-fractions]
+    representations: [visual, verbal, symbolic]
+    engines: [sort, sim]
+    secret_goals:
+      - { id: no-calc, text: Compared products without computing any of them, kind: strategy }
+
+  - id: w05.nf.fraction-multiplication-problems
+    title: Fraction multiplication stories
+    description: Solve real-world problems involving multiplication of fractions and mixed numbers.
+    ccss: [5.NF.B.6]
+    prerequisites: [w05.nf.multiplication-as-scaling, w04.oa.multiplicative-comparison]
+    representations: [verbal, visual, symbolic]
+    engines: [story, build]
+
+  - id: w05.nf.divide-unit-fractions
+    title: Divide with unit fractions
+    description: Divide a unit fraction by a whole number and a whole number by a unit fraction, with models and stories.
+    ccss: [5.NF.B.7]
+    prerequisites: [w05.nf.multiply-fractions, w05.nf.fraction-as-division]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, story]
+    strategies: [how-many-fit, share-it]
+
+  # ---- Measurement & Data ----
+  - id: w05.md.convert-measurements
+    title: Convert any direction
+    description: Convert among units within a measurement system and use conversions in multi-step problems.
+    ccss: [5.MD.A.1]
+    prerequisites: [w04.md.unit-conversion, w05.nbt.decimal-operations]
+    representations: [symbolic, verbal, visual]
+    engines: [story, fluency]
+
+  - id: w05.md.line-plots-fraction-operations
+    title: Line plots, fraction math
+    description: Make line plots with fractional data and use fraction operations to answer questions about them.
+    ccss: [5.MD.B.2]
+    prerequisites: [w04.md.line-plots-fractions, w05.nf.add-sub-unlike-fractions]
+    representations: [visual, symbolic]
+    engines: [build, story]
+
+  - id: w05.md.volume-concept
+    title: Filling with cubes
+    description: Understand volume as packing with unit cubes and measure it by counting.
+    ccss: [5.MD.C.3, 5.MD.C.4]
+    prerequisites: [w03.md.area-concept]
+    representations: [physical, visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w05.md.volume-formula
+    title: Volume by multiplying
+    description: Use V = l × w × h and V = B × h, and add volumes of combined prisms.
+    ccss: [5.MD.C.5]
+    prerequisites: [w05.md.volume-concept, w05.nbt.multiply-multidigit-fluent, w04.md.area-perimeter-formulas]
+    representations: [visual, symbolic, physical]
+    engines: [build, story]
+    secret_goals:
+      - { id: same-volume, text: Built two different boxes with the same volume, kind: shortcut }
+
+  # ---- Geometry ----
+  - id: w05.g.coordinate-plane
+    title: The coordinate plane
+    description: Use axes and ordered pairs to locate points in the first quadrant.
+    ccss: [5.G.A.1]
+    prerequisites: [w02.md.number-line]
+    representations: [visual, symbolic]
+    engines: [manipulate, build]
+
+  - id: w05.g.graph-points-problems
+    title: Plot and read
+    description: Graph points in the first quadrant to represent real situations and interpret them.
+    ccss: [5.G.A.2]
+    prerequisites: [w05.g.coordinate-plane]
+    representations: [visual, symbolic, verbal]
+    engines: [build, story]
+
+  - id: w05.g.classify-2d-hierarchy
+    title: Shape family tree
+    description: Classify two-dimensional figures in a hierarchy, where attributes of a category belong to all subcategories.
+    ccss: [5.G.B.3, 5.G.B.4]
+    prerequisites: [w04.g.classify-by-lines-angles]
+    representations: [visual, verbal]
+    engines: [sort, build]

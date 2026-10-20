@@ -1,0 +1,228 @@
+world: 8
+name: Grade 8
+tier: workshop
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [2, 7, 21] }
+
+nodes:
+  # ---- The Number System ----
+  - id: w08.ns.irrational-numbers
+    title: Rational or not
+    description: Know that every number has a decimal expansion, that rationals repeat or terminate, and that irrationals do neither.
+    ccss: [8.NS.A.1]
+    prerequisites: [w07.ns.multiply-divide-rationals]
+    representations: [symbolic, visual, verbal]
+    engines: [sort, strategy]
+
+  - id: w08.ns.approximate-irrationals
+    title: Pin down an irrational
+    description: Approximate irrational numbers with rationals, locate them on a number line, and compare them.
+    ccss: [8.NS.A.2]
+    prerequisites: [w08.ns.irrational-numbers, w08.ee.square-cube-roots]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+    secret_goals:
+      - { id: squeeze, text: Trapped root 2 between two decimals to the hundredths, kind: shortcut }
+
+  # ---- Expressions & Equations ----
+  - id: w08.ee.integer-exponents
+    title: Exponent rules
+    description: Apply the properties of integer exponents, including zero and negative exponents.
+    ccss: [8.EE.A.1]
+    prerequisites: [w06.ee.exponents, w07.ns.multiply-divide-rationals]
+    representations: [symbolic, visual]
+    engines: [fluency, sort, strategy]
+    mastery: { fluency_ms: 6000 }
+    strategies: [expand-and-count, pattern-down-to-zero]
+
+  - id: w08.ee.square-cube-roots
+    title: Roots
+    description: Solve x² = p and x³ = p, evaluate roots of perfect squares and cubes, and know √2 is irrational.
+    ccss: [8.EE.A.2]
+    prerequisites: [w08.ee.integer-exponents]
+    representations: [symbolic, visual, physical]
+    engines: [fluency, build]
+
+  - id: w08.ee.scientific-notation
+    title: Scientific notation
+    description: Use powers of ten to estimate and compare very large and very small quantities.
+    ccss: [8.EE.A.3]
+    prerequisites: [w08.ee.integer-exponents, w05.nbt.place-value-powers-of-10]
+    representations: [symbolic, verbal, visual]
+    engines: [sort, sim]
+
+  - id: w08.ee.operations-scientific-notation
+    title: Compute in scientific notation
+    description: Add, subtract, multiply, and divide numbers in scientific notation and choose appropriate units.
+    ccss: [8.EE.A.4]
+    prerequisites: [w08.ee.scientific-notation]
+    representations: [symbolic, verbal]
+    engines: [fluency, story]
+
+  - id: w08.ee.proportional-graphs-slope
+    title: Slope as rate
+    description: Graph proportional relationships, read the unit rate as slope, and compare relationships across representations.
+    ccss: [8.EE.B.5]
+    prerequisites: [w07.rp.proportional-equations]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, sort]
+
+  - id: w08.ee.slope-and-linear-equations
+    title: y = mx + b
+    description: Use similar triangles to explain why slope is constant and derive y = mx and y = mx + b.
+    ccss: [8.EE.B.6]
+    prerequisites: [w08.ee.proportional-graphs-slope, w08.g.similarity-dilations]
+    representations: [visual, symbolic]
+    engines: [build, manipulate, strategy]
+    secret_goals:
+      - { id: slope-triangles, text: Showed two slope triangles are similar, kind: strategy }
+
+  - id: w08.ee.linear-equations-one-variable
+    title: Linear equations
+    description: Solve linear equations with rational coefficients, including ones with one, none, or infinitely many solutions.
+    ccss: [8.EE.C.7]
+    prerequisites: [w07.ee.two-step-equations, w07.ee.linear-expressions]
+    representations: [symbolic, visual, verbal]
+    engines: [fluency, manipulate, sort]
+    mastery: { fluency_ms: 20000 }
+    strategies: [collect-terms, clear-fractions]
+
+  - id: w08.ee.systems-of-linear-equations
+    title: Two lines, one point
+    description: Solve systems of two linear equations graphically and algebraically and use them to solve problems.
+    ccss: [8.EE.C.8]
+    prerequisites: [w08.ee.linear-equations-one-variable, w08.ee.slope-and-linear-equations]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, strategy, story]
+    strategies: [graph-and-read, substitution, elimination]
+
+  # ---- Functions ----
+  - id: w08.f.function-concept
+    title: What a function is
+    description: Understand a function as a rule assigning exactly one output to each input, with graphs as input-output pairs.
+    ccss: [8.F.A.1]
+    prerequisites: [w06.ee.dependent-independent-variables]
+    representations: [visual, symbolic, verbal, physical]
+    engines: [sort, sim]
+
+  - id: w08.f.compare-functions
+    title: Compare functions
+    description: Compare properties of two functions given in different ways (table, graph, equation, description).
+    ccss: [8.F.A.2]
+    prerequisites: [w08.f.function-concept, w08.ee.slope-and-linear-equations]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, strategy]
+
+  - id: w08.f.linear-vs-nonlinear
+    title: Linear or not
+    description: Interpret y = mx + b as a linear function and give examples of functions that are not linear.
+    ccss: [8.F.A.3]
+    prerequisites: [w08.f.function-concept, w08.ee.slope-and-linear-equations]
+    representations: [visual, symbolic]
+    engines: [sort, sim]
+
+  - id: w08.f.construct-linear-functions
+    title: Build a linear model
+    description: Construct a linear function from two points, a table, or a description, and interpret rate of change and initial value.
+    ccss: [8.F.B.4]
+    prerequisites: [w08.f.compare-functions]
+    representations: [visual, symbolic, verbal]
+    engines: [build, story]
+
+  - id: w08.f.qualitative-graphs
+    title: Read the shape
+    description: Describe a relationship qualitatively from its graph and sketch a graph from a description.
+    ccss: [8.F.B.5]
+    prerequisites: [w08.f.linear-vs-nonlinear]
+    representations: [visual, verbal]
+    engines: [sim, build]
+    secret_goals:
+      - { id: story-match, text: Matched all five graphs to their stories with no misses, kind: streak }
+
+  # ---- Geometry ----
+  - id: w08.g.rigid-transformations
+    title: Slide, flip, turn
+    description: Perform rotations, reflections, and translations and describe what they preserve, including with coordinates.
+    ccss: [8.G.A.1, 8.G.A.3]
+    prerequisites: [w06.ns.coordinate-distances, w07.g.angle-relationships]
+    representations: [visual, physical, symbolic]
+    engines: [manipulate, build]
+
+  - id: w08.g.congruence-transformations
+    title: Congruent by moving
+    description: Show two figures are congruent by finding a sequence of rigid motions that maps one onto the other.
+    ccss: [8.G.A.2]
+    prerequisites: [w08.g.rigid-transformations]
+    representations: [visual, physical, verbal]
+    engines: [manipulate, strategy]
+    secret_goals:
+      - { id: two-moves, text: Matched the figures in two moves or fewer, kind: shortcut }
+
+  - id: w08.g.similarity-dilations
+    title: Similar by scaling
+    description: Perform dilations and show two figures are similar by a sequence of dilations and rigid motions.
+    ccss: [8.G.A.4]
+    prerequisites: [w08.g.rigid-transformations, w07.g.scale-drawings]
+    representations: [visual, physical, symbolic]
+    engines: [manipulate, build]
+
+  - id: w08.g.angle-facts
+    title: Angle facts
+    description: Establish the triangle angle sum, exterior angles, transversal angle pairs, and the AA criterion for similarity.
+    ccss: [8.G.A.5]
+    prerequisites: [w07.g.angle-relationships, w08.g.similarity-dilations]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, strategy]
+
+  - id: w08.g.pythagorean-theorem
+    title: Pythagorean theorem
+    description: Explain a proof of the Pythagorean theorem and apply it to find unknown sides in two and three dimensions.
+    ccss: [8.G.B.6, 8.G.B.7]
+    prerequisites: [w08.ee.square-cube-roots, w07.g.area-volume-surface-area]
+    representations: [visual, symbolic, physical]
+    engines: [build, story, strategy]
+    secret_goals:
+      - { id: square-tiles, text: Rearranged the squares to show a² + b² = c², kind: strategy }
+
+  - id: w08.g.distance-between-points
+    title: Distance on the plane
+    description: Apply the Pythagorean theorem to find the distance between two points in the coordinate plane.
+    ccss: [8.G.B.8]
+    prerequisites: [w08.g.pythagorean-theorem, w06.ns.coordinate-distances]
+    representations: [visual, symbolic]
+    engines: [manipulate, fluency]
+
+  - id: w08.g.volume-round-solids
+    title: Cylinders, cones, spheres
+    description: Use the volume formulas for cylinders, cones, and spheres to solve problems.
+    ccss: [8.G.C.9]
+    prerequisites: [w07.g.circles, w07.g.area-volume-surface-area]
+    representations: [visual, symbolic, physical]
+    engines: [sim, story]
+    secret_goals:
+      - { id: three-cones, text: Showed three cones fill one cylinder, kind: custom }
+
+  # ---- Statistics & Probability ----
+  - id: w08.sp.scatter-plots
+    title: Scatter plots
+    description: Construct and interpret scatter plots, describing clustering, outliers, and linear or nonlinear association.
+    ccss: [8.SP.A.1]
+    prerequisites: [w05.g.graph-points-problems, w07.sp.compare-populations]
+    representations: [visual, verbal]
+    engines: [build, sort]
+
+  - id: w08.sp.line-of-best-fit
+    title: Line of best fit
+    description: Fit a straight line to a scatter plot informally and interpret its slope and intercept in context.
+    ccss: [8.SP.A.2, 8.SP.A.3]
+    prerequisites: [w08.sp.scatter-plots, w08.f.construct-linear-functions]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, story]
+
+  - id: w08.sp.two-way-tables
+    title: Two-way tables
+    description: Build two-way frequency tables for categorical data and use relative frequencies to look for association.
+    ccss: [8.SP.A.4]
+    prerequisites: [w07.sp.compound-events, w06.rp.percent]
+    representations: [visual, symbolic, verbal]
+    engines: [build, story]

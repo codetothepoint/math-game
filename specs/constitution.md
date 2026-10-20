@@ -31,3 +31,6 @@ Parents and teachers set the starting world, see progress, and attach real-world
 
 ## 10. Understanding over memorization.
 Representations are mixed (symbolic, visual, verbal, physical). Strategy matters, not just answers. A skill is not mastered until it transfers to a representation the player did not drill.
+
+## 11. Specs are platform-neutral.
+The build target is native Android, but every spec describes behavior, data, visuals, and interaction in platform-independent terms. Holding only `specs/`, a team could generate an exact iOS equivalent. Platform-specific detail lives in `specs/platform/`, never in the game, curriculum, or mechanics specs. See ADR 0001.

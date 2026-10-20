@@ -1,0 +1,251 @@
+world: 2
+name: Grade 2
+tier: playground
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [2, 7, 21] }
+
+nodes:
+  # ---- Operations & Algebraic Thinking ----
+  - id: w02.oa.fluency-within-20
+    title: Fast facts to 20
+    description: Add and subtract within 20 from memory, with sums of two one-digit numbers known cold.
+    ccss: [2.OA.B.2]
+    prerequisites: [w01.oa.add-within-20, w01.oa.subtract-within-20]
+    representations: [symbolic, verbal, visual]
+    engines: [fluency]
+    mastery: { fluency_ms: 2500, three_star: 0.95 }
+    strategies: [make-ten, doubles, think-addition]
+
+  - id: w02.oa.odd-and-even
+    title: Odd or even
+    description: Tell whether a group is odd or even by pairing, and write an even number as a doubles sum.
+    ccss: [2.OA.C.3]
+    prerequisites: [w01.nbt.count-to-120]
+    representations: [physical, visual, symbolic]
+    engines: [sort, manipulate]
+    strategies: [pair-up]
+
+  - id: w02.oa.arrays-repeated-addition
+    title: Rows and columns
+    description: Find the total in a rectangular array by adding equal rows.
+    ccss: [2.OA.C.4]
+    prerequisites: [w01.oa.add-three-numbers]
+    representations: [physical, visual, symbolic]
+    engines: [build, manipulate]
+    strategies: [skip-count, repeated-addition]
+
+  - id: w02.oa.word-problems-within-100
+    title: Story problems within 100
+    description: Solve one- and two-step story problems within 100 with unknowns in any position.
+    ccss: [2.OA.A.1]
+    prerequisites: [w01.oa.word-problems-within-20, w02.nbt.add-within-100-fluent]
+    representations: [verbal, visual, symbolic]
+    engines: [story, strategy]
+    strategies: [draw-it, write-equation, bar-model]
+
+  # ---- Number & Operations in Base Ten ----
+  - id: w02.nbt.hundreds-tens-ones
+    title: Hundreds, tens, ones
+    description: See a three-digit number as hundreds, tens, and ones; a hundred is ten tens.
+    ccss: [2.NBT.A.1]
+    prerequisites: [w01.nbt.tens-and-ones]
+    representations: [physical, visual, symbolic]
+    engines: [build, manipulate]
+    strategies: [bundle-tens, bundle-hundreds]
+
+  - id: w02.nbt.skip-count
+    title: Skip count by 5, 10, 100
+    description: Count within 1000 by fives, tens, and hundreds from any starting point.
+    ccss: [2.NBT.A.2]
+    prerequisites: [w01.nbt.count-to-120]
+    representations: [verbal, visual, symbolic]
+    engines: [fluency, manipulate]
+    mastery: { fluency_ms: 2500 }
+
+  - id: w02.nbt.read-write-to-1000
+    title: Numbers to 1000
+    description: Read and write numbers to 1000 as numerals, words, and expanded form.
+    ccss: [2.NBT.A.3]
+    prerequisites: [w02.nbt.hundreds-tens-ones]
+    representations: [verbal, visual, symbolic]
+    engines: [sort, build, fluency]
+
+  - id: w02.nbt.compare-three-digit
+    title: Compare to 1000
+    description: Compare two three-digit numbers by place value using <, >, and =.
+    ccss: [2.NBT.A.4]
+    prerequisites: [w02.nbt.read-write-to-1000, w01.nbt.compare-two-digit]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, fluency]
+
+  - id: w02.nbt.add-within-100-fluent
+    title: Add within 100
+    description: Add within 100 fluently using place value and properties.
+    ccss: [2.NBT.B.5]
+    prerequisites: [w01.nbt.add-within-100, w02.oa.fluency-within-20]
+    representations: [symbolic, visual, physical]
+    engines: [fluency, strategy, manipulate]
+    mastery: { fluency_ms: 6000 }
+    strategies: [add-tens-then-ones, make-ten, compensate]
+
+  - id: w02.nbt.subtract-within-100-fluent
+    title: Subtract within 100
+    description: Subtract within 100 fluently, including when a ten must be broken apart.
+    ccss: [2.NBT.B.5]
+    prerequisites: [w02.nbt.add-within-100-fluent, w01.nbt.subtract-multiples-of-ten]
+    representations: [symbolic, visual, physical]
+    engines: [fluency, strategy, manipulate]
+    mastery: { fluency_ms: 7000 }
+    strategies: [count-up, decompose-ten, compensate, think-addition]
+
+  - id: w02.nbt.add-up-to-four-two-digit
+    title: Add a stack of numbers
+    description: Add up to four two-digit numbers.
+    ccss: [2.NBT.B.6]
+    prerequisites: [w02.nbt.add-within-100-fluent]
+    representations: [symbolic, visual]
+    engines: [strategy, story]
+    strategies: [reorder, make-ten, add-tens-then-ones]
+
+  - id: w02.nbt.add-sub-within-1000
+    title: Add and subtract to 1000
+    description: Add and subtract within 1000 using models, drawings, and place-value strategies, composing and decomposing hundreds and tens.
+    ccss: [2.NBT.B.7]
+    prerequisites: [w02.nbt.subtract-within-100-fluent, w02.nbt.hundreds-tens-ones]
+    representations: [physical, visual, symbolic]
+    engines: [manipulate, build, strategy]
+    strategies: [place-value, compensate, count-up]
+
+  - id: w02.nbt.mental-10-100
+    title: Jump by 10 and 100
+    description: Mentally add or subtract 10 or 100 to any number up to 900.
+    ccss: [2.NBT.B.8]
+    prerequisites: [w01.nbt.ten-more-ten-less, w02.nbt.hundreds-tens-ones]
+    representations: [visual, symbolic, verbal]
+    engines: [fluency, manipulate]
+    mastery: { fluency_ms: 3000 }
+
+  - id: w02.nbt.explain-strategies
+    title: Why it works
+    description: Explain why an addition or subtraction strategy works using place value and properties.
+    ccss: [2.NBT.B.9]
+    prerequisites: [w02.nbt.add-sub-within-1000]
+    representations: [verbal, visual, symbolic]
+    engines: [strategy, sort]
+    secret_goals:
+      - { id: two-strategies, text: Solved one problem two different ways, kind: strategy }
+
+  # ---- Measurement & Data ----
+  - id: w02.md.measure-with-tools
+    title: Rulers and tapes
+    description: Measure lengths with rulers, yardsticks, meter sticks, and tapes, choosing the right tool.
+    ccss: [2.MD.A.1]
+    prerequisites: [w01.md.measure-with-units]
+    representations: [physical, visual, symbolic]
+    engines: [manipulate, sort]
+
+  - id: w02.md.measure-different-units
+    title: Same length, different units
+    description: Measure one object in two units and explain why the counts differ.
+    ccss: [2.MD.A.2]
+    prerequisites: [w02.md.measure-with-tools]
+    representations: [physical, visual, verbal]
+    engines: [manipulate, strategy]
+
+  - id: w02.md.estimate-lengths
+    title: Guess the length
+    description: Estimate lengths in inches, feet, centimeters, and meters.
+    ccss: [2.MD.A.3]
+    prerequisites: [w02.md.measure-with-tools]
+    representations: [visual, verbal, physical]
+    engines: [sim, sort]
+    secret_goals:
+      - { id: within-one, text: Estimated within one unit three times in a row, kind: streak }
+
+  - id: w02.md.compare-lengths
+    title: How much longer
+    description: Measure to find how much longer one object is than another.
+    ccss: [2.MD.A.4]
+    prerequisites: [w02.md.measure-with-tools, w02.nbt.subtract-within-100-fluent]
+    representations: [physical, visual, symbolic]
+    engines: [manipulate, story]
+
+  - id: w02.md.length-word-problems
+    title: Length stories
+    description: Add and subtract lengths within 100 in story problems, using drawings and equations.
+    ccss: [2.MD.B.5]
+    prerequisites: [w02.md.compare-lengths]
+    representations: [verbal, visual, symbolic]
+    engines: [story, manipulate]
+
+  - id: w02.md.number-line
+    title: The number line
+    description: Place whole numbers on a number line with equal spacing and use it to add and subtract within 100.
+    ccss: [2.MD.B.6]
+    prerequisites: [w01.nbt.count-to-120, w02.md.measure-with-tools]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, build]
+    strategies: [jump-tens, jump-ones]
+
+  - id: w02.md.time-to-five-minutes
+    title: Time to five minutes
+    description: Tell and write time to the nearest five minutes, with a.m. and p.m.
+    ccss: [2.MD.C.7]
+    prerequisites: [w01.md.tell-time-hour-half, w02.nbt.skip-count]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, fluency]
+    mastery: { fluency_ms: 5000 }
+
+  - id: w02.md.money
+    title: Coins and dollars
+    description: Solve story problems with dollars, quarters, dimes, nickels, and pennies.
+    ccss: [2.MD.C.8]
+    prerequisites: [w02.nbt.skip-count, w02.nbt.add-within-100-fluent]
+    representations: [physical, visual, symbolic, verbal]
+    engines: [story, manipulate, strategy]
+    strategies: [count-coins-largest-first, make-a-dollar]
+    secret_goals:
+      - { id: exact-change, text: Paid with exact change using the fewest coins, kind: shortcut }
+
+  - id: w02.md.line-plots
+    title: Line plots
+    description: Measure several objects to the nearest whole unit and show the data on a line plot.
+    ccss: [2.MD.D.9]
+    prerequisites: [w02.md.measure-with-tools]
+    representations: [physical, visual, symbolic]
+    engines: [build, sort]
+
+  - id: w02.md.picture-and-bar-graphs
+    title: Picture and bar graphs
+    description: Make picture graphs and bar graphs for up to four categories and answer questions from them.
+    ccss: [2.MD.D.10]
+    prerequisites: [w01.md.organize-data]
+    representations: [visual, symbolic, verbal]
+    engines: [build, story]
+
+  # ---- Geometry ----
+  - id: w02.g.shapes-by-attributes
+    title: Name that shape
+    description: Recognize and draw shapes by their number of sides, angles, or faces, including cubes.
+    ccss: [2.G.A.1]
+    prerequisites: [w01.g.shape-attributes]
+    representations: [visual, physical, verbal]
+    engines: [sort, build]
+
+  - id: w02.g.partition-rectangles
+    title: Tile a rectangle
+    description: Split a rectangle into rows and columns of same-size squares and count them.
+    ccss: [2.G.A.2]
+    prerequisites: [w02.oa.arrays-repeated-addition]
+    representations: [physical, visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w02.g.halves-thirds-fourths
+    title: Halves, thirds, fourths
+    description: Split circles and rectangles into two, three, or four equal shares; equal shares need not be the same shape.
+    ccss: [2.G.A.3]
+    prerequisites: [w01.g.halves-and-fourths]
+    representations: [physical, visual, verbal]
+    engines: [manipulate, sort]
+    secret_goals:
+      - { id: different-shapes, text: Made four equal shares that were not all the same shape, kind: shortcut }

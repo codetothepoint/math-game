@@ -1,0 +1,454 @@
+<title>Math Game Skill Graph</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  /* Layout: compact sticky toolbar; a pannable canvas of 12 world columns grouped by tier; details in a bottom sheet (phone) or right rail (desktop). */
+  --bg: #f4f6f8;
+  --panel: #ffffff;
+  --fg: #16202b;
+  --muted: #5d6874;
+  --line: #d7dde4;
+  --line-strong: #a9b3bf;
+  --accent: #1d3f94;
+  --accent-soft: rgba(29, 63, 148, 0.10);
+  --up: #c2410c;
+  --down: #0e7490;
+  --band: rgba(22, 32, 43, 0.045);
+  --edge: rgba(22, 32, 43, 0.14);
+  --ghost: 0.18;
+  --d-oa: #d9480f; --d-ee: #c92a2a; --d-a: #a61e4d;
+  --d-nbt: #e67700; --d-ns: #a98300; --d-n: #8d6a00;
+  --d-nf: #c2255c; --d-rp: #862e9c;
+  --d-f: #5f3dc4; --d-g: #1864ab; --d-md: #2b8a3e; --d-sp: #0b7285; --d-s: #0b7285;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Helvetica Neue", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141a; --panel: #171e27; --fg: #e8edf2; --muted: #98a4b2; --line: #2a3441; --line-strong: #4a5666;
+    --accent: #9db8ff; --accent-soft: rgba(157, 184, 255, 0.14); --up: #fb923c; --down: #2dd4bf;
+    --band: rgba(232, 237, 242, 0.035); --edge: rgba(232, 237, 242, 0.14); --ghost: 0.16;
+    --d-oa: #ff8c52; --d-ee: #ff7b7b; --d-a: #f783ac;
+    --d-nbt: #ffb14d; --d-ns: #e4c54c; --d-n: #d6b55a;
+    --d-nf: #f06595; --d-rp: #cc8ae6;
+    --d-f: #9d85f0; --d-g: #6fa8e8; --d-md: #69c272; --d-sp: #4dc4d4; --d-s: #4dc4d4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141a; --panel: #171e27; --fg: #e8edf2; --muted: #98a4b2; --line: #2a3441; --line-strong: #4a5666;
+  --accent: #9db8ff; --accent-soft: rgba(157, 184, 255, 0.14); --up: #fb923c; --down: #2dd4bf;
+  --band: rgba(232, 237, 242, 0.035); --edge: rgba(232, 237, 242, 0.14); --ghost: 0.16;
+  --d-oa: #ff8c52; --d-ee: #ff7b7b; --d-a: #f783ac;
+  --d-nbt: #ffb14d; --d-ns: #e4c54c; --d-n: #d6b55a;
+  --d-nf: #f06595; --d-rp: #cc8ae6;
+  --d-f: #9d85f0; --d-g: #6fa8e8; --d-md: #69c272; --d-sp: #4dc4d4; --d-s: #4dc4d4;
+  color-scheme: dark;
+}
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.4; display: flex; flex-direction: column; min-height: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+* { box-sizing: border-box; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.toolbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 10px 8px;
+  display: grid; gap: 8px;
+}
+.title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.stats { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; display: flex; gap: 10px; flex-wrap: wrap; }
+.stats b { color: var(--fg); font-weight: 700; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.controls input[type="search"] { flex: 1 1 160px; min-width: 0; padding: 6px 10px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--bg); }
+.controls select { padding: 6px 8px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--bg); max-width: 46vw; }
+.zoom { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; }
+.zoom button { background: var(--bg); border: 0; padding: 6px 10px; font-variant-numeric: tabular-nums; }
+.zoom button + button { border-left: 1px solid var(--line-strong); }
+.zoom button:hover { background: var(--accent-soft); }
+.toggle { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+.chip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); font-size: 12px; white-space: nowrap; }
+.chip .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--d); }
+.chip.off { opacity: 0.45; }
+.chip.off .dot { background: transparent; box-shadow: inset 0 0 0 2px var(--d); }
+.chip .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 12px; align-items: center; }
+.legend .sw { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--line-strong); vertical-align: middle; margin-right: 5px; }
+.legend .sw.up { border-color: var(--up); }
+.legend .sw.down { border-color: var(--down); }
+.legend .sw.dashed { border-top-style: dashed; }
+
+.workspace { flex: 1 1 auto; display: grid; grid-template-columns: 1fr; min-height: 0; position: relative; }
+.canvas-wrap { overflow: auto; position: relative; -webkit-overflow-scrolling: touch; min-height: 60vh; }
+.spacer { position: relative; }
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.stage svg { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.stage svg path { fill: none; stroke: var(--edge); stroke-width: 1.2; transition: stroke 120ms, opacity 120ms; }
+.stage svg path.e-up { stroke: var(--up); stroke-width: 2; }
+.stage svg path.e-down { stroke: var(--down); stroke-width: 2; }
+.stage svg path.e-ghost { opacity: 0.25; }
+.stage svg path.e-hidden { display: none; }
+.stage svg path.dim { opacity: 0.12; }
+.band { position: absolute; top: 0; background: var(--band); border-radius: 10px; }
+.band span { position: absolute; left: 12px; top: 6px; font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.col-head { position: absolute; display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; }
+.col-head .num { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1; letter-spacing: -0.03em; color: var(--fg); }
+.col-head .name { font-weight: 700; font-size: 13px; line-height: 1.2; }
+.col-head .count { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.group-label { position: absolute; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 6px; }
+.node {
+  position: absolute; display: flex; align-items: center; padding: 0 8px 0 10px; border-radius: var(--radius);
+  text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: color-mix(in srgb, var(--d) 13%, var(--panel));
+  border: 1px solid color-mix(in srgb, var(--d) 55%, transparent);
+  box-shadow: inset 3px 0 0 var(--d);
+  color: var(--fg); font-size: 12.5px; line-height: 1.2;
+  transition: opacity 120ms, box-shadow 120ms;
+}
+.node span { overflow: hidden; text-overflow: ellipsis; }
+.node.original { border-style: dashed; }
+.node:hover { border-color: var(--d); }
+.node.sel { box-shadow: inset 3px 0 0 var(--d), 0 0 0 3px var(--accent); z-index: 2; }
+.node.up { box-shadow: inset 3px 0 0 var(--d), 0 0 0 2px var(--up); }
+.node.down { box-shadow: inset 3px 0 0 var(--d), 0 0 0 2px var(--down); }
+.node.ghost { opacity: var(--ghost); }
+.node.dim { opacity: 0.12; }
+.hint { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); color: var(--muted); font-size: 13px; text-align: center; pointer-events: none; max-width: 28ch; }
+
+.panel {
+  background: var(--panel); border-top: 1px solid var(--line);
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+  max-height: 48vh; overflow: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: 10px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.08);
+}
+.panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.crumb { color: var(--muted); font-size: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.crumb .dchip { display: inline-flex; align-items: center; gap: 5px; color: var(--fg); font-weight: 700; }
+.crumb .dchip i { width: 9px; height: 9px; border-radius: 50%; background: var(--d); display: inline-block; }
+.panel h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin: 2px 0 0; line-height: 1.15; text-wrap: balance; }
+.panel .id { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+.panel .desc { margin: 8px 0 0; max-width: 64ch; }
+.close { border: 1px solid var(--line-strong); background: var(--bg); border-radius: var(--radius); padding: 4px 10px; font-size: 12px; flex: 0 0 auto; }
+.section { margin-top: 12px; }
+.section h3 { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin: 0 0 5px; font-weight: 700; }
+.section h3.up { color: var(--up); }
+.section h3.down { color: var(--down); }
+.tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.tag { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); }
+.tag.mono { font-family: var(--font-mono); font-size: 11px; }
+.links { display: flex; flex-direction: column; gap: 4px; }
+.link { display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: var(--radius); padding: 5px 8px; font-size: 12.5px; }
+.link:hover { border-color: var(--d); background: color-mix(in srgb, var(--d) 10%, var(--bg)); }
+.link .w { font-family: var(--font-mono); font-size: 11px; color: var(--muted); flex: 0 0 auto; }
+.link i { width: 8px; height: 8px; border-radius: 50%; background: var(--d); flex: 0 0 auto; }
+.mastery { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; }
+.mastery div { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 8px; }
+.mastery b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
+.mastery small { color: var(--muted); font-size: 11px; }
+.goals { margin: 0; padding-left: 18px; }
+.goals li { margin: 2px 0; }
+.goals .kind { color: var(--muted); font-size: 11px; margin-left: 6px; }
+.empty { color: var(--muted); font-size: 12px; }
+
+@media (min-width: 900px) {
+  .workspace { grid-template-columns: 1fr 360px; }
+  .panel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--toolbar-h, 150px)); align-self: start; max-height: calc(100vh - var(--toolbar-h, 150px)); border-top: 0; border-left: 1px solid var(--line); box-shadow: none; padding-top: 14px; }
+  .panel[hidden] { display: block !important; }
+  .canvas-wrap { height: calc(100vh - var(--toolbar-h, 150px)); min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .node, .stage svg path { transition: none; } }
+</style>
+
+<header class="toolbar" id="toolbar">
+  <div class="title-row">
+    <h1>Math Game Skill Graph</h1>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="controls">
+    <input type="search" id="q" placeholder="Search skills, ids, standards" aria-label="Search skills" autocomplete="off">
+    <select id="engine" aria-label="Filter by engine"><option value="">All engines</option></select>
+    <div class="zoom" role="group" aria-label="Zoom">
+      <button type="button" id="zoomOut" aria-label="Zoom out">−</button>
+      <button type="button" id="zoomLabel" title="Reset to 100%">100%</button>
+      <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
+      <button type="button" id="zoomFit" title="Fit all twelve worlds in view">Fit</button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="allEdges" checked> All links</label>
+  </div>
+  <div class="chips" id="domains" aria-label="Domains (tap to hide or show)"></div>
+  <div class="legend">
+    <span><span class="sw up"></span>needs (prerequisites)</span>
+    <span><span class="sw down"></span>unlocks</span>
+    <span><span class="sw dashed"></span>original, not Common Core</span>
+  </div>
+</header>
+
+<div class="workspace">
+  <div class="canvas-wrap" id="wrap">
+    <div class="spacer" id="spacer">
+      <div class="stage" id="stage"></div>
+    </div>
+  </div>
+  <aside class="panel" id="panel" hidden aria-live="polite"></aside>
+</div>
+
+<script>
+const DATA = /*__CURRICULUM_JSON__*/null;
+
+const DOMAIN_ORDER = ["oa","nbt","nf","md","g","rp","ns","ee","f","sp","n","a","s"];
+const TIERS = [["playground",1,2,"Playground"],["adventure",3,5,"Adventure"],["workshop",6,8,"Workshop"],["studio",9,10,"Studio"],["lab",11,12,"Lab"]];
+const COL_W = 212, COL_GAP = 56, NODE_H = 34, NODE_GAP = 7, GROUP_H = 24, GROUP_GAP = 12, PAD = 16, TIER_H = 30, HEAD_H = 56;
+
+const byId = new Map(DATA.nodes.map(n => [n.id, n]));
+const worlds = DATA.worlds;
+const pos = new Map();
+let scale = 1, selected = null, activeDomains = new Set(DOMAIN_ORDER), engine = "", query = "";
+
+const stage = document.getElementById("stage");
+const spacer = document.getElementById("spacer");
+const wrap = document.getElementById("wrap");
+const panel = document.getElementById("panel");
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function worldX(w) { return PAD + (w - 1) * (COL_W + COL_GAP); }
+
+// ---- Layout ----
+function layout() {
+  let maxH = 0;
+  const html = [];
+  for (const [tier, a, b, label] of TIERS) {
+    const x = worldX(a) - 8, w = worldX(b) + COL_W + 8 - x;
+    html.push(`<div class="band" data-tier="${tier}" style="left:${x}px;width:${w}px"><span>${label}</span></div>`);
+  }
+  for (const wd of worlds) {
+    const x = worldX(wd.world);
+    const nodes = DATA.nodes.filter(n => n.world === wd.world);
+    html.push(`<div class="col-head" style="left:${x}px;top:${TIER_H}px;width:${COL_W}px;height:${HEAD_H}px"><div class="num">${wd.world}</div><div><div class="name">${esc(wd.name)}</div><div class="count">${nodes.length} skills</div></div></div>`);
+    let y = TIER_H + HEAD_H + 6;
+    for (const d of DOMAIN_ORDER) {
+      const group = nodes.filter(n => n.domain === d).sort((p, q) => p.depth - q.depth || p.title.localeCompare(q.title));
+      if (!group.length) continue;
+      html.push(`<div class="group-label" style="left:${x}px;top:${y}px;width:${COL_W}px;--d:var(--d-${d})">${esc(DATA.domains[d] || d)}</div>`);
+      y += GROUP_H;
+      for (const n of group) {
+        pos.set(n.id, { x, y });
+        html.push(`<button type="button" class="node${n.source === "original" ? " original" : ""}" id="n-${n.id}" data-id="${n.id}" style="left:${x}px;top:${y}px;width:${COL_W}px;height:${NODE_H}px;--d:var(--d-${d})" title="${esc(n.title)}"><span>${esc(n.title)}</span></button>`);
+        y += NODE_H + NODE_GAP;
+      }
+      y += GROUP_GAP;
+    }
+    maxH = Math.max(maxH, y);
+  }
+  const W = worldX(12) + COL_W + PAD, H = maxH + PAD;
+  const svg = [`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`];
+  for (const n of DATA.nodes) {
+    const t = pos.get(n.id);
+    for (const pid of n.prerequisites) {
+      const p = byId.get(pid), s = pos.get(pid);
+      const y1 = s.y + NODE_H / 2, y2 = t.y + NODE_H / 2;
+      let d;
+      if (p.world === n.world) {
+        const x = s.x + COL_W, bulge = 30;
+        d = `M${x},${y1} C${x + bulge},${y1} ${x + bulge},${y2} ${x},${y2}`;
+      } else {
+        const x1 = s.x + COL_W, x2 = t.x, c = Math.min(80, (x2 - x1) * 0.5);
+        d = `M${x1},${y1} C${x1 + c},${y1} ${x2 - c},${y2} ${x2},${y2}`;
+      }
+      svg.push(`<path d="${d}" data-from="${pid}" data-to="${n.id}"/>`);
+    }
+  }
+  svg.push("</svg>");
+  stage.innerHTML = svg.join("") + html.join("");
+  stage.style.width = W + "px"; stage.style.height = H + "px";
+  document.querySelectorAll(".band").forEach(b => { b.style.height = H - 6 + "px"; });
+  stage.dataset.w = W; stage.dataset.h = H;
+  setScale(scale);
+}
+
+function setScale(s) {
+  scale = Math.max(0.12, Math.min(1.6, s));
+  stage.style.transform = `scale(${scale})`;
+  spacer.style.width = stage.dataset.w * scale + "px";
+  spacer.style.height = stage.dataset.h * scale + "px";
+  document.getElementById("zoomLabel").textContent = Math.round(scale * 100) + "%";
+}
+
+function scrollToNode(id) {
+  const p = pos.get(id); if (!p) return;
+  wrap.scrollTo({ left: (p.x + COL_W / 2) * scale - wrap.clientWidth / 2, top: (p.y + NODE_H / 2) * scale - wrap.clientHeight / 2, behavior: "smooth" });
+}
+
+// ---- Ancestry ----
+function closure(id, key) {
+  const out = new Set(), stack = [id];
+  while (stack.length) {
+    const cur = byId.get(stack.pop());
+    for (const next of cur[key]) if (!out.has(next)) { out.add(next); stack.push(next); }
+  }
+  return out;
+}
+
+// ---- Filters + selection styling ----
+function matches(n) {
+  if (!activeDomains.has(n.domain)) return false;
+  if (engine && !n.engines.includes(engine)) return false;
+  if (query) {
+    const q = query.toLowerCase();
+    const hay = [n.title, n.id, n.description, ...n.ccss, ...n.strategies].join(" ").toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function apply() {
+  const visible = new Set(DATA.nodes.filter(matches).map(n => n.id));
+  const up = selected ? closure(selected, "prerequisites") : null;
+  const down = selected ? closure(selected, "dependents") : null;
+  const allEdges = document.getElementById("allEdges").checked;
+  for (const n of DATA.nodes) {
+    const el = document.getElementById("n-" + n.id);
+    el.classList.toggle("dim", !visible.has(n.id));
+    el.classList.toggle("sel", n.id === selected);
+    el.classList.toggle("up", !!up && up.has(n.id));
+    el.classList.toggle("down", !!down && down.has(n.id));
+    el.classList.toggle("ghost", !!selected && n.id !== selected && !up.has(n.id) && !down.has(n.id));
+  }
+  for (const path of stage.querySelectorAll("path")) {
+    const f = path.dataset.from, t = path.dataset.to;
+    path.classList.toggle("dim", !visible.has(f) || !visible.has(t));
+    let cls = "";
+    if (selected) {
+      if ((t === selected || up.has(t)) && up.has(f)) cls = "e-up";
+      else if ((f === selected || down.has(f)) && down.has(t)) cls = "e-down";
+      else cls = allEdges ? "e-ghost" : "e-hidden";
+    } else if (!allEdges) cls = "e-hidden";
+    path.classList.remove("e-up", "e-down", "e-ghost", "e-hidden");
+    if (cls) path.classList.add(cls);
+  }
+  const hint = document.getElementById("hint");
+  if (hint) hint.hidden = !!selected || scale < 0.5;
+}
+
+// ---- Detail panel ----
+function linkList(ids, cls) {
+  if (!ids.length) return `<div class="empty">none</div>`;
+  const items = ids.map(id => byId.get(id)).sort((a, b) => a.world - b.world || a.title.localeCompare(b.title));
+  return `<div class="links">` + items.map(n => `<button type="button" class="link" data-go="${n.id}" style="--d:var(--d-${n.domain})"><i></i><span class="w">w${String(n.world).padStart(2, "0")}</span><span>${esc(n.title)}</span></button>`).join("") + `</div>`;
+}
+function tags(list, mono) { return list.length ? `<div class="tags">${list.map(t => `<span class="tag${mono ? " mono" : ""}">${esc(t)}</span>`).join("")}</div>` : `<div class="empty">none</div>`; }
+
+function renderPanel() {
+  if (!selected) {
+    panel.innerHTML = `<div class="empty">Tap a skill to see what it needs, what it unlocks, and how it is mastered.</div>`;
+    return;
+  }
+  const n = byId.get(selected), wd = worlds[n.world - 1], m = n.mastery;
+  const tier = TIERS.find(t => t[0] === n.tier)[3];
+  panel.innerHTML = `
+    <div class="panel-head">
+      <div>
+        <div class="crumb" style="--d:var(--d-${n.domain})"><span class="dchip"><i></i>${esc(n.domain_name)}</span><span>World ${n.world} · ${esc(wd.name)} · ${tier}</span></div>
+        <h2>${esc(n.title)}</h2>
+        <div class="id">${esc(n.id)}${n.source === "original" ? " · original" : ""}</div>
+      </div>
+      <button type="button" class="close" id="closePanel">Close</button>
+    </div>
+    <p class="desc">${esc(n.description)}</p>
+    <div class="section"><h3>Standards</h3>${tags(n.ccss, true)}</div>
+    <div class="section"><h3 class="up">Needs</h3>${linkList(n.prerequisites)}</div>
+    <div class="section"><h3 class="down">Unlocks</h3>${linkList(n.dependents)}</div>
+    <div class="section"><h3>Engines</h3>${tags(n.engines)}</div>
+    <div class="section"><h3>Representations</h3>${tags(n.representations)}</div>
+    <div class="section"><h3>Strategies</h3>${tags(n.strategies)}</div>
+    <div class="section"><h3>Mastery</h3><div class="mastery">
+      <div><b>${m.unlock}</b><small>unlocks next</small></div>
+      <div><b>${m.two_star}</b><small>2 stars</small></div>
+      <div><b>${m.three_star}</b><small>3 stars</small></div>
+      ${m.fluency_ms ? `<div><b>${(m.fluency_ms / 1000).toFixed(1)}s</b><small>fluency target</small></div>` : ""}
+      <div><b>${m.revisit_days.join(" · ")}</b><small>revisit days</small></div>
+    </div></div>
+    <div class="section"><h3>Secret goals</h3>${n.secret_goals.length ? `<ul class="goals">${n.secret_goals.map(g => `<li>${esc(g.text)}<span class="kind">${esc(g.kind || "")}</span></li>`).join("")}</ul>` : `<div class="empty">none yet</div>`}</div>`;
+}
+
+function select(id, scroll) {
+  selected = id;
+  panel.hidden = !id && window.innerWidth < 900;
+  renderPanel();
+  apply();
+  if (id && scroll) scrollToNode(id);
+}
+
+// ---- Toolbar ----
+function buildToolbar() {
+  const s = DATA.stats;
+  document.getElementById("stats").innerHTML = `<span><b>${s.nodes}</b> skills</span><span><b>${s.edges}</b> prerequisite links</span><span><b>${s.cross_world_edges}</b> cross-world</span><span><b>${s.standards_referenced}</b> standards</span><span><b>${s.original_nodes}</b> original</span><span>generated ${esc(DATA.generated)}</span>`;
+  const counts = {};
+  for (const n of DATA.nodes) counts[n.domain] = (counts[n.domain] || 0) + 1;
+  document.getElementById("domains").innerHTML = DOMAIN_ORDER.filter(d => counts[d]).map(d => `<button type="button" class="chip" data-domain="${d}" style="--d:var(--d-${d})"><span class="dot"></span>${esc(DATA.domains[d] || d)}<span class="n">${counts[d]}</span></button>`).join("");
+  const engines = Object.keys(s.per_engine);
+  const sel = document.getElementById("engine");
+  for (const e of engines) { const o = document.createElement("option"); o.value = e; o.textContent = `${e} (${s.per_engine[e]})`; sel.appendChild(o); }
+}
+
+function fit() {
+  const W = Number(stage.dataset.w);
+  setScale((wrap.clientWidth - 8) / W);
+  wrap.scrollTo({ left: 0, top: 0 });
+  apply();
+}
+
+// ---- Events ----
+document.addEventListener("click", e => {
+  const node = e.target.closest(".node");
+  if (node) { select(node.dataset.id === selected ? null : node.dataset.id, false); return; }
+  const go = e.target.closest("[data-go]");
+  if (go) { select(go.dataset.go, true); return; }
+  const chip = e.target.closest(".chip[data-domain]");
+  if (chip) {
+    const d = chip.dataset.domain;
+    if (activeDomains.has(d)) activeDomains.delete(d); else activeDomains.add(d);
+    chip.classList.toggle("off", !activeDomains.has(d));
+    apply(); return;
+  }
+  if (e.target.id === "closePanel") { select(null, false); return; }
+});
+document.getElementById("q").addEventListener("input", e => { query = e.target.value.trim(); apply(); });
+document.getElementById("engine").addEventListener("change", e => { engine = e.target.value; apply(); });
+document.getElementById("allEdges").addEventListener("change", apply);
+document.getElementById("zoomIn").addEventListener("click", () => { setScale(scale * 1.25); apply(); });
+document.getElementById("zoomOut").addEventListener("click", () => { setScale(scale / 1.25); apply(); });
+document.getElementById("zoomLabel").addEventListener("click", () => { setScale(1); apply(); });
+document.getElementById("zoomFit").addEventListener("click", fit);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && selected) select(null, false); });
+
+function measureToolbar() {
+  document.documentElement.style.setProperty("--toolbar-h", document.getElementById("toolbar").offsetHeight + "px");
+}
+window.addEventListener("resize", () => { measureToolbar(); if (!selected) panel.hidden = window.innerWidth < 900; });
+
+// ---- Boot ----
+buildToolbar();
+layout();
+const hint = document.createElement("div");
+hint.className = "hint"; hint.id = "hint";
+hint.textContent = "Scroll sideways through the worlds. Tap any skill to trace what it needs and what it unlocks.";
+wrap.appendChild(hint);
+measureToolbar();
+if (window.innerWidth < 900) setScale(0.8);
+const initial = location.hash.slice(1);
+if (byId.has(initial)) select(initial, true); else { panel.hidden = window.innerWidth < 900; renderPanel(); apply(); }
+</script>

@@ -1,0 +1,275 @@
+world: 10
+name: Geometry
+tier: studio
+notes: >
+  Traditional-pathway Geometry plus the conditional-probability standards (S.CP) that
+  Appendix A places in this course.
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [3, 10, 30] }
+
+nodes:
+  # ---- Congruence ----
+  - id: w10.g.definitions
+    title: Precise definitions
+    description: Define angle, circle, perpendicular, parallel, and segment precisely from points, lines, and distance.
+    ccss: [G.CO.A.1]
+    prerequisites: [w04.g.lines-and-angles, w07.g.circles]
+    representations: [verbal, visual]
+    engines: [sort, build]
+
+  - id: w10.g.transformations-as-functions
+    title: Transformations as functions
+    description: Describe transformations as functions on points, and separate those that preserve distance and angle from those that do not.
+    ccss: [G.CO.A.2]
+    prerequisites: [w08.g.rigid-transformations, w09.f.function-notation]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, sort]
+
+  - id: w10.g.symmetry-of-figures
+    title: Carry it onto itself
+    description: Find the rotations and reflections that map a rectangle, parallelogram, trapezoid, or regular polygon onto itself.
+    ccss: [G.CO.A.3]
+    prerequisites: [w10.g.transformations-as-functions, w04.g.line-symmetry]
+    representations: [visual, physical, verbal]
+    engines: [manipulate, sort]
+
+  - id: w10.g.define-transformations
+    title: Define and draw transformations
+    description: Define rotations, reflections, and translations in terms of angles, circles, perpendicular and parallel lines, and draw or specify sequences of them.
+    ccss: [G.CO.A.4, G.CO.A.5]
+    prerequisites: [w10.g.transformations-as-functions, w10.g.definitions]
+    representations: [visual, verbal, symbolic]
+    engines: [build, manipulate]
+
+  - id: w10.g.congruence-via-rigid-motions
+    title: Congruence means rigid motion
+    description: Use rigid motions to decide whether two figures are congruent and show corresponding parts are congruent.
+    ccss: [G.CO.B.6, G.CO.B.7]
+    prerequisites: [w10.g.define-transformations, w08.g.congruence-transformations]
+    representations: [visual, verbal, physical]
+    engines: [manipulate, strategy]
+
+  - id: w10.g.triangle-congruence-criteria
+    title: ASA, SAS, SSS
+    description: Explain how the triangle congruence criteria follow from rigid motions.
+    ccss: [G.CO.B.8]
+    prerequisites: [w10.g.congruence-via-rigid-motions, w07.g.construct-triangles]
+    representations: [visual, verbal, symbolic]
+    engines: [strategy, build]
+    secret_goals:
+      - { id: ssa-fails, text: Built a counterexample showing SSA is not enough, kind: shortcut }
+
+  - id: w10.g.line-angle-theorems
+    title: Prove line and angle theorems
+    description: Prove theorems about vertical angles, transversals, and perpendicular bisectors.
+    ccss: [G.CO.C.9]
+    prerequisites: [w08.g.angle-facts, w10.g.triangle-congruence-criteria]
+    representations: [visual, verbal, symbolic]
+    engines: [build, strategy]
+    strategies: [flow-proof, two-column, paragraph-proof]
+
+  - id: w10.g.triangle-theorems
+    title: Prove triangle theorems
+    description: Prove the angle sum, isosceles base angles, midsegment, and median concurrency theorems.
+    ccss: [G.CO.C.10]
+    prerequisites: [w10.g.line-angle-theorems]
+    representations: [visual, verbal, symbolic]
+    engines: [build, strategy]
+
+  - id: w10.g.parallelogram-theorems
+    title: Prove parallelogram theorems
+    description: Prove that opposite sides and angles of a parallelogram are congruent and its diagonals bisect each other, and the converses.
+    ccss: [G.CO.C.11]
+    prerequisites: [w10.g.triangle-theorems]
+    representations: [visual, verbal, symbolic]
+    engines: [build, strategy]
+
+  - id: w10.g.constructions
+    title: Compass and straightedge
+    description: Copy segments and angles, bisect, construct perpendiculars and parallels, and inscribe regular polygons in a circle.
+    ccss: [G.CO.D.12, G.CO.D.13]
+    prerequisites: [w10.g.definitions, w10.g.symmetry-of-figures]
+    representations: [physical, visual]
+    engines: [build, manipulate]
+    secret_goals:
+      - { id: hexagon-six-arcs, text: Inscribed a hexagon with six arcs and no extra marks, kind: shortcut }
+
+  # ---- Similarity, Right Triangles, Trigonometry ----
+  - id: w10.g.dilation-properties
+    title: What dilations do
+    description: Verify that a dilation takes a line not through the center to a parallel line and scales segments by the factor.
+    ccss: [G.SRT.A.1]
+    prerequisites: [w08.g.similarity-dilations, w10.g.define-transformations]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, sim]
+
+  - id: w10.g.similarity-via-transformations
+    title: Similarity and AA
+    description: Decide similarity using transformations, explain proportional sides and equal angles, and establish the AA criterion.
+    ccss: [G.SRT.A.2, G.SRT.A.3]
+    prerequisites: [w10.g.dilation-properties, w10.g.congruence-via-rigid-motions]
+    representations: [visual, verbal, symbolic]
+    engines: [strategy, sort]
+
+  - id: w10.g.similarity-theorems
+    title: Prove with similarity
+    description: Prove the side-splitter theorem and the Pythagorean theorem using similarity, and solve problems with congruence and similarity.
+    ccss: [G.SRT.B.4, G.SRT.B.5]
+    prerequisites: [w10.g.similarity-via-transformations, w10.g.triangle-theorems]
+    representations: [visual, verbal, symbolic]
+    engines: [build, strategy, story]
+
+  - id: w10.g.trig-ratios
+    title: Sine, cosine, tangent
+    description: Understand trig ratios as properties of acute angles via similarity, and the sine-cosine relationship for complementary angles.
+    ccss: [G.SRT.C.6, G.SRT.C.7]
+    prerequisites: [w10.g.similarity-via-transformations]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, build]
+    secret_goals:
+      - { id: ratio-holds, text: Showed the ratio stays constant as the triangle grows, kind: strategy }
+
+  - id: w10.g.solve-right-triangles
+    title: Solve right triangles
+    description: Use trig ratios and the Pythagorean theorem to find unknown sides and angles in applied problems.
+    ccss: [G.SRT.C.8]
+    prerequisites: [w10.g.trig-ratios, w08.g.pythagorean-theorem]
+    representations: [visual, symbolic, verbal]
+    engines: [story, fluency]
+    mastery: { fluency_ms: 25000 }
+
+  # ---- Circles ----
+  - id: w10.g.circle-angles
+    title: Angles in circles
+    description: Show all circles are similar, and relate inscribed, central, and circumscribed angles and tangent-radius perpendicularity.
+    ccss: [G.C.A.1, G.C.A.2]
+    prerequisites: [w10.g.definitions, w10.g.triangle-theorems]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, strategy]
+
+  - id: w10.g.inscribed-circumscribed
+    title: Circles in and around triangles
+    description: Construct the inscribed and circumscribed circles of a triangle and prove angle properties of inscribed quadrilaterals.
+    ccss: [G.C.A.3]
+    prerequisites: [w10.g.circle-angles, w10.g.constructions]
+    representations: [visual, physical, verbal]
+    engines: [build, strategy]
+
+  - id: w10.g.arc-length-sectors
+    title: Arcs, sectors, radians
+    description: Derive that arc length is proportional to radius, define radian measure, and find sector areas.
+    ccss: [G.C.B.5]
+    prerequisites: [w10.g.circle-angles, w07.g.circles]
+    representations: [visual, symbolic]
+    engines: [manipulate, build]
+
+  # ---- Expressing Geometric Properties with Equations ----
+  - id: w10.g.circle-equations
+    title: Equation of a circle
+    description: Derive the equation of a circle from the Pythagorean theorem and find center and radius by completing the square.
+    ccss: [G.GPE.A.1]
+    prerequisites: [w08.g.distance-between-points, w09.a.complete-the-square]
+    representations: [symbolic, visual]
+    engines: [build, manipulate]
+
+  - id: w10.g.coordinate-proofs
+    title: Prove it with coordinates
+    description: Use coordinates to prove simple geometric theorems algebraically.
+    ccss: [G.GPE.B.4]
+    prerequisites: [w08.g.distance-between-points, w10.g.parallelogram-theorems]
+    representations: [symbolic, visual, verbal]
+    engines: [build, strategy]
+
+  - id: w10.g.parallel-perpendicular-slopes
+    title: Slopes of parallels and perpendiculars
+    description: Prove the slope criteria for parallel and perpendicular lines and use them to find equations of lines.
+    ccss: [G.GPE.B.5]
+    prerequisites: [w08.ee.slope-and-linear-equations, w10.g.coordinate-proofs]
+    representations: [symbolic, visual]
+    engines: [fluency, build]
+
+  - id: w10.g.partition-segments
+    title: Split a segment in a ratio
+    description: Find the point on a directed segment that partitions it in a given ratio.
+    ccss: [G.GPE.B.6]
+    prerequisites: [w10.g.coordinate-proofs, w07.rp.proportional-equations]
+    representations: [visual, symbolic]
+    engines: [manipulate, fluency]
+
+  - id: w10.g.coordinate-perimeter-area
+    title: Perimeter and area from coordinates
+    description: Compute perimeters of polygons and areas of triangles and rectangles from their coordinates.
+    ccss: [G.GPE.B.7]
+    prerequisites: [w10.g.coordinate-proofs, w06.g.polygons-coordinate-plane]
+    representations: [visual, symbolic]
+    engines: [build, story]
+
+  # ---- Geometric Measurement & Dimension; Modeling ----
+  - id: w10.g.volume-arguments
+    title: Where the formulas come from
+    description: Give informal arguments for circumference, circle area, and the volumes of cylinders, pyramids, and cones, including Cavalieri's principle.
+    ccss: [G.GMD.A.1]
+    prerequisites: [w08.g.volume-round-solids]
+    representations: [visual, verbal, physical]
+    engines: [sim, strategy]
+    secret_goals:
+      - { id: stack-of-coins, text: Used the stack-of-coins idea to explain a slanted cylinder, kind: strategy }
+
+  - id: w10.g.volume-problems
+    title: Volume in the world
+    description: Use volume formulas for cylinders, pyramids, cones, and spheres to solve problems.
+    ccss: [G.GMD.A.3]
+    prerequisites: [w10.g.volume-arguments]
+    representations: [visual, symbolic, verbal]
+    engines: [story, sim]
+
+  - id: w10.g.cross-sections-and-rotations
+    title: 2D from 3D and back
+    description: Identify cross-sections of solids and the solids generated by rotating two-dimensional shapes.
+    ccss: [G.GMD.B.4]
+    prerequisites: [w07.g.cross-sections, w10.g.volume-arguments]
+    representations: [visual, physical, verbal]
+    engines: [sim, sort]
+
+  - id: w10.g.modeling-with-geometry
+    title: Model with shapes
+    description: Use shapes and their measures to describe objects, work with density, and solve design problems under constraints.
+    ccss: [G.MG.A.1, G.MG.A.2, G.MG.A.3]
+    prerequisites: [w10.g.volume-problems, w10.g.coordinate-perimeter-area]
+    representations: [verbal, visual, symbolic]
+    engines: [story, sim, build]
+
+  # ---- Conditional Probability & Rules of Probability ----
+  - id: w10.s.events-as-sets
+    title: Events as sets
+    description: Describe events as subsets of a sample space using unions, intersections, and complements.
+    ccss: [S.CP.A.1]
+    prerequisites: [w07.sp.compound-events]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, build]
+
+  - id: w10.s.independence
+    title: Independence and conditional probability
+    description: Understand independence through the product rule and conditional probability as P(A and B)/P(B), in everyday language.
+    ccss: [S.CP.A.2, S.CP.A.3, S.CP.A.5]
+    prerequisites: [w10.s.events-as-sets]
+    representations: [symbolic, verbal, visual]
+    engines: [sim, story]
+
+  - id: w10.s.two-way-tables-independence
+    title: Tables and independence
+    description: Build two-way tables, use them to decide independence, and approximate conditional probabilities.
+    ccss: [S.CP.A.4]
+    prerequisites: [w10.s.independence, w09.s.two-way-frequency-tables]
+    representations: [visual, symbolic]
+    engines: [build, story]
+
+  - id: w10.s.probability-rules
+    title: Conditional and addition rules
+    description: Find conditional probabilities as fractions of outcomes and apply the addition rule, interpreting answers in context.
+    ccss: [S.CP.B.6, S.CP.B.7]
+    prerequisites: [w10.s.independence]
+    representations: [symbolic, visual, verbal]
+    engines: [fluency, story, sim]
+    secret_goals:
+      - { id: base-rate, text: Explained a surprising test result using conditional probability, kind: custom }

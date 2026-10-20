@@ -14,6 +14,9 @@ This project is spec-driven. `specs/` is the source of truth.
 | `specs/curriculum/` | Skill graph, as data, worlds 1–12 |
 | `specs/mechanics/` | Mini-game engines and tier style guides |
 | `specs/decisions/` | Architecture decision records |
+| `tools/curriculum.py` | Validates the skill graph and builds `specs/curriculum/generated/` |
 
 ## Status
-Specs in progress. No code yet.
+Specs in progress. Curriculum graph v1 is complete (344 skills, 12 worlds) and validated. No game code yet.
+
+Platform: native Android, with specs written so an iOS equivalent could be generated from them (ADR 0001).

@@ -1,0 +1,311 @@
+world: 11
+name: Algebra II
+tier: lab
+notes: >
+  Traditional-pathway Algebra II, including the trigonometric-function and inference
+  statistics standards that Appendix A places in this course.
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [3, 10, 30] }
+
+nodes:
+  # ---- Number & Quantity ----
+  - id: w11.n.rational-exponents
+    title: Rational exponents
+    description: Extend exponent properties to rational exponents and rewrite radicals as powers and back.
+    ccss: [N.RN.A.1, N.RN.A.2]
+    prerequisites: [w08.ee.integer-exponents, w08.ee.square-cube-roots]
+    representations: [symbolic, visual]
+    engines: [fluency, strategy]
+    mastery: { fluency_ms: 10000 }
+
+  - id: w11.n.complex-numbers
+    title: Complex numbers
+    description: Know i² = −1, write complex numbers as a + bi, and add, subtract, and multiply them.
+    ccss: [N.CN.A.1, N.CN.A.2]
+    prerequisites: [w09.a.solve-quadratics]
+    representations: [symbolic, visual]
+    engines: [fluency, build]
+
+  - id: w11.n.complex-solutions-quadratics
+    title: Complex roots
+    description: Solve quadratic equations with real coefficients that have complex solutions.
+    ccss: [N.CN.C.7]
+    prerequisites: [w11.n.complex-numbers, w09.a.solve-quadratics]
+    representations: [symbolic, visual]
+    engines: [fluency, manipulate]
+
+  # ---- Algebra ----
+  - id: w11.a.structure-advanced
+    title: Structure, again
+    description: Use structure to rewrite expressions involving higher powers, rational exponents, and nested forms.
+    ccss: [A.SSE.A.2]
+    prerequisites: [w09.a.structure-of-expressions, w11.n.rational-exponents]
+    representations: [symbolic, visual]
+    engines: [sort, strategy]
+    strategies: [chunking, substitution]
+
+  - id: w11.a.geometric-series
+    title: Sum a geometric series
+    description: Derive the formula for the sum of a finite geometric series and use it, for example for mortgage payments.
+    ccss: [A.SSE.B.4]
+    prerequisites: [w09.f.sequences-as-functions, w09.f.exponential-forms]
+    representations: [symbolic, verbal, visual]
+    engines: [build, story]
+    secret_goals:
+      - { id: telescoping, text: Derived the sum formula by subtracting the shifted series, kind: strategy }
+
+  - id: w11.a.remainder-theorem
+    title: Remainder theorem
+    description: "Know and apply the remainder theorem: p(a) is the remainder on division by x − a, so p(a) = 0 means x − a is a factor."
+    ccss: [A.APR.B.2]
+    prerequisites: [w09.a.polynomial-arithmetic, w09.a.factor-quadratics]
+    representations: [symbolic, visual]
+    engines: [strategy, fluency]
+
+  - id: w11.a.polynomial-zeros-graphs
+    title: Zeros and the sketch
+    description: Find zeros of polynomials by factoring and use them to sketch a rough graph.
+    ccss: [A.APR.B.3]
+    prerequisites: [w11.a.remainder-theorem]
+    representations: [symbolic, visual]
+    engines: [build, manipulate]
+
+  - id: w11.a.polynomial-identities
+    title: Polynomial identities
+    description: Prove and use polynomial identities to describe numerical relationships, such as generating Pythagorean triples.
+    ccss: [A.APR.C.4]
+    prerequisites: [w11.a.structure-advanced]
+    representations: [symbolic, verbal]
+    engines: [build, strategy]
+
+  - id: w11.a.rational-expressions
+    title: Rational expressions
+    description: Rewrite rational expressions by long division and inspection, and add, subtract, multiply, and divide them.
+    ccss: [A.APR.D.6, A.APR.D.7]
+    prerequisites: [w11.a.remainder-theorem, w06.ns.divide-fractions]
+    representations: [symbolic, visual]
+    engines: [fluency, strategy]
+    mastery: { fluency_ms: 30000 }
+
+  - id: w11.a.create-equations-advanced
+    title: Write harder equations
+    description: Create equations and inequalities from rational and exponential situations and solve them.
+    ccss: [A.CED.A.1]
+    prerequisites: [w09.a.create-equations-one-variable, w11.a.rational-expressions]
+    representations: [verbal, symbolic, visual]
+    engines: [story, build]
+
+  - id: w11.a.rational-radical-equations
+    title: Rational and radical equations
+    description: Solve simple rational and radical equations in one variable and explain how extraneous solutions arise.
+    ccss: [A.REI.A.2]
+    prerequisites: [w11.a.rational-expressions, w11.n.rational-exponents]
+    representations: [symbolic, visual]
+    engines: [manipulate, strategy]
+    secret_goals:
+      - { id: catch-extraneous, text: Caught an extraneous solution without a hint, kind: no-hints }
+
+  - id: w11.a.quadratics-complex-roots
+    title: a ± bi
+    description: Solve any quadratic and write complex solutions as a ± bi.
+    ccss: [A.REI.B.4.b]
+    prerequisites: [w11.n.complex-solutions-quadratics]
+    representations: [symbolic, visual]
+    engines: [fluency]
+    mastery: { fluency_ms: 30000 }
+
+  - id: w11.a.systems-three-variables
+    title: Three equations, three unknowns
+    description: Solve systems of linear equations in three variables exactly.
+    ccss: [A.REI.C.6]
+    prerequisites: [w09.a.systems-algebraically]
+    representations: [symbolic, visual]
+    engines: [strategy, fluency]
+    strategies: [elimination, substitution]
+
+  - id: w11.a.nonlinear-systems
+    title: Line meets circle
+    description: Solve systems of a linear equation and a quadratic or circle equation algebraically and graphically.
+    ccss: [A.REI.C.7]
+    prerequisites: [w09.a.linear-quadratic-systems, w10.g.circle-equations]
+    representations: [symbolic, visual]
+    engines: [manipulate, build]
+
+  - id: w11.a.solve-graphically-advanced
+    title: Crossings, any family
+    description: Find where f(x) = g(x) for polynomial, rational, absolute value, exponential, and logarithmic functions using graphs and tables.
+    ccss: [A.REI.D.11]
+    prerequisites: [w09.a.solve-graphically, w11.f.logarithms]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+
+  # ---- Functions ----
+  - id: w11.f.key-features-advanced
+    title: Features of any function
+    description: Interpret key features and average rates of change for polynomial, rational, exponential, logarithmic, and trigonometric functions.
+    ccss: [F.IF.B.4, F.IF.B.6]
+    prerequisites: [w09.f.key-features, w09.f.average-rate-of-change]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, manipulate, story]
+
+  - id: w11.f.graph-polynomials
+    title: Graph polynomials
+    description: Graph polynomial functions showing zeros and end behavior.
+    ccss: [F.IF.C.7.c]
+    prerequisites: [w11.a.polynomial-zeros-graphs, w11.f.key-features-advanced]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+    secret_goals:
+      - { id: bounce-or-cross, text: Predicted bounce vs cross at every zero from the factored form, kind: strategy }
+
+  - id: w11.f.exponential-rewrite
+    title: Rewrite rates
+    description: Rewrite exponential functions to reveal equivalent rates, such as a yearly rate as a monthly one.
+    ccss: [F.IF.C.8.b]
+    prerequisites: [w11.n.rational-exponents, w09.f.exponential-forms]
+    representations: [symbolic, verbal]
+    engines: [strategy, story]
+
+  - id: w11.f.inverse-functions
+    title: Inverse functions
+    description: Find the inverse of a function by solving, and relate the graphs of a function and its inverse.
+    ccss: [F.BF.B.4.a]
+    prerequisites: [w09.f.inverse-functions-intro, w11.a.rational-radical-equations]
+    representations: [symbolic, visual]
+    engines: [manipulate, build]
+
+  - id: w11.f.logarithms
+    title: Logarithms
+    description: Understand logarithms as solutions to exponential equations, evaluate them, and use them to solve for exponents.
+    ccss: [F.LE.A.4]
+    prerequisites: [w11.f.exponential-rewrite, w11.f.inverse-functions]
+    representations: [symbolic, visual, verbal]
+    engines: [manipulate, fluency, story]
+    strategies: [rewrite-as-exponent, change-of-base]
+
+  - id: w11.f.graph-exponential-log
+    title: Graph exponentials and logs
+    description: Graph exponential and logarithmic functions showing intercepts, asymptotes, and end behavior.
+    ccss: [F.IF.C.7.e]
+    prerequisites: [w09.f.graph-exponential, w11.f.logarithms]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w11.f.compare-functions-advanced
+    title: Compare any two functions
+    description: Compare properties of two functions from any family, each represented a different way.
+    ccss: [F.IF.C.9]
+    prerequisites: [w11.f.graph-polynomials, w11.f.graph-exponential-log]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, strategy]
+
+  - id: w11.f.combine-functions
+    title: Combine and sequence
+    description: Combine functions arithmetically to model situations, and write arithmetic and geometric sequences both recursively and explicitly.
+    ccss: [F.BF.A.1.b, F.BF.A.2]
+    prerequisites: [w09.f.build-functions, w11.a.geometric-series]
+    representations: [symbolic, verbal, visual]
+    engines: [build, story, sim]
+
+  - id: w11.f.transformations-advanced
+    title: Transform any family
+    description: Apply shifts, stretches, and reflections to any function family and recognize even and odd functions from graphs and expressions.
+    ccss: [F.BF.B.3]
+    prerequisites: [w09.f.transformations-of-functions, w11.f.graph-polynomials]
+    representations: [visual, symbolic]
+    engines: [manipulate, sort]
+
+  # ---- Trigonometric Functions ----
+  - id: w11.f.radian-measure
+    title: Radians
+    description: Understand radian measure as the arc length subtended on the unit circle.
+    ccss: [F.TF.A.1]
+    prerequisites: [w10.g.arc-length-sectors]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, sim]
+
+  - id: w11.f.unit-circle
+    title: The unit circle
+    description: Extend trigonometric functions to all real numbers by traversing the unit circle.
+    ccss: [F.TF.A.2]
+    prerequisites: [w11.f.radian-measure, w10.g.trig-ratios]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, sim, fluency]
+    secret_goals:
+      - { id: sign-quadrants, text: Predicted the sign of sine and cosine in every quadrant before checking, kind: strategy }
+
+  - id: w11.f.graph-trig
+    title: Graph sine and cosine
+    description: Graph trigonometric functions showing period, midline, and amplitude.
+    ccss: [F.IF.C.7.e]
+    prerequisites: [w11.f.unit-circle]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w11.f.model-periodic
+    title: Model what repeats
+    description: Choose trigonometric functions to model periodic phenomena with given amplitude, frequency, and midline.
+    ccss: [F.TF.B.5]
+    prerequisites: [w11.f.graph-trig, w11.f.transformations-advanced]
+    representations: [verbal, visual, symbolic]
+    engines: [story, sim]
+
+  - id: w11.f.pythagorean-identity
+    title: sin² + cos² = 1
+    description: Prove the Pythagorean identity and use it to find sine, cosine, or tangent given one of them and the quadrant.
+    ccss: [F.TF.C.8]
+    prerequisites: [w11.f.unit-circle, w08.g.pythagorean-theorem]
+    representations: [symbolic, visual]
+    engines: [strategy, fluency]
+
+  # ---- Statistics & Probability ----
+  - id: w11.s.normal-distribution
+    title: The normal curve
+    description: Use mean and standard deviation to fit a normal distribution and estimate population percentages.
+    ccss: [S.ID.A.4]
+    prerequisites: [w09.s.single-variable-data]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, manipulate]
+    strategies: [empirical-rule]
+
+  - id: w11.s.inference-concepts
+    title: Statistics as inference
+    description: Understand statistics as inference from random samples and decide if a model fits a data-generating process.
+    ccss: [S.IC.A.1, S.IC.A.2]
+    prerequisites: [w07.sp.sampling, w07.sp.compound-events]
+    representations: [verbal, visual, symbolic]
+    engines: [sim, story]
+
+  - id: w11.s.study-designs
+    title: Surveys, experiments, observation
+    description: Recognize the purposes of and differences among sample surveys, experiments, and observational studies, and the role of randomization.
+    ccss: [S.IC.B.3]
+    prerequisites: [w11.s.inference-concepts]
+    representations: [verbal, visual]
+    engines: [sort, story]
+
+  - id: w11.s.margin-of-error
+    title: Margin of error
+    description: Estimate a population mean or proportion from a sample and develop a margin of error through simulation.
+    ccss: [S.IC.B.4]
+    prerequisites: [w11.s.normal-distribution, w11.s.inference-concepts]
+    representations: [visual, symbolic, verbal]
+    engines: [sim]
+
+  - id: w11.s.compare-treatments
+    title: Did the treatment work?
+    description: Use randomized experiment data to compare treatments and judge significance with simulation; evaluate reports based on data.
+    ccss: [S.IC.B.5, S.IC.B.6]
+    prerequisites: [w11.s.study-designs, w11.s.margin-of-error]
+    representations: [visual, verbal, symbolic]
+    engines: [sim, story]
+    secret_goals:
+      - { id: rerandomize, text: Re-randomized the groups to see how often the difference happens by chance, kind: strategy }
+
+  - id: w11.s.probability-decisions
+    title: Decide with probability
+    description: Use probabilities to make fair decisions and analyze decisions and strategies.
+    ccss: [S.MD.B.6, S.MD.B.7]
+    prerequisites: [w10.s.probability-rules]
+    representations: [verbal, symbolic, visual]
+    engines: [sim, story, strategy]

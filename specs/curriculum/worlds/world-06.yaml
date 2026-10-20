@@ -1,0 +1,259 @@
+world: 6
+name: Grade 6
+tier: workshop
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [2, 7, 21] }
+
+nodes:
+  # ---- Ratios & Proportional Relationships ----
+  - id: w06.rp.ratio-concept
+    title: Ratios
+    description: Describe a relationship between two quantities with ratio language and notation.
+    ccss: [6.RP.A.1]
+    prerequisites: [w04.oa.multiplicative-comparison, w05.nf.fraction-as-division]
+    representations: [verbal, visual, symbolic, physical]
+    engines: [build, story]
+    strategies: [tape-diagram]
+
+  - id: w06.rp.unit-rate
+    title: Unit rates
+    description: Understand a unit rate a/b associated with a ratio a:b and use rate language.
+    ccss: [6.RP.A.2]
+    prerequisites: [w06.rp.ratio-concept, w05.nbt.divide-by-two-digit]
+    representations: [verbal, symbolic, visual]
+    engines: [story, fluency]
+
+  - id: w06.rp.ratio-tables
+    title: Ratio tables and graphs
+    description: Make tables of equivalent ratios, find missing values, and plot the pairs.
+    ccss: [6.RP.A.3.a]
+    prerequisites: [w06.rp.ratio-concept, w05.g.graph-points-problems]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+    strategies: [scale-up, scale-down, double-number-line]
+
+  - id: w06.rp.unit-rate-problems
+    title: Rate problems
+    description: Solve unit-rate problems such as unit pricing and constant speed.
+    ccss: [6.RP.A.3.b]
+    prerequisites: [w06.rp.unit-rate, w06.rp.ratio-tables]
+    representations: [verbal, symbolic, visual]
+    engines: [story, sim]
+
+  - id: w06.rp.percent
+    title: Percent
+    description: Find a percent of a quantity as a rate per 100 and find the whole given a part and the percent.
+    ccss: [6.RP.A.3.c]
+    prerequisites: [w06.rp.ratio-tables, w05.nbt.decimal-operations]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, story]
+    strategies: [double-number-line, benchmark-percents]
+
+  - id: w06.rp.convert-units-with-ratios
+    title: Convert with ratios
+    description: Use ratio reasoning to convert measurement units and transform units when multiplying or dividing.
+    ccss: [6.RP.A.3.d]
+    prerequisites: [w06.rp.unit-rate-problems, w05.md.convert-measurements]
+    representations: [symbolic, verbal]
+    engines: [story, fluency]
+
+  # ---- The Number System ----
+  - id: w06.ns.divide-fractions
+    title: Divide fractions by fractions
+    description: Divide fractions by fractions with models and reasoning, and solve story problems.
+    ccss: [6.NS.A.1]
+    prerequisites: [w05.nf.divide-unit-fractions]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, story, strategy]
+    strategies: [how-many-fit, common-denominator, multiply-by-reciprocal]
+    secret_goals:
+      - { id: explain-flip, text: Explained why multiplying by the reciprocal works, kind: strategy }
+
+  - id: w06.ns.divide-multidigit-fluent
+    title: Long division
+    description: Divide multi-digit numbers fluently with the standard algorithm.
+    ccss: [6.NS.B.2]
+    prerequisites: [w05.nbt.divide-by-two-digit]
+    representations: [symbolic, visual]
+    engines: [fluency]
+    mastery: { fluency_ms: 25000 }
+
+  - id: w06.ns.decimal-operations-fluent
+    title: Decimals, fast
+    description: Add, subtract, multiply, and divide multi-digit decimals fluently.
+    ccss: [6.NS.B.3]
+    prerequisites: [w05.nbt.decimal-operations]
+    representations: [symbolic, visual]
+    engines: [fluency]
+    mastery: { fluency_ms: 15000 }
+
+  - id: w06.ns.gcf-lcm-distributive
+    title: GCF and LCM
+    description: Find the greatest common factor and least common multiple, and factor a sum with the distributive property.
+    ccss: [6.NS.B.4]
+    prerequisites: [w04.oa.factors-multiples-primes, w03.oa.properties-of-multiplication]
+    representations: [symbolic, visual]
+    engines: [fluency, build, strategy]
+    strategies: [prime-factorization, list-multiples]
+
+  - id: w06.ns.negative-numbers
+    title: Below zero
+    description: Understand positive and negative numbers as opposite directions or values, and zero as the reference point.
+    ccss: [6.NS.C.5]
+    prerequisites: [w02.md.number-line]
+    representations: [visual, verbal, symbolic, physical]
+    engines: [manipulate, story, sim]
+
+  - id: w06.ns.rationals-on-number-line
+    title: Rationals on the line and plane
+    description: Place rational numbers and their opposites on the number line and in all four quadrants.
+    ccss: [6.NS.C.6]
+    prerequisites: [w06.ns.negative-numbers, w05.g.coordinate-plane]
+    representations: [visual, symbolic]
+    engines: [manipulate, build]
+
+  - id: w06.ns.order-and-absolute-value
+    title: Order and absolute value
+    description: Order rational numbers, interpret inequalities in context, and understand absolute value as distance from zero.
+    ccss: [6.NS.C.7]
+    prerequisites: [w06.ns.rationals-on-number-line]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, story]
+
+  - id: w06.ns.coordinate-distances
+    title: Distances on the grid
+    description: Graph points in all four quadrants and find distances between points on the same horizontal or vertical line.
+    ccss: [6.NS.C.8]
+    prerequisites: [w06.ns.rationals-on-number-line, w06.ns.order-and-absolute-value]
+    representations: [visual, symbolic]
+    engines: [manipulate, story]
+
+  # ---- Expressions & Equations ----
+  - id: w06.ee.exponents
+    title: Exponents
+    description: Write and evaluate numerical expressions with whole-number exponents.
+    ccss: [6.EE.A.1]
+    prerequisites: [w05.nbt.place-value-powers-of-10, w05.oa.order-of-operations]
+    representations: [symbolic, visual]
+    engines: [fluency, build]
+
+  - id: w06.ee.write-expressions
+    title: Letters for numbers
+    description: Write expressions with variables and identify their parts (term, factor, coefficient).
+    ccss: [6.EE.A.2.a, 6.EE.A.2.b]
+    prerequisites: [w05.oa.numerical-expressions]
+    representations: [verbal, symbolic, visual]
+    engines: [sort, build]
+
+  - id: w06.ee.evaluate-expressions
+    title: Plug it in
+    description: Evaluate expressions with variables and exponents, including formulas, using order of operations.
+    ccss: [6.EE.A.2.c]
+    prerequisites: [w06.ee.write-expressions, w06.ee.exponents]
+    representations: [symbolic, visual]
+    engines: [fluency, sim]
+    mastery: { fluency_ms: 10000 }
+
+  - id: w06.ee.equivalent-expressions
+    title: Equivalent expressions
+    description: Use properties to generate equivalent expressions and decide when two expressions are equivalent.
+    ccss: [6.EE.A.3, 6.EE.A.4]
+    prerequisites: [w06.ee.write-expressions, w06.ns.gcf-lcm-distributive]
+    representations: [symbolic, visual, physical]
+    engines: [sort, build, strategy]
+    strategies: [distribute, combine-like-terms, test-a-value]
+
+  - id: w06.ee.solutions-of-equations
+    title: Does it solve it?
+    description: Understand solving as finding values that make an equation or inequality true, and check by substitution.
+    ccss: [6.EE.B.5, 6.EE.B.6]
+    prerequisites: [w06.ee.evaluate-expressions]
+    representations: [symbolic, visual, verbal]
+    engines: [sort, manipulate]
+
+  - id: w06.ee.one-step-equations
+    title: One-step equations
+    description: Solve x + p = q and px = q with nonnegative rationals, in and out of context.
+    ccss: [6.EE.B.7]
+    prerequisites: [w06.ee.solutions-of-equations, w06.ns.divide-fractions]
+    representations: [visual, symbolic, physical, verbal]
+    engines: [manipulate, fluency, story]
+    strategies: [balance, undo]
+
+  - id: w06.ee.inequalities-intro
+    title: Inequalities
+    description: Write x > c or x < c to represent a constraint and show its infinitely many solutions on a number line.
+    ccss: [6.EE.B.8]
+    prerequisites: [w06.ee.solutions-of-equations, w06.ns.order-and-absolute-value]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, story]
+
+  - id: w06.ee.dependent-independent-variables
+    title: Two variables, one relationship
+    description: Write an equation relating a dependent and independent variable and connect it to tables and graphs.
+    ccss: [6.EE.C.9]
+    prerequisites: [w06.ee.one-step-equations, w06.rp.ratio-tables]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, build]
+
+  # ---- Geometry ----
+  - id: w06.g.area-polygons
+    title: Area of triangles and polygons
+    description: Find areas of triangles and other polygons by composing rectangles or decomposing into pieces.
+    ccss: [6.G.A.1]
+    prerequisites: [w05.nf.area-with-fractional-sides, w05.g.classify-2d-hierarchy]
+    representations: [visual, symbolic, physical]
+    engines: [build, manipulate]
+    strategies: [compose-rectangle, decompose]
+    secret_goals:
+      - { id: half-rectangle, text: Showed a triangle is half of a rectangle, kind: strategy }
+
+  - id: w06.g.volume-fractional-edges
+    title: Volume with fractions
+    description: Find volumes of right rectangular prisms with fractional edge lengths by packing and by formula.
+    ccss: [6.G.A.2]
+    prerequisites: [w05.md.volume-formula, w05.nf.multiply-fractions]
+    representations: [visual, symbolic, physical]
+    engines: [build, story]
+
+  - id: w06.g.polygons-coordinate-plane
+    title: Polygons on the grid
+    description: Draw polygons from coordinates and find side lengths from the coordinates.
+    ccss: [6.G.A.3]
+    prerequisites: [w06.ns.coordinate-distances, w06.g.area-polygons]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w06.g.nets-surface-area
+    title: Nets and surface area
+    description: Represent three-dimensional figures with nets and use them to find surface area.
+    ccss: [6.G.A.4]
+    prerequisites: [w06.g.area-polygons]
+    representations: [physical, visual, symbolic]
+    engines: [build, manipulate]
+
+  # ---- Statistics & Probability ----
+  - id: w06.sp.statistical-questions
+    title: Statistical questions
+    description: Recognize questions that anticipate variability and describe a distribution by center, spread, and shape.
+    ccss: [6.SP.A.1, 6.SP.A.2, 6.SP.A.3]
+    prerequisites: [w05.md.line-plots-fraction-operations]
+    representations: [verbal, visual]
+    engines: [sort, sim]
+
+  - id: w06.sp.plots
+    title: Dot plots, histograms, box plots
+    description: Display numerical data in dot plots, histograms, and box plots.
+    ccss: [6.SP.B.4]
+    prerequisites: [w06.sp.statistical-questions]
+    representations: [visual, symbolic]
+    engines: [build, sort]
+
+  - id: w06.sp.summarize-distributions
+    title: Mean, median, and spread
+    description: Summarize a data set with its count, measures of center (mean, median), and variability (IQR, MAD), and relate them to the context.
+    ccss: [6.SP.B.5]
+    prerequisites: [w06.sp.plots, w06.ns.decimal-operations-fluent]
+    representations: [visual, symbolic, verbal]
+    engines: [build, strategy, sim]
+    strategies: [fair-share-mean, balance-point]

@@ -1,0 +1,360 @@
+world: 9
+name: Algebra I
+tier: studio
+notes: >
+  Common Core does not assign high-school standards to grades. Worlds 9–12 follow the
+  traditional pathway from CCSSM Appendix A: Algebra I, Geometry, Algebra II, then a fourth
+  year of precalculus, statistics, and an original introduction to limits and rates of change.
+  Modeling (the star standards) is treated as a representation (story/sim engines), not as
+  separate nodes.
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [3, 10, 30] }
+
+nodes:
+  # ---- Number & Quantity ----
+  - id: w09.n.rational-irrational-closure
+    title: Closed or not
+    description: Explain why sums and products of rationals are rational, and what happens when an irrational is involved.
+    ccss: [N.RN.B.3]
+    prerequisites: [w08.ns.irrational-numbers]
+    representations: [symbolic, verbal]
+    engines: [sort, strategy]
+
+  - id: w09.n.quantities-and-units
+    title: Units as a tool
+    description: Use units to guide solutions, choose scales for graphs, and pick a level of accuracy that fits the measurement.
+    ccss: [N.Q.A.1, N.Q.A.2, N.Q.A.3]
+    prerequisites: [w06.rp.convert-units-with-ratios, w08.ee.scientific-notation]
+    representations: [verbal, symbolic, visual]
+    engines: [story, sim]
+
+  # ---- Algebra: Seeing Structure in Expressions ----
+  - id: w09.a.interpret-expressions
+    title: Read an expression
+    description: Interpret terms, factors, and coefficients in context, and see a complicated expression as built from simpler parts.
+    ccss: [A.SSE.A.1]
+    prerequisites: [w07.ee.rewrite-for-insight]
+    representations: [symbolic, verbal, visual]
+    engines: [sort, story]
+
+  - id: w09.a.polynomial-arithmetic
+    title: Polynomial arithmetic
+    description: Add, subtract, and multiply polynomials, understanding they form a closed system.
+    ccss: [A.APR.A.1]
+    prerequisites: [w07.ee.linear-expressions, w08.ee.integer-exponents]
+    representations: [symbolic, visual]
+    engines: [build, fluency]
+    mastery: { fluency_ms: 20000 }
+    strategies: [area-model, distribute, combine-like-terms]
+
+  - id: w09.a.structure-of-expressions
+    title: See the structure
+    description: Use the structure of an expression to rewrite it, such as seeing x⁴ − y⁴ as a difference of squares.
+    ccss: [A.SSE.A.2]
+    prerequisites: [w09.a.interpret-expressions, w09.a.polynomial-arithmetic]
+    representations: [symbolic, visual]
+    engines: [sort, strategy]
+    strategies: [difference-of-squares, common-factor, chunking]
+
+  - id: w09.a.factor-quadratics
+    title: Factor quadratics
+    description: Factor quadratic expressions to reveal their zeros.
+    ccss: [A.SSE.B.3.a]
+    prerequisites: [w09.a.structure-of-expressions]
+    representations: [symbolic, visual]
+    engines: [build, fluency, strategy]
+    mastery: { fluency_ms: 15000 }
+    strategies: [area-model, sum-product, grouping]
+    secret_goals:
+      - { id: no-guess, text: Factored five in a row without a wrong try, kind: streak }
+
+  - id: w09.a.complete-the-square
+    title: Complete the square
+    description: Complete the square to reveal the vertex and the maximum or minimum of a quadratic.
+    ccss: [A.SSE.B.3.b, A.REI.B.4.a]
+    prerequisites: [w09.a.factor-quadratics]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+    secret_goals:
+      - { id: literal-square, text: Built the square with tiles before using symbols, kind: representation }
+
+  - id: w09.a.exponential-expression-forms
+    title: Rewrite exponentials
+    description: Use exponent properties to rewrite exponential expressions and reveal rates, such as 1.15^t as a monthly rate.
+    ccss: [A.SSE.B.3.c]
+    prerequisites: [w08.ee.integer-exponents, w09.a.interpret-expressions]
+    representations: [symbolic, verbal]
+    engines: [strategy, story]
+
+  # ---- Algebra: Creating Equations ----
+  - id: w09.a.create-equations-one-variable
+    title: Write the equation
+    description: Create equations and inequalities in one variable from linear, quadratic, and simple exponential situations, and solve them.
+    ccss: [A.CED.A.1]
+    prerequisites: [w08.ee.linear-equations-one-variable]
+    representations: [verbal, symbolic, visual]
+    engines: [story, build]
+
+  - id: w09.a.create-equations-two-variables
+    title: Equations in two variables
+    description: Create equations in two or more variables to represent relationships and graph them on labeled axes.
+    ccss: [A.CED.A.2]
+    prerequisites: [w09.a.create-equations-one-variable, w08.f.construct-linear-functions]
+    representations: [verbal, symbolic, visual]
+    engines: [story, build, sim]
+
+  - id: w09.a.constraints-and-systems
+    title: Constraints
+    description: Represent constraints with equations, inequalities, or systems and judge whether solutions are viable in context.
+    ccss: [A.CED.A.3]
+    prerequisites: [w09.a.create-equations-two-variables, w08.ee.systems-of-linear-equations]
+    representations: [verbal, symbolic, visual]
+    engines: [story, sim]
+
+  - id: w09.a.rearrange-formulas
+    title: Rearrange a formula
+    description: Solve a formula for a chosen variable, treating other letters as fixed.
+    ccss: [A.CED.A.4]
+    prerequisites: [w09.a.create-equations-one-variable]
+    representations: [symbolic, verbal]
+    engines: [manipulate, fluency]
+
+  # ---- Algebra: Reasoning with Equations & Inequalities ----
+  - id: w09.a.justify-solving-steps
+    title: Why each step is legal
+    description: Explain each step in solving an equation as following from equality of numbers, and build a viable argument.
+    ccss: [A.REI.A.1]
+    prerequisites: [w08.ee.linear-equations-one-variable]
+    representations: [symbolic, verbal]
+    engines: [sort, strategy]
+
+  - id: w09.a.linear-equations-inequalities
+    title: Linear with letters
+    description: Solve linear equations and inequalities in one variable, including ones whose coefficients are letters.
+    ccss: [A.REI.B.3]
+    prerequisites: [w09.a.justify-solving-steps, w07.ee.two-step-inequalities]
+    representations: [symbolic, visual]
+    engines: [fluency, manipulate]
+    mastery: { fluency_ms: 20000 }
+
+  - id: w09.a.solve-quadratics
+    title: Solve quadratics
+    description: Solve quadratics by inspection, square roots, factoring, completing the square, and the quadratic formula, choosing the fit.
+    ccss: [A.REI.B.4.b]
+    prerequisites: [w09.a.factor-quadratics, w09.a.complete-the-square]
+    representations: [symbolic, visual]
+    engines: [strategy, fluency]
+    strategies: [inspection, square-root, factor, complete-square, formula]
+    secret_goals:
+      - { id: right-tool, text: Picked the fastest method for each of five quadratics, kind: strategy }
+
+  - id: w09.a.systems-algebraically
+    title: Systems by algebra
+    description: Solve systems of linear equations exactly by substitution and elimination, and explain why elimination works.
+    ccss: [A.REI.C.5, A.REI.C.6]
+    prerequisites: [w08.ee.systems-of-linear-equations, w09.a.linear-equations-inequalities]
+    representations: [symbolic, visual]
+    engines: [fluency, strategy]
+    strategies: [substitution, elimination]
+
+  - id: w09.a.linear-quadratic-systems
+    title: Line meets parabola
+    description: Solve a system of a linear and a quadratic equation algebraically and graphically.
+    ccss: [A.REI.C.7]
+    prerequisites: [w09.a.systems-algebraically, w09.a.solve-quadratics]
+    representations: [symbolic, visual]
+    engines: [manipulate, build]
+
+  - id: w09.a.graphs-of-equations
+    title: The graph is the solution set
+    description: Understand the graph of an equation in two variables as the set of all its solutions.
+    ccss: [A.REI.D.10]
+    prerequisites: [w09.a.create-equations-two-variables]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+
+  - id: w09.a.solve-graphically
+    title: Where graphs cross
+    description: Explain why the x-coordinates where y = f(x) and y = g(x) intersect solve f(x) = g(x), and find them with graphs and tables.
+    ccss: [A.REI.D.11]
+    prerequisites: [w09.a.graphs-of-equations, w09.f.function-notation]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+
+  - id: w09.a.graph-inequalities-two-variables
+    title: Shade the half-plane
+    description: Graph solutions to linear inequalities and systems of them as half-planes and their intersections.
+    ccss: [A.REI.D.12]
+    prerequisites: [w09.a.graphs-of-equations, w09.a.linear-equations-inequalities]
+    representations: [visual, symbolic]
+    engines: [manipulate, build]
+
+  # ---- Functions: Interpreting ----
+  - id: w09.f.function-notation
+    title: f(x)
+    description: Use function notation, understand domain and range, and evaluate and interpret f(x) in context.
+    ccss: [F.IF.A.1, F.IF.A.2]
+    prerequisites: [w08.f.function-concept]
+    representations: [symbolic, visual, verbal]
+    engines: [sort, fluency, story]
+
+  - id: w09.f.sequences-as-functions
+    title: Sequences are functions
+    description: Recognize sequences as functions on the integers and define them recursively or explicitly.
+    ccss: [F.IF.A.3]
+    prerequisites: [w09.f.function-notation, w04.oa.patterns-and-rules]
+    representations: [symbolic, visual, verbal]
+    engines: [sim, build]
+
+  - id: w09.f.key-features
+    title: Key features of graphs
+    description: Interpret intercepts, intervals of increase and decrease, maxima and minima, symmetry, and end behavior.
+    ccss: [F.IF.B.4]
+    prerequisites: [w09.f.function-notation, w08.f.qualitative-graphs]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, manipulate]
+
+  - id: w09.f.domain-in-context
+    title: Domain in context
+    description: Relate the domain of a function to its graph and to the situation it describes.
+    ccss: [F.IF.B.5]
+    prerequisites: [w09.f.function-notation]
+    representations: [verbal, visual, symbolic]
+    engines: [story, sort]
+
+  - id: w09.f.average-rate-of-change
+    title: Average rate of change
+    description: Calculate and interpret the average rate of change over an interval from a table, graph, or formula.
+    ccss: [F.IF.B.6]
+    prerequisites: [w09.f.key-features, w08.f.construct-linear-functions]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, story]
+
+  - id: w09.f.graph-linear-quadratic
+    title: Graph lines and parabolas
+    description: Graph linear and quadratic functions and show intercepts, maxima, and minima.
+    ccss: [F.IF.C.7.a]
+    prerequisites: [w09.f.key-features, w09.a.solve-quadratics]
+    representations: [visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w09.f.graph-piecewise-absolute
+    title: Graph the odd ones
+    description: Graph square root, cube root, piecewise-defined, step, and absolute value functions.
+    ccss: [F.IF.C.7.b]
+    prerequisites: [w09.f.graph-linear-quadratic]
+    representations: [visual, symbolic]
+    engines: [build, sort]
+
+  - id: w09.f.graph-exponential
+    title: Graph exponentials
+    description: Graph exponential functions and show intercepts and end behavior.
+    ccss: [F.IF.C.7.e]
+    prerequisites: [w09.a.exponential-expression-forms, w09.f.key-features]
+    representations: [visual, symbolic]
+    engines: [build, sim]
+
+  - id: w09.f.quadratic-forms
+    title: Forms of a quadratic
+    description: Use factored and vertex forms to reveal zeros, extrema, and symmetry, and interpret them in context.
+    ccss: [F.IF.C.8.a]
+    prerequisites: [w09.f.graph-linear-quadratic, w09.a.complete-the-square]
+    representations: [symbolic, visual, verbal]
+    engines: [sort, strategy, story]
+
+  - id: w09.f.exponential-forms
+    title: Growth and decay
+    description: Use exponent properties to interpret exponential expressions as growth or decay and classify them.
+    ccss: [F.IF.C.8.b]
+    prerequisites: [w09.f.graph-exponential]
+    representations: [symbolic, verbal, visual]
+    engines: [sort, sim]
+
+  - id: w09.f.compare-representations
+    title: Compare across representations
+    description: Compare properties of two functions each given a different way (algebraically, graphically, in a table, or in words).
+    ccss: [F.IF.C.9]
+    prerequisites: [w09.f.quadratic-forms, w09.f.exponential-forms]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, strategy]
+
+  # ---- Functions: Building ----
+  - id: w09.f.build-functions
+    title: Build a function
+    description: Write a function from a situation explicitly, recursively, or by combining simpler functions.
+    ccss: [F.BF.A.1.a, F.BF.A.1.b]
+    prerequisites: [w09.f.sequences-as-functions, w09.a.create-equations-two-variables]
+    representations: [verbal, symbolic, visual]
+    engines: [story, build]
+
+  - id: w09.f.transformations-of-functions
+    title: Shift, stretch, flip
+    description: Identify the effect of k in f(x) + k, k·f(x), f(kx), and f(x + k) on the graph, and find k from graphs.
+    ccss: [F.BF.B.3]
+    prerequisites: [w09.f.graph-linear-quadratic, w09.f.graph-exponential]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+    secret_goals:
+      - { id: match-in-three, text: Matched the target graph in three transformations or fewer, kind: shortcut }
+
+  - id: w09.f.inverse-functions-intro
+    title: Undo a function
+    description: Solve f(x) = c for x and write an expression for the inverse of a simple function.
+    ccss: [F.BF.B.4.a]
+    prerequisites: [w09.a.rearrange-formulas, w09.f.function-notation]
+    representations: [symbolic, visual]
+    engines: [manipulate, build]
+
+  # ---- Functions: Linear, Quadratic, Exponential Models ----
+  - id: w09.f.linear-vs-exponential-growth
+    title: Linear vs exponential
+    description: Distinguish situations with constant differences from constant ratios, build the matching functions, and see that exponential eventually wins.
+    ccss: [F.LE.A.1, F.LE.A.2, F.LE.A.3]
+    prerequisites: [w09.f.average-rate-of-change, w09.f.exponential-forms]
+    representations: [visual, symbolic, verbal]
+    engines: [sim, sort, story]
+    secret_goals:
+      - { id: overtake, text: Predicted when the exponential overtakes the line before running it, kind: custom }
+
+  - id: w09.f.interpret-parameters
+    title: What the parameters mean
+    description: Interpret the parameters of linear and exponential functions in terms of the context.
+    ccss: [F.LE.B.5]
+    prerequisites: [w09.f.linear-vs-exponential-growth]
+    representations: [verbal, symbolic, visual]
+    engines: [story, sort]
+
+  # ---- Statistics: Interpreting Data ----
+  - id: w09.s.single-variable-data
+    title: Shape, center, spread
+    description: Represent and compare data sets with dot plots, histograms, and box plots, using center, spread, shape, and outliers.
+    ccss: [S.ID.A.1, S.ID.A.2, S.ID.A.3]
+    prerequisites: [w06.sp.summarize-distributions]
+    representations: [visual, symbolic, verbal]
+    engines: [build, sort, sim]
+
+  - id: w09.s.two-way-frequency-tables
+    title: Joint and conditional frequencies
+    description: Summarize categorical data in two-way tables and interpret joint, marginal, and conditional relative frequencies.
+    ccss: [S.ID.B.5]
+    prerequisites: [w08.sp.two-way-tables]
+    representations: [visual, symbolic, verbal]
+    engines: [build, story]
+
+  - id: w09.s.fit-functions-to-data
+    title: Fit a model
+    description: Fit linear, quadratic, and exponential functions to data and assess fit with residuals.
+    ccss: [S.ID.B.6]
+    prerequisites: [w08.sp.line-of-best-fit, w09.f.compare-representations]
+    representations: [visual, symbolic]
+    engines: [manipulate, sim]
+
+  - id: w09.s.correlation
+    title: Correlation and causation
+    description: Interpret slope and intercept of a fitted line, use the correlation coefficient, and separate correlation from causation.
+    ccss: [S.ID.C.7, S.ID.C.8, S.ID.C.9]
+    prerequisites: [w09.s.fit-functions-to-data]
+    representations: [visual, verbal, symbolic]
+    engines: [story, sort, sim]
+    secret_goals:
+      - { id: spurious, text: Spotted the spurious correlation in the data set, kind: custom }

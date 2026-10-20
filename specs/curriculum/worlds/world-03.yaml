@@ -1,0 +1,260 @@
+world: 3
+name: Grade 3
+tier: adventure
+defaults:
+  mastery: { unlock: 0.6, two_star: 0.75, three_star: 0.9, revisit_days: [2, 7, 21] }
+
+nodes:
+  # ---- Operations & Algebraic Thinking ----
+  - id: w03.oa.multiplication-as-groups
+    title: Equal groups
+    description: Interpret a product as the total in equal groups and write it as multiplication.
+    ccss: [3.OA.A.1]
+    prerequisites: [w02.oa.arrays-repeated-addition]
+    representations: [physical, visual, symbolic, verbal]
+    engines: [build, manipulate]
+    strategies: [skip-count, array]
+
+  - id: w03.oa.division-as-sharing
+    title: Fair shares
+    description: Interpret a quotient as the size of each share or the number of shares.
+    ccss: [3.OA.A.2]
+    prerequisites: [w03.oa.multiplication-as-groups]
+    representations: [physical, visual, symbolic, verbal]
+    engines: [manipulate, story]
+    strategies: [deal-out, measure-out]
+
+  - id: w03.oa.mult-div-word-problems
+    title: Group stories
+    description: Solve multiplication and division story problems within 100 with equal groups, arrays, and measurement.
+    ccss: [3.OA.A.3]
+    prerequisites: [w03.oa.multiplication-as-groups, w03.oa.division-as-sharing]
+    representations: [verbal, visual, symbolic]
+    engines: [story, manipulate]
+    strategies: [draw-it, write-equation]
+
+  - id: w03.oa.unknown-in-mult-div
+    title: Find the missing factor
+    description: Find the unknown whole number in a multiplication or division equation.
+    ccss: [3.OA.A.4]
+    prerequisites: [w03.oa.mult-div-word-problems]
+    representations: [symbolic, visual]
+    engines: [fluency, manipulate]
+
+  - id: w03.oa.properties-of-multiplication
+    title: Multiplication moves
+    description: Use commutative, associative, and distributive properties to multiply.
+    ccss: [3.OA.B.5]
+    prerequisites: [w03.oa.multiplication-as-groups]
+    representations: [visual, symbolic, physical]
+    engines: [build, strategy]
+    strategies: [commutative, associative, distributive, split-a-factor]
+    secret_goals:
+      - { id: split-it, text: Split a hard fact into two easy ones, kind: strategy }
+
+  - id: w03.oa.division-as-unknown-factor
+    title: Division is missing-factor
+    description: Understand division as an unknown-factor problem.
+    ccss: [3.OA.B.6]
+    prerequisites: [w03.oa.division-as-sharing, w03.oa.unknown-in-mult-div]
+    representations: [symbolic, visual, verbal]
+    engines: [strategy, fluency]
+    strategies: [think-multiplication]
+
+  - id: w03.oa.multiply-fluently-100
+    title: Multiplication facts
+    description: Multiply within 100 fluently, with all products of two one-digit numbers known from memory.
+    ccss: [3.OA.C.7]
+    prerequisites: [w03.oa.properties-of-multiplication]
+    representations: [symbolic, verbal, visual]
+    engines: [fluency]
+    mastery: { fluency_ms: 3000, three_star: 0.95, revisit_days: [1, 3, 7, 21, 60] }
+    strategies: [doubling, tens-neighbor, square-neighbor]
+
+  - id: w03.oa.divide-fluently-100
+    title: Division facts
+    description: Divide within 100 fluently using the relationship to multiplication.
+    ccss: [3.OA.C.7]
+    prerequisites: [w03.oa.division-as-unknown-factor, w03.oa.multiply-fluently-100]
+    representations: [symbolic, verbal, visual]
+    engines: [fluency]
+    mastery: { fluency_ms: 3500, three_star: 0.95, revisit_days: [1, 3, 7, 21, 60] }
+    strategies: [think-multiplication]
+
+  - id: w03.oa.two-step-word-problems
+    title: Two-step stories
+    description: Solve two-step story problems with the four operations and check answers for reasonableness.
+    ccss: [3.OA.D.8]
+    prerequisites: [w03.oa.mult-div-word-problems, w02.oa.word-problems-within-100]
+    representations: [verbal, visual, symbolic]
+    engines: [story, strategy]
+    strategies: [bar-model, estimate-first, write-equation]
+
+  - id: w03.oa.arithmetic-patterns
+    title: Patterns in the tables
+    description: Find and explain patterns in addition and multiplication tables.
+    ccss: [3.OA.D.9]
+    prerequisites: [w03.oa.multiply-fluently-100, w02.oa.odd-and-even]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, build]
+    secret_goals:
+      - { id: hidden-pattern, text: Found a pattern the game did not point out, kind: shortcut }
+
+  # ---- Number & Operations in Base Ten ----
+  - id: w03.nbt.round-to-10-100
+    title: Rounding
+    description: Round whole numbers to the nearest 10 or 100.
+    ccss: [3.NBT.A.1]
+    prerequisites: [w02.nbt.compare-three-digit, w02.md.number-line]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, fluency]
+    strategies: [number-line-midpoint]
+
+  - id: w03.nbt.add-sub-within-1000-fluent
+    title: Add and subtract to 1000, fast
+    description: Add and subtract within 1000 fluently using place value, properties, and relationships.
+    ccss: [3.NBT.A.2]
+    prerequisites: [w02.nbt.add-sub-within-1000, w02.nbt.explain-strategies]
+    representations: [symbolic, visual]
+    engines: [fluency, strategy]
+    mastery: { fluency_ms: 10000 }
+    strategies: [place-value, compensate, count-up]
+
+  - id: w03.nbt.multiply-by-multiples-of-10
+    title: Times ten, twenty, thirty
+    description: Multiply one-digit numbers by multiples of 10 up to 90.
+    ccss: [3.NBT.A.3]
+    prerequisites: [w03.oa.multiply-fluently-100, w02.nbt.hundreds-tens-ones]
+    representations: [visual, symbolic, physical]
+    engines: [fluency, build]
+    strategies: [groups-of-ten]
+
+  # ---- Number & Operations — Fractions ----
+  - id: w03.nf.unit-fractions
+    title: One part of a whole
+    description: Understand 1/b as one of b equal parts and a/b as a of those parts.
+    ccss: [3.NF.A.1]
+    prerequisites: [w02.g.halves-thirds-fourths, w03.oa.division-as-sharing]
+    representations: [physical, visual, symbolic, verbal]
+    engines: [manipulate, build]
+
+  - id: w03.nf.fractions-on-number-line
+    title: Fractions on the line
+    description: Place fractions on a number line by splitting the unit interval into equal parts.
+    ccss: [3.NF.A.2]
+    prerequisites: [w03.nf.unit-fractions, w02.md.number-line]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, build]
+
+  - id: w03.nf.equivalent-fractions
+    title: Same amount, different name
+    description: Recognize and generate simple equivalent fractions using models and the number line.
+    ccss: [3.NF.A.3.a, 3.NF.A.3.b]
+    prerequisites: [w03.nf.fractions-on-number-line]
+    representations: [visual, symbolic, physical]
+    engines: [manipulate, sort]
+    secret_goals:
+      - { id: three-names, text: Found three names for the same fraction, kind: shortcut }
+
+  - id: w03.nf.whole-numbers-as-fractions
+    title: Wholes as fractions
+    description: Write whole numbers as fractions and recognize fractions equal to whole numbers.
+    ccss: [3.NF.A.3.c]
+    prerequisites: [w03.nf.equivalent-fractions]
+    representations: [visual, symbolic]
+    engines: [sort, manipulate]
+
+  - id: w03.nf.compare-fractions
+    title: Which is bigger
+    description: Compare fractions with the same numerator or the same denominator using models and reasoning.
+    ccss: [3.NF.A.3.d]
+    prerequisites: [w03.nf.equivalent-fractions]
+    representations: [visual, symbolic, verbal]
+    engines: [sort, strategy]
+    strategies: [same-denominator, same-numerator]
+
+  # ---- Measurement & Data ----
+  - id: w03.md.time-to-minute
+    title: Time to the minute
+    description: Tell time to the nearest minute and solve elapsed-time problems in minutes.
+    ccss: [3.MD.A.1]
+    prerequisites: [w02.md.time-to-five-minutes]
+    representations: [visual, symbolic, verbal]
+    engines: [manipulate, story]
+    strategies: [jump-to-next-hour]
+
+  - id: w03.md.volume-and-mass
+    title: Grams, kilograms, liters
+    description: Measure and estimate liquid volume and mass, and solve one-step problems with them.
+    ccss: [3.MD.A.2]
+    prerequisites: [w02.md.measure-with-tools, w03.nbt.add-sub-within-1000-fluent]
+    representations: [physical, visual, symbolic, verbal]
+    engines: [sim, story]
+
+  - id: w03.md.scaled-graphs
+    title: Scaled graphs
+    description: Draw scaled picture and bar graphs and answer how-many-more questions from them.
+    ccss: [3.MD.B.3]
+    prerequisites: [w02.md.picture-and-bar-graphs, w03.oa.multiply-fluently-100]
+    representations: [visual, symbolic, verbal]
+    engines: [build, story]
+
+  - id: w03.md.line-plots-fractions
+    title: Line plots with halves and quarters
+    description: Measure to the nearest half or quarter inch and plot the data.
+    ccss: [3.MD.B.4]
+    prerequisites: [w02.md.line-plots, w03.nf.unit-fractions]
+    representations: [physical, visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w03.md.area-concept
+    title: Covering with squares
+    description: Understand area as covering with unit squares and measure it by counting.
+    ccss: [3.MD.C.5, 3.MD.C.6]
+    prerequisites: [w02.g.partition-rectangles]
+    representations: [physical, visual, symbolic]
+    engines: [build, manipulate]
+
+  - id: w03.md.area-by-multiplying
+    title: Area by multiplying
+    description: Find the area of a rectangle by multiplying side lengths and show why it matches tiling.
+    ccss: [3.MD.C.7.a, 3.MD.C.7.b]
+    prerequisites: [w03.md.area-concept, w03.oa.multiply-fluently-100]
+    representations: [visual, symbolic, physical]
+    engines: [build, story]
+
+  - id: w03.md.area-distributive-additive
+    title: Split the area
+    description: Use the distributive property and additive decomposition to find areas of rectangles and rectilinear figures.
+    ccss: [3.MD.C.7.c, 3.MD.C.7.d]
+    prerequisites: [w03.md.area-by-multiplying, w03.oa.properties-of-multiplication]
+    representations: [visual, symbolic]
+    engines: [build, strategy]
+    strategies: [split-a-side, cut-into-rectangles]
+
+  - id: w03.md.perimeter
+    title: Perimeter
+    description: Find perimeters of polygons, find an unknown side, and compare shapes with the same area or perimeter.
+    ccss: [3.MD.D.8]
+    prerequisites: [w03.md.area-concept, w03.nbt.add-sub-within-1000-fluent]
+    representations: [visual, symbolic, physical]
+    engines: [build, story]
+    secret_goals:
+      - { id: same-perimeter, text: Built two shapes with the same perimeter but different areas, kind: shortcut }
+
+  # ---- Geometry ----
+  - id: w03.g.quadrilaterals
+    title: Four-sided families
+    description: Classify quadrilaterals by shared attributes, including rhombuses, rectangles, and squares.
+    ccss: [3.G.A.1]
+    prerequisites: [w02.g.shapes-by-attributes]
+    representations: [visual, verbal, physical]
+    engines: [sort, build]
+
+  - id: w03.g.partition-equal-areas
+    title: Equal-area parts
+    description: Partition shapes into parts with equal areas and name each part as a unit fraction of the whole.
+    ccss: [3.G.A.2]
+    prerequisites: [w03.nf.unit-fractions, w03.md.area-concept]
+    representations: [visual, physical, symbolic]
+    engines: [manipulate, build]
