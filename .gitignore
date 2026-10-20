@@ -3,6 +3,12 @@
 .idea/
 .vscode/
 build/
-node_modules/
 .gradle/
+.kotlin/
 local.properties
+node_modules/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+__pycache__/

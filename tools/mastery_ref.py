@@ -91,6 +91,7 @@ class RevisitState:
     hints: int = 0
     passed: int = 0
     last_set_passed: Optional[bool] = None
+    history: list[tuple[float, bool]] = field(default_factory=list)  # (at, passed) per completed set
 
 
 @dataclass
@@ -299,6 +300,7 @@ class Mastery:
             rv.interval_index = 0
             s.score = self._move(s.score, rv.correct / K["REVISIT_SET_SIZE"], K["ALPHA_REVISIT"])
         rv.last_set_passed = passed
+        rv.history.append((item.at, passed))
         rv.due_at = item.at + days[rv.interval_index]
         rv.served = rv.correct = rv.hints = 0
         rv.representation = None
