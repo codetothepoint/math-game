@@ -22,7 +22,8 @@ A math game that carries a player from 1st grade through 12th grade at their own
 - The curriculum is a directed acyclic graph of skills. See `specs/curriculum/`.
 - A skill node unlocks when its prerequisites reach a mastery threshold (not completion).
 - Multiple branches can be open at once: a player can run ahead on fractions while still working on measurement.
-- Skipping ahead is just playing: if a player wants to try a node whose prerequisites are not yet mastered, they can attempt it; the game adjusts and the prerequisites get credit from what the player demonstrates. No "challenge test".
+- Skipping ahead is just playing: a node one hop beyond the frontier is a *reach* node and can be attempted; clean items on it credit the prerequisites underneath. No "challenge test". (`specs/mastery.md` §6)
+- Nodes in worlds before the parent-set starting world are *assumed*: open without stars, and quietly interleaved into play so gaps surface without a test. (`specs/mastery.md` §6.3, §7.5)
 
 ## Stars
 Three stars per skill node, modeled on Angry Birds, but the 3rd star cannot be earned in a single sitting.
@@ -34,7 +35,7 @@ Three stars per skill node, modeled on Angry Birds, but the 3rd star cannot be e
 | ★★★ | Own it | Fluency threshold met, no hints, and the skill holds up in a surprise revisit days later in a different representation |
 
 - A failed revisit dims the 3rd star back to 2. The player can earn it back.
-- Star thresholds are defined per skill node in the curriculum data, not hard-coded.
+- Star thresholds are defined per skill node in the curriculum data, not hard-coded. The exact rules are in `specs/mastery.md` §5.
 
 ## Secret goals
 Modeled on Prune: each level has one or more hidden goals revealed only after completion, so the player discovers them by playing rather than chasing them.
@@ -43,11 +44,12 @@ Modeled on Prune: each level has one or more hidden goals revealed only after co
 - Collecting secret goals contributes to world completion and can be a milestone for parent rewards.
 
 ## Mastery model
-- **Tracked signals:** accuracy, response time trend, hint use, strategy used (when the game can observe it), representation handled, time since last success.
-- **Mastery score** per skill node, 0–1, updated from signals. Thresholds in curriculum data map scores to stars and unlocks.
-- **Spaced revisit:** mastered skills reappear inside later games at increasing intervals. The player does not see "review"; they see a game that happens to include an earlier idea.
-- **Transfer check:** the surprise revisit uses a representation the player did not drill (practiced symbolic → revisited visual, or practiced visual → revisited as a word problem).
-- **Decay:** a skill not seen for a long time, or failed on revisit, drops below the 3-star threshold.
+Specified in full in `specs/mastery.md`, with a reference implementation and executable scenarios in `tools/`. In brief:
+- **Tracked signals:** per item: correct, first try, hints, response time, representation, strategy observed. Engines report; they never score.
+- **Mastery score** per skill node, 0–1, moved toward each item's evidence. A miss moves it half as far as a success. Thresholds in curriculum data map scores to stars and unlocks.
+- **Spaced revisit:** two-star skills reappear inside later games at the node's `revisit_days` intervals, mixed in and unlabelled.
+- **Transfer check:** the revisit uses the representation the player drilled least. Passing it is what earns the third star.
+- **Decay:** a failed revisit dims the third star. Time alone never removes a star; an overdue revisit shows as *due* on the map and gets served next.
 
 ## Sophistication tiers
 The game must look and feel different as the math matures. Rough tiers (to refine):

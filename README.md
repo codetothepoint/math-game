@@ -13,8 +13,10 @@ This project is spec-driven. `specs/` is the source of truth.
 | `specs/game-design.md` | Game design document |
 | `specs/curriculum/` | Skill graph, as data, worlds 1–12 |
 | `specs/mechanics/` | Mini-game engines and tier style guides |
+| `specs/mastery.md` | Mastery model: evidence, stars, availability, revisits |
 | `specs/decisions/` | Architecture decision records |
 | `tools/curriculum.py` | Validates the skill graph and builds `specs/curriculum/generated/` |
+| `tools/mastery_ref.py`, `tools/test_mastery.py` | Reference implementation of the mastery model and its scenarios |
 
 ## Status
 Specs in progress. Curriculum graph v1 is complete (344 skills, 12 worlds) and validated. No game code yet.
