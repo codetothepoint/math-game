@@ -8,11 +8,15 @@ import com.codetothepoint.mathgame.core.engines.Pt
 sealed interface BuildTarget {
     val kind: String
 
-    /** Make a number from `blocks`; [value] in base units ([scale] 1 for whole numbers, 100 for hundredths). */
-    data class Quantity(val value: Int, val scale: Int = 1) : BuildTarget { override val kind get() = "quantity" }
+    /**
+     * Make a number from `blocks`; [value] in base units ([scale] 1 for whole numbers, 100 for hundredths).
+     * [base] is the number the prompt starts from ("ten times 340"); [digitMoves] asks for the prompt that
+     * follows one digit between places (the 4 in 340 and in 3,400).
+     */
+    data class Quantity(val value: Int, val scale: Int = 1, val base: Int? = null, val digitMoves: Boolean = false) : BuildTarget { override val kind get() = "quantity" }
 
-    /** Make an amount from `parts`. */
-    data class FractionQuantity(val value: Fraction, val denominators: List<Int>) : BuildTarget { override val kind get() = "quantity" }
+    /** Make an amount from `parts`; [groups] × [each] is how the prompt reads ("four friends each take two thirds"). */
+    data class FractionQuantity(val value: Fraction, val denominators: List<Int>, val groups: Int? = null, val each: Fraction? = null, val readAsMixed: Boolean = false) : BuildTarget { override val kind get() = "quantity" }
 
     /** One rectangle of [a] × [b] in `tiles`. */
     data class Product(val a: Int, val b: Int) : BuildTarget {
@@ -45,8 +49,8 @@ sealed interface BuildTarget {
     /** Every value marked once on a line plot with ticks of [tick]. */
     data class Plot(val values: List<Fraction>, val tick: Fraction) : BuildTarget { override val kind get() = "plot" }
 
-    /** A gear chain producing [terms]; [minimalGears] is the fewest gears that can. */
-    data class Sequence(val terms: List<Int>, val minimalGears: Int) : BuildTarget { override val kind get() = "sequence" }
+    /** A gear chain producing [terms]; [minimalGears] is the fewest gears that can; [hiddenIndices] are terms the prompt leaves blank. */
+    data class Sequence(val terms: List<Int>, val minimalGears: Int, val hiddenIndices: Set<Int> = emptySet()) : BuildTarget { override val kind get() = "sequence" }
 
     /** A conversion table: each row is (count of big units) → expected count of small units. */
     data class Table(val bigUnit: String, val smallUnit: String, val factor: Int, val rows: List<Int>) : BuildTarget { override val kind get() = "table" }

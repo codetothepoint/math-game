@@ -107,7 +107,7 @@ class Stats(private val model: MasteryModel) {
             title = nd.title,
             description = nd.description,
             stars = s.stars,
-            progress = progress(s, nd.mastery.twoStar),
+            progress = progress(s),
             hintsLately = hintsLately(s),
             waysPracticed = nd.representations.filter { (s.repItems[it] ?: 0) >= 3 },
             strategiesSeen = nd.strategies.filter { it in s.strategies },
@@ -115,9 +115,10 @@ class Stats(private val model: MasteryModel) {
         )
     }
 
-    private fun progress(s: NodeState, twoStar: Double): Progress = when {
-        s.stars == 3 -> Progress.OWNS_IT
-        s.stars == 2 || s.score >= twoStar -> Progress.GOT_IT
+    /** Follows the flags, which already carry the star hysteresis (parent-portal §6.3). */
+    private fun progress(s: NodeState): Progress = when (s.stars) {
+        3 -> Progress.OWNS_IT
+        2 -> Progress.GOT_IT
         else -> Progress.BUILDING
     }
 

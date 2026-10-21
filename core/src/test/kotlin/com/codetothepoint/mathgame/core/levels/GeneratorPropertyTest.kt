@@ -7,6 +7,7 @@ import com.codetothepoint.mathgame.core.engines.build.BuildTarget
 import com.codetothepoint.mathgame.core.engines.isPrime
 import com.codetothepoint.mathgame.core.engines.manipulate.ManipulateEngine
 import com.codetothepoint.mathgame.core.engines.manipulate.ManipulateTarget
+import com.codetothepoint.mathgame.core.engines.manipulate.MatchState
 import com.codetothepoint.mathgame.core.recipes.Band
 import com.codetothepoint.mathgame.core.recipes.RecipeLoader
 import kotlin.random.Random
@@ -38,13 +39,14 @@ class GeneratorPropertyTest {
                 val rng = Random("${recipe.node}/${recipe.engine.key}/$band".hashCode())
                 repeat(perBand) { i ->
                     val rep = recipe.representations[i % recipe.representations.size]
-                    val item = try { gen.generate(recipe.params(band), band, rep, rng) } catch (e: Exception) {
+                    val item = try { gen.generate(recipe.params(band), recipe.tolerance, band, rep, rng) } catch (e: Exception) {
                         failures += "${recipe.node}/${recipe.engine.key} $band #$i threw ${e::class.simpleName}: ${e.message}"; return@repeat
                     }
                     val ok = when (item) {
                         is GeneratedItem.Build -> BuildEngine.satisfied(item.target, Solutions.forBuild(item.target))
                         is GeneratedItem.Manipulate -> ManipulateEngine.satisfied(item.target, Solutions.forManipulate(item.target, item.initial)) &&
-                            !ManipulateEngine.satisfied(item.target, item.initial)   // the item is not already done
+                            !ManipulateEngine.satisfied(item.target, item.initial) &&   // the item is not already done
+                            playerHalfSolves(item)                                     // the given instrument stays as generated (review #3)
                     }
                     if (!ok) failures += "${recipe.node}/${recipe.engine.key} $band #$i unsolvable: $item"
                     rangeCheck(recipe.node, band, item)?.let { failures += "${recipe.node}/${recipe.engine.key} $band #$i $it" }
@@ -67,7 +69,9 @@ class GeneratorPropertyTest {
                 }
             }
             "w04.nbt.divide-by-one-digit" -> (t as BuildTarget.Quotient).let {
-                if (band == Band.LOW && it.remainder != 0) "low band must divide evenly: $it" else if (it.quotient < 1) "quotient under 1: $it" else null
+                if (band == Band.LOW && it.remainder != 0) "low band must divide evenly: $it"
+                else if (it.quotient < 1) "quotient under 1: $it"
+                else if (it.quotient > 99 || it.divisor > 99) "tiles kit shows at most 99 on a side: $it" else null
             }
             "w04.oa.factors-multiples-primes" -> (t as BuildTarget.FactorPairs).let {
                 if (band == Band.LOW && it.area !in 6..30) "out of range: $it" else null
@@ -77,7 +81,21 @@ class GeneratorPropertyTest {
             }
             "w04.md.measure-angles" -> {
                 val deg = (t as? BuildTarget.Angle)?.degrees ?: (m as ManipulateTarget.AngleValue).degrees
-                if (band == Band.LOW && deg % 10 != 0) "low band needs multiples of 10: $deg" else null
+                val tol = (t as? BuildTarget.Angle)?.toleranceDegrees ?: (m as ManipulateTarget.AngleValue).toleranceDegrees
+                if (band == Band.LOW && deg % 10 != 0) "low band needs multiples of 10: $deg"
+                else if (t == null && band == Band.HIGH && tol != 1) "high band manipulate tolerance must be ±1: $tol"
+                else if (t == null && band != Band.HIGH && tol != 2) "tolerance must be ±2: $tol" else null
+            }
+            "w04.md.angles-concept", "w04.md.additive-angles" -> {
+                val tol = (m as? ManipulateTarget.AngleValue)?.toleranceDegrees ?: (m as ManipulateTarget.AngleUnknown).toleranceDegrees
+                if (tol != (if (band == Band.HIGH) 1 else 2)) "tolerance by band: got $tol at $band" else null
+            }
+            "w04.g.line-symmetry" -> (t as? BuildTarget.SymmetricCompletion)?.let { sc ->
+                val all = sc.given + sc.given.map { sc.line.reflect(it) }
+                if (all.any { it.x !in Generators.GRID || it.y !in Generators.GRID }) "leaves the 7×7 grid: $all" else null
+            }
+            "w04.nf.add-sub-like-denominators" -> (m as ManipulateTarget.BarSum).let {
+                if (it.value.num <= 0 || it.a.den != it.den || it.b.den != it.den) "degenerate sum: $it" else null
             }
             "w04.nf.fraction-equivalence" -> (m as ManipulateTarget.Equal).let {
                 if (it.reference.withDenominator(it.targetDen) == null) "not expressible: $it" else null
@@ -98,12 +116,32 @@ class GeneratorPropertyTest {
         }
     }
 
+    /** For a match item, only the player's instrument may change; the given one stays exactly as generated. */
+    private fun playerHalfSolves(item: GeneratedItem.Manipulate): Boolean {
+        val t = item.target as? ManipulateTarget.Match ?: return true
+        val initial = item.initial as MatchState
+        val solved = Solutions.forManipulate(t, initial) as MatchState
+        val played = if (t.givenOnGrid) MatchState(solved.line, initial.grid) else MatchState(initial.line, solved.grid)
+        return ManipulateEngine.satisfied(t, played)
+    }
+
+    @Test
+    fun everyRecipeParameterIsReadByItsGenerator() {
+        for (r in recipes.all) {
+            val allowed = Generators.KEYS[r.key] ?: fail("no key allow-list for ${r.node}/${r.engine.key}")
+            for (band in Band.entries) {
+                val extra = r.params(band).keys() - allowed
+                assertTrue(extra.isEmpty(), "${r.node}/${r.engine.key} $band declares parameters no generator reads: $extra")
+            }
+        }
+    }
+
     @Test
     fun primesAppearInFactorLevels() {
         val recipe = recipes.all.first { it.node == "w04.oa.factors-multiples-primes" }
         val gen = Generators.forRecipe(recipe)
         val rng = Random(7)
-        val areas = List(400) { (gen.generate(recipe.params(Band.MID), Band.MID, recipe.representations[0], rng) as GeneratedItem.Build).target as BuildTarget.FactorPairs }
+        val areas = List(400) { (gen.generate(recipe.params(Band.MID), recipe.tolerance, Band.MID, recipe.representations[0], rng) as GeneratedItem.Build).target as BuildTarget.FactorPairs }
         val primes = areas.count { isPrime(it.area) }
         assertTrue(primes in 50..150, "expected roughly a quarter primes, got $primes of 400")
     }

@@ -243,7 +243,8 @@
       2,
       5
      ],
-     "remainder": false
+     "remainder": false,
+     "max_side": 99
     },
     "mid": {
      "dividend": [
@@ -254,7 +255,8 @@
       2,
       9
      ],
-     "remainder": true
+     "remainder": true,
+     "max_side": 99
     },
     "high": {
      "dividend": [
@@ -265,7 +267,8 @@
       3,
       9
      ],
-     "remainder": true
+     "remainder": true,
+     "max_side": 99
     }
    },
    "strategies": {
@@ -299,9 +302,9 @@
    "generator": {
     "low": {
      "denominators": [
-      2,
       3,
-      4
+      4,
+      6
      ],
      "numerator_max": 4
     },
@@ -437,8 +440,7 @@
      "hundredths": [
       1,
       9
-     ],
-     "require_trade": true
+     ]
     }
    },
    "hints": {
@@ -579,8 +581,7 @@
     },
     "high": {
      "tick": "1/8",
-     "values": 10,
-     "ask_difference": true
+     "values": 10
     }
    },
    "hints": {
@@ -934,8 +935,7 @@
        10
       ]
      ],
-     "reverse": true,
-     "non_unit_scaling": true
+     "reverse": true
     }
    },
    "hints": {
@@ -966,9 +966,9 @@
    "generator": {
     "low": {
      "denominators": [
-      2,
       3,
-      4
+      4,
+      6
      ],
      "numerator_max": 4,
      "parts": 2

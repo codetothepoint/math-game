@@ -203,7 +203,9 @@ Engine-logic test cases (to implement with the engine, platform-neutral):
 
 ## 13. Open questions
 - Should Adventure lock-in auto-trigger after a short settle when the construction is satisfied, to reduce taps for younger players in world 3?
-- Tile rectangles larger than ~40 on a side are cramped on a phone; the generator caps or the kit auto-scales. v1: auto-scale, cap at 99.
+- Tile rectangles larger than ~40 on a side are cramped on a phone; the generator caps or the kit auto-scales. v1: auto-scale, cap at 99. Consequence: `quotient` dividends are clipped to `99 × divisor` (recipe `max_side`), so four-digit dividends from 4.NBT.B.6 are not reachable on `tiles`; they need the `area-model` instrument or a scaled kit (M3 decision).
+- "About two primes per level" (§10) is a per-level property, but generators are per item (§11); v1 draws each item prime with probability `primes_per_level / 8`, so a level can have none or five. Level-level composition belongs in the level builder once levels are played and tuned.
+- The readout normalization in §12 case 4 ("3 thousands 4 hundreds") is rendered by the UI, not decided by core; it is verified in M3's engine tests.
 - `two-ways` targets and the `grouped-copies` rule need a definition of "structurally different" that is not fooled by reordering identical pieces. v1: different multiset of piece sizes. A piece keeps its denomination: a two-eighths piece is not a quarter (core `Fraction(2, 8)` vs `Fraction.of(1, 4)`).
 - Line symmetry on `strokes` is a `constraint` target of the form *complete the figure across this line*: the given half must be present and every point and segment must reflect onto one in the construction (core `SymmetricCompletion`).
 - `place-value-ten-times` with `blocks` in `physical` representation is served by core as a plain `quantity` target; the UI decides how a 'ten times bigger' prompt reads.

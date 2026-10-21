@@ -62,6 +62,7 @@ object Solutions {
             FractionBarState(t.den, List(t.parts - 1) { 1 } + (n - (t.parts - 1)), initialDen = t.den)
         }
         is ManipulateTarget.BarValue -> FractionBarState(t.den, listOf(t.value.withDenominator(t.den)!!.num), initialDen = t.den)
+        is ManipulateTarget.BarSum -> FractionBarState(t.den, listOf(t.value.withDenominator(t.den)!!.num), initialDen = t.den)
         is ManipulateTarget.GridValue -> GridState(t.hundredths)
         is ManipulateTarget.AngleValue -> (initial as AngleState).let { if (it.reading != null) it.copy(reading = t.degrees.toDouble()) else AngleState(t.degrees.toDouble()) }
         is ManipulateTarget.AngleUnknown -> AngleState(t.unknown.toDouble())

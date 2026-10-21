@@ -35,16 +35,16 @@ class LevelBuilder(private val model: MasteryModel, private val recipes: Recipes
         val coreKind = if (model.availability(p, nodeId) == Availability.REACH && state.levelsCompleted == 0) ItemKind.REACH else ItemKind.CORE
         val generator = Generators.forRecipe(recipe)
 
-        val core = List(coreItemsPerLevel) { PlannedItem(nodeId, coreKind, generator.generate(recipe.params(band), band, representation, rng)) }
+        val core = List(coreItemsPerLevel) { PlannedItem(nodeId, coreKind, generator.generate(recipe.params(band), recipe.tolerance, band, representation, rng)) }
 
         val extras = mutableListOf<PlannedItem>()
         for ((dueNode, rep) in model.dueRevisits(p, now, engine, exclude = nodeId, coreItems = coreItemsPerLevel, hosting = hosting)) {
             val r = recipes.getValue(dueNode, engine)   // hosting guaranteed it exists and serves rep
-            extras += PlannedItem(dueNode, ItemKind.REVISIT, Generators.forRecipe(r).generate(r.params(bandFor(p, dueNode)), bandFor(p, dueNode), rep, rng))
+            extras += PlannedItem(dueNode, ItemKind.REVISIT, Generators.forRecipe(r).generate(r.params(bandFor(p, dueNode)), r.tolerance, bandFor(p, dueNode), rep, rng))
         }
         assumedPrerequisite(p, nodeId, engine, rng)?.let { r ->
             val rep = r.representations.random(rng)
-            extras += PlannedItem(r.node, ItemKind.CORE, Generators.forRecipe(r).generate(r.params(Band.MID), Band.MID, rep, rng))
+            extras += PlannedItem(r.node, ItemKind.CORE, Generators.forRecipe(r).generate(r.params(Band.MID), r.tolerance, Band.MID, rep, rng))
         }
 
         val items = core.toMutableList()

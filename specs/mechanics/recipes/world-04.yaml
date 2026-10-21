@@ -88,9 +88,11 @@ recipes:
     representations: [visual, symbolic]
     frame: Packing crates into equal rows, leftovers in the tray
     generator:
-      low:  { dividend: [12, 60], divisor: [2, 5], remainder: false }
-      mid:  { dividend: [40, 200], divisor: [2, 9], remainder: true }
-      high: { dividend: [200, 2000], divisor: [3, 9], remainder: true }
+      # max_side: the tiles kit shows at most 99 tiles on a side (engine-build §13), so dividend ≤ max_side × divisor.
+      # Four-digit dividends (4.NBT.B.6) wait for the area-model instrument; see engine-build §13.
+      low:  { dividend: [12, 60], divisor: [2, 5], remainder: false, max_side: 99 }
+      mid:  { dividend: [40, 200], divisor: [2, 9], remainder: true, max_side: 99 }
+      high: { dividend: [200, 2000], divisor: [3, 9], remainder: true, max_side: 99 }
     strategies:
       partial-quotients: chunked-quotient
       area-model: rows-of
@@ -108,7 +110,7 @@ recipes:
     representations: [visual, symbolic, physical]
     frame: Cutting a loaf two different ways for the same order
     generator:
-      low:  { denominators: [2, 3, 4], numerator_max: 4 }
+      low:  { denominators: [3, 4, 6], numerator_max: 4 }   # halves cannot be split two ways over halves
       mid:  { denominators: [4, 6, 8], numerator_max: 7 }
       high: { denominators: [5, 8, 10, 12], mixed_numbers: true }
     hints:
@@ -142,9 +144,10 @@ recipes:
     representations: [visual, symbolic]
     frame: Filling a 10×10 tray from strips and squares
     generator:
+      # A "must trade a strip" variant was dropped: core cannot see kit draws, only the construction. The trade-strip secret goal rewards it instead.
       low:  { tenths: [1, 9], hundredths: [0, 0] }
       mid:  { tenths: [1, 9], hundredths: [1, 9] }
-      high: { tenths: [1, 9], hundredths: [1, 9], require_trade: true }
+      high: { tenths: [1, 9], hundredths: [1, 9] }
     hints:
       structure: Label the strips as tenths and the squares as hundredths
       piece: Place the tenths strips
@@ -191,9 +194,10 @@ recipes:
     representations: [visual, symbolic]
     frame: Logging the lengths of everything in the toolbox
     generator:
+      # "Ask the difference" after plotting is a story/fluency follow-up, not a build action; dropped here.
       low:  { tick: "1/2", values: 6 }
       mid:  { tick: "1/4", values: 8 }
-      high: { tick: "1/8", values: 10, ask_difference: true }
+      high: { tick: "1/8", values: 10 }
     hints:
       structure: Highlight the tick for the next value
       piece: Place one mark
@@ -308,7 +312,7 @@ recipes:
     generator:
       low:  { pairs: [[2, 4], [4, 8], [3, 6]] }
       mid:  { pairs: [[2, 4], [4, 8], [3, 6], [5, 10], [6, 12], [3, 12]] }
-      high: { pairs: [[8, 4], [12, 6], [3, 12], [4, 12], [5, 10]], reverse: true, non_unit_scaling: true }
+      high: { pairs: [[8, 4], [12, 6], [3, 12], [4, 12], [5, 10]], reverse: true }   # the pairs themselves carry the non-unit scalings
     hints:
       zoom: Show the finer cuts lightly on the second bar
       nudge: Re-cut the bar; leave the shaded edge to the player
@@ -323,7 +327,7 @@ recipes:
     representations: [visual, symbolic, physical]
     frame: Splitting a chocolate bar for a group
     generator:
-      low:  { denominators: [2, 3, 4], numerator_max: 4, parts: 2 }
+      low:  { denominators: [3, 4, 6], numerator_max: 4, parts: 2 }
       mid:  { denominators: [4, 6, 8], numerator_max: 7, parts: [2, 3] }
       high: { denominators: [8, 10, 12], mixed_numbers: true, parts: [2, 3] }
     hints:

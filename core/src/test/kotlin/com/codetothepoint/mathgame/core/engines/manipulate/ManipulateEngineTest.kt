@@ -113,7 +113,7 @@ class ManipulateEngineTest {
         assertTrue(ManipulateEngine.satisfied(bar, regrouped))
         assertEquals("regroup-whole", ManipulateEngine.detectStrategy(bar, regrouped, setOf("regroup-whole")))
         assertTrue(ManipulateEngine.satisfied(ManipulateTarget.GridValue(37), GridState(37)))
-        val chart = ManipulateTarget.ChartValue(3400)
+        val chart = ManipulateTarget.ChartValue(3400, 340)
         assertTrue(ManipulateEngine.satisfied(chart, PlaceChartState(3400, leverPulls = 1)))
         assertEquals("shift-digits", ManipulateEngine.detectStrategy(chart, PlaceChartState(3400, digitShifts = 3), setOf("shift-digits")))
         assertNull(ManipulateEngine.detectStrategy(chart, PlaceChartState(3400, digitShifts = 3, typed = true), setOf("shift-digits")))

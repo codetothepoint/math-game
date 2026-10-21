@@ -24,6 +24,7 @@ enum class Band(val key: String) {
  * so access is by typed getters that accept the shapes the recipe files use: a scalar or a list.
  */
 class Params(private val obj: JsonObject) {
+    fun keys(): Set<String> = obj.keySet().filter { !obj.get(it).isJsonNull }.toSet()
     fun has(key: String): Boolean = obj.has(key) && !obj.get(key).isJsonNull
     fun int(key: String): Int = required(key).asInt
     fun intOr(key: String, default: Int): Int = if (has(key)) int(key) else default

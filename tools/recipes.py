@@ -64,6 +64,38 @@ ENGINES = {
 }
 
 
+# Generator parameters each recipe may use. Mirrors Generators.KEYS in core. A key here with no reader in
+# core, or a key in a recipe that is not here, is a validation error (review finding #13).
+GENERATOR_KEYS = {
+    ("w04.oa.factors-multiples-primes", "build"): {"areas", "primes_per_level", "include_squares"},
+    ("w04.oa.patterns-and-rules", "build"): {"rules", "terms_shown", "max_gears", "hidden_terms"},
+    ("w04.nbt.place-value-ten-times", "build"): {"multiplier", "base_digits", "digit_moves"},
+    ("w04.nbt.multiply-multidigit", "build"): {"factors", "also"},
+    ("w04.nbt.divide-by-one-digit", "build"): {"dividend", "divisor", "remainder", "max_side"},
+    ("w04.nf.decompose-fractions", "build"): {"denominators", "numerator_max", "mixed_numbers"},
+    ("w04.nf.multiply-fraction-by-whole", "build"): {"denominators", "whole", "read_as_mixed"},
+    ("w04.nf.tenths-and-hundredths", "build"): {"tenths", "hundredths"},
+    ("w04.md.unit-conversion", "build"): {"systems", "rows", "skip_rows"},
+    ("w04.md.area-perimeter-formulas", "build"): {"constraints", "area", "perimeter", "unknown_side"},
+    ("w04.md.line-plots-fractions", "build"): {"tick", "values"},
+    ("w04.md.measure-angles", "build"): {"degrees", "range"},
+    ("w04.g.lines-and-angles", "build"): {"constraints"},
+    ("w04.g.classify-by-lines-angles", "build"): {"constraints"},
+    ("w04.g.line-symmetry", "build"): {"line", "half_given"},
+    ("w04.nbt.place-value-ten-times", "manipulate"): {"base_digits", "operation", "compare_digits"},
+    ("w04.nbt.round-multidigit", "manipulate"): {"digits", "place", "near_midpoint"},
+    ("w04.nf.fraction-equivalence", "manipulate"): {"pairs", "reverse"},
+    ("w04.nf.decompose-fractions", "manipulate"): {"denominators", "numerator_max", "mixed_numbers", "parts"},
+    ("w04.nf.add-sub-like-denominators", "manipulate"): {"denominators", "operations", "sum_max", "mixed_numbers"},
+    ("w04.nf.tenths-and-hundredths", "manipulate"): {"tenths", "hundredths", "express_as"},
+    ("w04.nf.decimal-notation", "manipulate"): {"granularity", "direction", "confusables"},
+    ("w04.md.angles-concept", "manipulate"): {"turns", "also_degrees", "fractions_of_turn", "ask_degrees"},
+    ("w04.md.measure-angles", "manipulate"): {"degrees", "range", "mode", "reflex"},
+    ("w04.md.additive-angles", "manipulate"): {"total", "known", "parts"},
+    ("w04.g.line-symmetry", "manipulate"): {"figures", "ask_all_lines"},
+}
+
+
 def main() -> int:
     schema = yaml.safe_load(SCHEMA.read_text())
     nodes = {n["id"]: n for n in cur.flatten(cur.load_worlds())}
@@ -130,6 +162,14 @@ def main() -> int:
             gen = r["generator"]
             if set(gen) & {"low", "mid", "high"} and set(gen) != {"low", "mid", "high"}:
                 problems.append(f"{tag}: generator bands must be all of low, mid, high")
+            allowed = GENERATOR_KEYS.get(key)
+            if allowed is None:
+                problems.append(f"{tag}: no generator key allow-list (add it to GENERATOR_KEYS)")
+            else:
+                bands = [gen[b] for b in ("low", "mid", "high")] if "low" in gen else [gen]
+                used = {k for b in bands for k in b}
+                if used - allowed:
+                    problems.append(f"{tag}: generator keys not read by any generator: {sorted(used - allowed)}")
 
     if problems:
         print("RECIPES INVALID", file=sys.stderr)
