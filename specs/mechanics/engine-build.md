@@ -150,14 +150,14 @@ The mechanic is identical across all four. Recipes list which they can serve.
 - **Strategy**: both cuts → `split-place-value` → node strategy `area-model`; one cut → `split-one-dimension` → `distributive`; no cut → `whole-array` (no strategy reported).
 - **Hints**: structure (the 20 | 3 and 10 | 4 lines appear), piece (the 20×10 region fills), readout (the full labeled model shows faintly).
 - **Secret goal** `four-partials`: all four partial products were built and labeled before lock-in. Observable: four regions present at lock-in on first try.
-- **Generator**: `low` 2-digit × 1-digit (12–49 × 2–5); `mid` 2-digit × 1-digit (11–99 × 2–9) and 3-digit × 1-digit; `high` 2-digit × 2-digit (11–99 × 11–29). Tile rectangles above 30 on a side render at half scale.
+- **Generator**: `low` 2-digit × 1-digit (12–49 × 2–5); `mid` 2-digit × 1-digit (11–99 × 2–9); `high` 2-digit × 2-digit (11–99 × 11–29). Tile rectangles above 30 on a side render at half scale; no side exceeds 99 (§13), so 3-digit × 1-digit products wait for a scaled kit.
 
 ### w04.oa.factors-multiples-primes — kit `tiles`, target `factor-pairs`
 - **Target**: "Find every rectangle with area 24." Readout lists dimensions found: `1 × 24 · 2 × 12 · 3 × 8 · 4 × 6`.
 - **Prime items**: "Find every rectangle with area 29." Only `1 × 29` exists; locking in with that alone is correct, and the readout names it: "29 is prime."
 - **Strategy**: `all-pairs-ascending` → node strategy `factor-pairs`; any complete set → `rectangle-arrays`.
 - **Secret goal** `prime-call`: declared a number prime (locked in with a single 1×n rectangle) on the first try, no hints.
-- **Generator**: `low` areas 6–30; `mid` 12–60 incl. two primes per level; `high` 24–100 incl. squares.
+- **Generator**: `low` areas 6–30; `mid` 12–60; `high` 24–100 incl. squares. Each item is prime with probability `primes_per_level / 8`, so a level has about that many primes (see §13).
 
 ### w04.g.classify-by-lines-angles — kit `strokes`, target `constraint`
 - **Target** (verbal): "Make a quadrilateral with exactly one pair of parallel sides." (visual: a faint example shape to beat; symbolic: the constraint list.)

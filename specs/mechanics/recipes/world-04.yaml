@@ -51,9 +51,10 @@ recipes:
     representations: [visual, symbolic, physical]
     frame: Stocking a warehouse ten times over
     generator:
+      # The blocks kit tops out at the 1000 piece (engine-build §3), so the base stays at three digits; the chart instrument covers four.
       low:  { multiplier: 10, base_digits: 2 }
       mid:  { multiplier: 10, base_digits: 3 }
-      high: { multiplier: 10, base_digits: [3, 4], digit_moves: true }
+      high: { multiplier: 10, base_digits: 3, digit_moves: true }
     hints:
       structure: Label the place-value columns
       piece: Bundle one group of ten for the player
@@ -68,8 +69,9 @@ recipes:
     representations: [visual, symbolic]
     frame: Laying tile in a garden bed
     generator:
+      # Sides are capped at 99 tiles (engine-build §13); 3-digit × 1-digit products (4.NBT.B.5) wait for a scaled kit, like 4-digit dividends.
       low:  { factors: [[12, 49], [2, 5]] }
-      mid:  { factors: [[11, 99], [2, 9]], also: [[101, 399], [2, 5]] }
+      mid:  { factors: [[11, 99], [2, 9]] }
       high: { factors: [[11, 99], [11, 29]] }
     strategies:
       area-model: split-place-value

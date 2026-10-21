@@ -127,10 +127,7 @@
     },
     "high": {
      "multiplier": 10,
-     "base_digits": [
-      3,
-      4
-     ],
+     "base_digits": 3,
      "digit_moves": true
     }
    },
@@ -180,16 +177,6 @@
       [
        2,
        9
-      ]
-     ],
-     "also": [
-      [
-       101,
-       399
-      ],
-      [
-       2,
-       5
       ]
      ]
     },

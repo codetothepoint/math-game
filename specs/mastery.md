@@ -173,6 +173,8 @@ When a parent sets `startingWorld = W`:
 - nodes with evidence are left alone.
 - moving the starting world later re-runs this rule; it never removes evidence.
 
+Evidence means `items > 0`. Reach credit on a node that has never been played (§6.2) is provisional, not evidence: raising the start above that node replaces it with the assumed score, and lowering it again returns the node to zero.
+
 An assumed node behaves as met for unlocking, so the starting world's entry nodes are available. The first real item on an assumed node clears `assumed`; its score continues from the provisional value. Assumed nodes are eligible for light interleaving (§7.5) so gaps surface during play rather than through a test.
 
 ## 7. Revisits
