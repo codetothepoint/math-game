@@ -13,6 +13,7 @@ Spec sources, in the order a session should read them: `constitution.md` → `ga
 - Tests mirror the specs: `core` tests reproduce `tools/test_mastery.py` scenario by scenario with the same numbers, and each engine spec's engine-logic cases by number.
 - Placeholder art until M5. Mechanics before skins; the engine fun check is run on grey boxes first.
 - One milestone per branch; the gate is what merges it.
+- **Review gate.** Before merge, the branch gets an adversarial review (`/review`, `.claude/agents/adversarial-reviewer.md`) and every finding is fixed with a test or declined with a spec citation, recorded in the PR. The gate is not passed while a finding is unresolved.
 
 ## M0 — Scaffold
 **Scope:** Gradle multi-module Android project per `platform/android/README.md`; the validators wired into the build.

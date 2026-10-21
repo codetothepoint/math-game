@@ -30,6 +30,7 @@ This repository is spec-driven. `specs/` is the source of truth; code implements
 
 ## Working agreements
 - One milestone per branch; the milestone's gate is the merge criterion.
+- **Every PR gets an adversarial review before merge.** Run `/review` (it spawns the `adversarial-reviewer` subagent in `.claude/agents/`). Every finding is resolved in the PR's `## Review` section: fixed in a named commit with a test, or declined with a spec citation. A PR with an unresolved finding does not merge. The reviewer reads the code cold; never brief it with your own conclusions.
 - Commit messages name the spec sections implemented (e.g. `core: mastery §5 stars, §7 revisits`).
 - Keep `specs/build-plan.md` checkboxes current in the same commit as the work.
 - Do not add time estimates, streaks, daily goals, or notifications to the player; the constitution and `specs/world-map.md` §8 forbid them.
