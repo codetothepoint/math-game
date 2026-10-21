@@ -204,4 +204,6 @@ Engine-logic test cases (to implement with the engine, platform-neutral):
 ## 13. Open questions
 - Should Adventure lock-in auto-trigger after a short settle when the construction is satisfied, to reduce taps for younger players in world 3?
 - Tile rectangles larger than ~40 on a side are cramped on a phone; the generator caps or the kit auto-scales. v1: auto-scale, cap at 99.
-- `two-ways` targets and the `grouped-copies` rule need a definition of "structurally different" that is not fooled by reordering identical pieces. v1: different multiset of piece sizes.
+- `two-ways` targets and the `grouped-copies` rule need a definition of "structurally different" that is not fooled by reordering identical pieces. v1: different multiset of piece sizes. A piece keeps its denomination: a two-eighths piece is not a quarter (core `Fraction(2, 8)` vs `Fraction.of(1, 4)`).
+- Line symmetry on `strokes` is a `constraint` target of the form *complete the figure across this line*: the given half must be present and every point and segment must reflect onto one in the construction (core `SymmetricCompletion`).
+- `place-value-ten-times` with `blocks` in `physical` representation is served by core as a plain `quantity` target; the UI decides how a 'ten times bigger' prompt reads.

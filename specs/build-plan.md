@@ -37,13 +37,13 @@ Spec sources, in the order a session should read them: `constitution.md` → `ga
 
 ## M2 — Core: levels and engine logic
 **Scope:** everything an engine needs that does not touch a screen.
-- [ ] Recipe model and loader; `tools/recipes.py` emits `specs/mechanics/recipes/generated/world-NN.json` (core reads JSON only, like the curriculum); validation mirroring `tools/recipes.py`
-- [ ] Difficulty bands (`mechanics/README.md`); level assembly: core items + revisit slots + one assumed-node item (`mastery.md` §7.2, §7.5)
-- [ ] Generators for all 26 world-4 recipes: each band's parameters produce solvable items within range; property tests per recipe (ranges, denominators, constraint satisfiability, prime counts)
-- [ ] `build` satisfaction for every target type in `engine-build.md` §4 and strategy detection for every rule in §7; the six engine-logic cases in §12
-- [ ] `manipulate` satisfaction and tolerance for `engine-manipulate.md` §4 and §6, strategy detection for §7; the six cases in §12
-- [ ] Secret-goal evaluation for the world-4 recipes' conditions, as pure predicates over an item or level record
-- [ ] Hint ladder state machine (three rungs, counts requests)
+- [x] Recipe model and loader; `tools/recipes.py` emits `specs/mechanics/recipes/generated/world-NN.json` (core reads JSON only, like the curriculum); validation mirroring `tools/recipes.py`
+- [x] Difficulty bands (`mechanics/README.md`); level assembly: core items + revisit slots + one assumed-node item (`mastery.md` §7.2, §7.5)
+- [x] Generators for all 26 world-4 recipes: each band's parameters produce solvable items within range; property tests per recipe (ranges, denominators, constraint satisfiability, prime counts)
+- [x] `build` satisfaction for every target type in `engine-build.md` §4 and strategy detection for every rule in §7; the six engine-logic cases in §12
+- [x] `manipulate` satisfaction and tolerance for `engine-manipulate.md` §4 and §6, strategy detection for §7; the six cases in §12
+- [x] Secret-goal evaluation for the world-4 recipes' conditions, as pure predicates over an item or level record
+- [x] Hint ladder state machine (three rungs, counts requests)
 
 **Gate:** every recipe generates 1,000 items per band without an invalid one; all engine-logic cases pass.
 

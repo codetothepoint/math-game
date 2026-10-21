@@ -1,0 +1,1379 @@
+{
+ "world": 4,
+ "recipes": [
+  {
+   "node": "w04.oa.factors-multiples-primes",
+   "engine": "build",
+   "kit": "tiles",
+   "target": "factor-pairs",
+   "representations": [
+    "visual",
+    "symbolic",
+    "physical"
+   ],
+   "frame": "Laying out every possible floor plan for a room of a given area",
+   "generator": {
+    "low": {
+     "areas": [
+      6,
+      30
+     ],
+     "primes_per_level": 1
+    },
+    "mid": {
+     "areas": [
+      12,
+      60
+     ],
+     "primes_per_level": 2
+    },
+    "high": {
+     "areas": [
+      24,
+      100
+     ],
+     "primes_per_level": 2,
+     "include_squares": true
+    }
+   },
+   "strategies": {
+    "factor-pairs": "all-pairs-ascending",
+    "rectangle-arrays": "whole-array"
+   },
+   "hints": {
+    "structure": "Show the readout slots for how many rectangles exist",
+    "piece": "Build one missing rectangle",
+    "readout": "Show all rectangles faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "prime-call",
+     "condition": "Locked in a single 1\u00d7n rectangle for a prime on the first try with no hints"
+    }
+   ],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.oa.patterns-and-rules",
+   "engine": "build",
+   "kit": "gears",
+   "target": "sequence",
+   "representations": [
+    "visual",
+    "symbolic",
+    "verbal"
+   ],
+   "frame": "Building a machine that stamps out the next number",
+   "generator": {
+    "low": {
+     "rules": [
+      "add"
+     ],
+     "terms_shown": 5,
+     "max_gears": 1
+    },
+    "mid": {
+     "rules": [
+      "add",
+      "multiply"
+     ],
+     "terms_shown": 5,
+     "max_gears": 2
+    },
+    "high": {
+     "rules": [
+      "add",
+      "subtract",
+      "multiply"
+     ],
+     "terms_shown": 6,
+     "max_gears": 2,
+     "hidden_terms": 1
+    }
+   },
+   "hints": {
+    "structure": "Show the gap between consecutive terms",
+    "piece": "Place the start value",
+    "readout": "Show the full gear chain faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "fewest-gears",
+     "condition": "Produced the sequence with the minimum number of gears for that rule"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nbt.place-value-ten-times",
+   "engine": "build",
+   "kit": "blocks",
+   "target": "quantity",
+   "representations": [
+    "visual",
+    "symbolic",
+    "physical"
+   ],
+   "frame": "Stocking a warehouse ten times over",
+   "generator": {
+    "low": {
+     "multiplier": 10,
+     "base_digits": 2
+    },
+    "mid": {
+     "multiplier": 10,
+     "base_digits": 3
+    },
+    "high": {
+     "multiplier": 10,
+     "base_digits": [
+      3,
+      4
+     ],
+     "digit_moves": true
+    }
+   },
+   "hints": {
+    "structure": "Label the place-value columns",
+    "piece": "Bundle one group of ten for the player",
+    "readout": "Show the target as blocks faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "bundle-up",
+     "condition": "Reached the target by bundling (rule `bundle`) rather than ten separate copies"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nbt.multiply-multidigit",
+   "engine": "build",
+   "kit": "tiles",
+   "target": "product",
+   "representations": [
+    "visual",
+    "symbolic"
+   ],
+   "frame": "Laying tile in a garden bed",
+   "generator": {
+    "low": {
+     "factors": [
+      [
+       12,
+       49
+      ],
+      [
+       2,
+       5
+      ]
+     ]
+    },
+    "mid": {
+     "factors": [
+      [
+       11,
+       99
+      ],
+      [
+       2,
+       9
+      ]
+     ],
+     "also": [
+      [
+       101,
+       399
+      ],
+      [
+       2,
+       5
+      ]
+     ]
+    },
+    "high": {
+     "factors": [
+      [
+       11,
+       99
+      ],
+      [
+       11,
+       29
+      ]
+     ]
+    }
+   },
+   "strategies": {
+    "area-model": "split-place-value",
+    "distributive": "split-one-dimension"
+   },
+   "hints": {
+    "structure": "Show the place-value cut lines on the rectangle",
+    "piece": "Fill the tens-by-tens region",
+    "readout": "Show the full labeled area model faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "four-partials",
+     "condition": "All four partial-product regions present and labeled at first lock-in"
+    }
+   ],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nbt.divide-by-one-digit",
+   "engine": "build",
+   "kit": "tiles",
+   "target": "quotient",
+   "representations": [
+    "visual",
+    "symbolic"
+   ],
+   "frame": "Packing crates into equal rows, leftovers in the tray",
+   "generator": {
+    "low": {
+     "dividend": [
+      12,
+      60
+     ],
+     "divisor": [
+      2,
+      5
+     ],
+     "remainder": false
+    },
+    "mid": {
+     "dividend": [
+      40,
+      200
+     ],
+     "divisor": [
+      2,
+      9
+     ],
+     "remainder": true
+    },
+    "high": {
+     "dividend": [
+      200,
+      2000
+     ],
+     "divisor": [
+      3,
+      9
+     ],
+     "remainder": true
+    }
+   },
+   "strategies": {
+    "partial-quotients": "chunked-quotient",
+    "area-model": "rows-of"
+   },
+   "hints": {
+    "structure": "Show the row outlines for the divisor",
+    "piece": "Lay a chunk of ten complete rows",
+    "readout": "Show the finished rows and tray faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "remainder-tray",
+     "condition": "Every item with a remainder locked in on the first try with the leftover tiles in the tray"
+    }
+   ],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nf.decompose-fractions",
+   "engine": "build",
+   "kit": "parts",
+   "target": "two-ways",
+   "representations": [
+    "visual",
+    "symbolic",
+    "physical"
+   ],
+   "frame": "Cutting a loaf two different ways for the same order",
+   "generator": {
+    "low": {
+     "denominators": [
+      2,
+      3,
+      4
+     ],
+     "numerator_max": 4
+    },
+    "mid": {
+     "denominators": [
+      4,
+      6,
+      8
+     ],
+     "numerator_max": 7
+    },
+    "high": {
+     "denominators": [
+      5,
+      8,
+      10,
+      12
+     ],
+     "mixed_numbers": true
+    }
+   },
+   "hints": {
+    "structure": "Show the unit-fraction cuts on the bar",
+    "piece": "Place the first piece of the second way",
+    "readout": "Show both ways faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "two-ways-unit",
+     "condition": "One of the two ways used only unit-fraction pieces (rule `unit-pieces`)"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nf.multiply-fraction-by-whole",
+   "engine": "build",
+   "kit": "parts",
+   "target": "quantity",
+   "representations": [
+    "visual",
+    "symbolic"
+   ],
+   "frame": "Four friends each take two thirds of a pizza",
+   "generator": {
+    "low": {
+     "denominators": [
+      2,
+      3,
+      4
+     ],
+     "whole": [
+      2,
+      3
+     ]
+    },
+    "mid": {
+     "denominators": [
+      3,
+      4,
+      5,
+      6
+     ],
+     "whole": [
+      2,
+      5
+     ]
+    },
+    "high": {
+     "denominators": [
+      6,
+      8,
+      10
+     ],
+     "whole": [
+      3,
+      8
+     ],
+     "read_as_mixed": true
+    }
+   },
+   "hints": {
+    "structure": "Show the whole-number of groups as outlines",
+    "piece": "Place one copy of the fraction group",
+    "readout": "Show the finished groups faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "copies",
+     "condition": "Built by duplicating the fraction group (rule `grouped-copies`)"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nf.tenths-and-hundredths",
+   "engine": "build",
+   "kit": "blocks",
+   "target": "quantity",
+   "representations": [
+    "visual",
+    "symbolic"
+   ],
+   "frame": "Filling a 10\u00d710 tray from strips and squares",
+   "generator": {
+    "low": {
+     "tenths": [
+      1,
+      9
+     ],
+     "hundredths": [
+      0,
+      0
+     ]
+    },
+    "mid": {
+     "tenths": [
+      1,
+      9
+     ],
+     "hundredths": [
+      1,
+      9
+     ]
+    },
+    "high": {
+     "tenths": [
+      1,
+      9
+     ],
+     "hundredths": [
+      1,
+      9
+     ],
+     "require_trade": true
+    }
+   },
+   "hints": {
+    "structure": "Label the strips as tenths and the squares as hundredths",
+    "piece": "Place the tenths strips",
+    "readout": "Show the filled tray faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "trade-strip",
+     "condition": "Unbundled a tenth strip into hundredths to finish (rule `unbundle`)"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.md.unit-conversion",
+   "engine": "build",
+   "kit": "units",
+   "target": "table",
+   "representations": [
+    "symbolic",
+    "visual"
+   ],
+   "frame": "Measuring rope, flour, and time for an expedition",
+   "generator": {
+    "low": {
+     "systems": [
+      "length-customary"
+     ],
+     "rows": 3
+    },
+    "mid": {
+     "systems": [
+      "length-customary",
+      "length-metric",
+      "time"
+     ],
+     "rows": 4
+    },
+    "high": {
+     "systems": [
+      "length-customary",
+      "length-metric",
+      "mass-metric",
+      "volume-metric",
+      "time"
+     ],
+     "rows": 5,
+     "skip_rows": true
+    }
+   },
+   "hints": {
+    "structure": "Show how many small units make one large unit",
+    "piece": "Fill the first row",
+    "readout": "Show the completed table faintly"
+   },
+   "strategies": {},
+   "secret_goals": [],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.md.area-perimeter-formulas",
+   "engine": "build",
+   "kit": "tiles",
+   "target": "constraint",
+   "representations": [
+    "symbolic",
+    "visual",
+    "verbal"
+   ],
+   "frame": "Fencing a pen with a fixed length of fence",
+   "generator": {
+    "low": {
+     "constraints": [
+      "area"
+     ],
+     "area": [
+      12,
+      40
+     ]
+    },
+    "mid": {
+     "constraints": [
+      "area",
+      "perimeter"
+     ],
+     "area": [
+      16,
+      60
+     ]
+    },
+    "high": {
+     "constraints": [
+      "perimeter",
+      "one_side"
+     ],
+     "perimeter": [
+      20,
+      60
+     ],
+     "unknown_side": true
+    }
+   },
+   "hints": {
+    "structure": "Show the readout for both area and perimeter",
+    "piece": "Set one side to a factor of the area",
+    "readout": "Show a satisfying rectangle faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "same-area-two-ways",
+     "condition": "Built two different rectangles with the target area in one item (two-ways)"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.md.line-plots-fractions",
+   "engine": "build",
+   "kit": "marks",
+   "target": "plot",
+   "representations": [
+    "visual",
+    "symbolic"
+   ],
+   "frame": "Logging the lengths of everything in the toolbox",
+   "generator": {
+    "low": {
+     "tick": "1/2",
+     "values": 6
+    },
+    "mid": {
+     "tick": "1/4",
+     "values": 8
+    },
+    "high": {
+     "tick": "1/8",
+     "values": 10,
+     "ask_difference": true
+    }
+   },
+   "hints": {
+    "structure": "Highlight the tick for the next value",
+    "piece": "Place one mark",
+    "readout": "Show the finished plot faintly"
+   },
+   "strategies": {},
+   "secret_goals": [],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.md.measure-angles",
+   "engine": "build",
+   "kit": "strokes",
+   "target": "angle",
+   "representations": [
+    "visual",
+    "symbolic",
+    "physical"
+   ],
+   "frame": "Setting the boom of a crane",
+   "generator": {
+    "low": {
+     "degrees": "multiples-of-10",
+     "range": [
+      20,
+      160
+     ]
+    },
+    "mid": {
+     "degrees": "multiples-of-5",
+     "range": [
+      10,
+      170
+     ]
+    },
+    "high": {
+     "degrees": "any",
+     "range": [
+      5,
+      175
+     ]
+    }
+   },
+   "tolerance": {
+    "degrees": 2
+   },
+   "hints": {
+    "structure": "Show the quarter-turn marks",
+    "piece": "Place the first ray along the baseline",
+    "readout": "Show the target angle faintly"
+   },
+   "strategies": {},
+   "secret_goals": []
+  },
+  {
+   "node": "w04.g.lines-and-angles",
+   "engine": "build",
+   "kit": "strokes",
+   "target": "constraint",
+   "representations": [
+    "visual",
+    "verbal",
+    "physical"
+   ],
+   "frame": "Drafting a blueprint on a dot grid",
+   "generator": {
+    "low": {
+     "constraints": [
+      "one-segment",
+      "one-ray",
+      "one-line",
+      "acute-angle",
+      "right-angle",
+      "obtuse-angle"
+     ]
+    },
+    "mid": {
+     "constraints": [
+      "parallel-pair",
+      "perpendicular-pair",
+      "two-rays-sharing-endpoint"
+     ]
+    },
+    "high": {
+     "constraints": [
+      "parallel-pair-with-transversal",
+      "perpendicular-through-point",
+      "obtuse-angle-between-parallels"
+     ]
+    }
+   },
+   "hints": {
+    "structure": "Show the direction of the required line",
+    "piece": "Place the first stroke",
+    "readout": "Show a satisfying figure faintly"
+   },
+   "strategies": {},
+   "secret_goals": [],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.g.classify-by-lines-angles",
+   "engine": "build",
+   "kit": "strokes",
+   "target": "constraint",
+   "representations": [
+    "visual",
+    "verbal"
+   ],
+   "frame": "Cutting shapes for a stained-glass window",
+   "generator": {
+    "low": {
+     "constraints": [
+      "right-triangle",
+      "acute-triangle",
+      "obtuse-triangle"
+     ]
+    },
+    "mid": {
+     "constraints": [
+      "parallelogram",
+      "rectangle-not-square",
+      "trapezoid-exactly-one-pair"
+     ]
+    },
+    "high": {
+     "constraints": [
+      "rhombus-not-square",
+      "quadrilateral-perpendicular-no-parallel",
+      "isosceles-right-triangle"
+     ]
+    }
+   },
+   "hints": {
+    "structure": "Name the property still missing",
+    "piece": "Place one side",
+    "readout": "Show a satisfying shape faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "different-each-time",
+     "condition": "Three consecutive items satisfied with no two constructions congruent"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.g.line-symmetry",
+   "engine": "build",
+   "kit": "strokes",
+   "target": "constraint",
+   "representations": [
+    "visual",
+    "physical"
+   ],
+   "frame": "Finishing the other half of a kite",
+   "generator": {
+    "low": {
+     "line": "vertical",
+     "half_given": true
+    },
+    "mid": {
+     "line": [
+      "vertical",
+      "horizontal"
+     ],
+     "half_given": true
+    },
+    "high": {
+     "line": "diagonal",
+     "half_given": true
+    }
+   },
+   "hints": {
+    "structure": "Show the mirror line's reflection of one point",
+    "piece": "Place one mirrored point",
+    "readout": "Show the completed figure faintly"
+   },
+   "strategies": {},
+   "secret_goals": [],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nbt.place-value-ten-times",
+   "engine": "manipulate",
+   "instrument": "place-chart",
+   "target": "value",
+   "representations": [
+    "visual",
+    "symbolic",
+    "physical"
+   ],
+   "frame": "Shifting a shipment one shelf up",
+   "generator": {
+    "low": {
+     "base_digits": 2,
+     "operation": "times-ten"
+    },
+    "mid": {
+     "base_digits": 3,
+     "operation": "times-ten"
+    },
+    "high": {
+     "base_digits": [
+      3,
+      4
+     ],
+     "operation": [
+      "times-ten",
+      "divide-by-ten"
+     ],
+     "compare_digits": true
+    }
+   },
+   "hints": {
+    "zoom": "Highlight the column each digit will land in",
+    "nudge": "Shift all but one digit",
+    "show": "Show the target number faintly in the chart"
+   },
+   "secret_goals": [
+    {
+     "id": "one-shift",
+     "condition": "Moved every digit one place with a single lever pull"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nbt.round-multidigit",
+   "engine": "manipulate",
+   "instrument": "number-line",
+   "target": "nearest",
+   "representations": [
+    "visual",
+    "symbolic",
+    "verbal"
+   ],
+   "frame": "Reading a trail distance off a zoomable map",
+   "generator": {
+    "low": {
+     "digits": 3,
+     "place": "tens"
+    },
+    "mid": {
+     "digits": 4,
+     "place": "hundreds"
+    },
+    "high": {
+     "digits": [
+      5,
+      6
+     ],
+     "place": "any",
+     "near_midpoint": true
+    }
+   },
+   "hints": {
+    "zoom": "Reveal the two candidate round values and the midpoint",
+    "nudge": "Move the marker to the number itself",
+    "show": "Show the rounded value faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "midpoint-call",
+     "condition": "Paused the marker at the midpoint before settling, on a high-band item"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nf.fraction-equivalence",
+   "engine": "manipulate",
+   "instrument": "fraction-bar",
+   "target": "equal",
+   "representations": [
+    "visual",
+    "symbolic",
+    "verbal"
+   ],
+   "frame": "Cutting a plank into more pieces without changing the painted part",
+   "generator": {
+    "low": {
+     "pairs": [
+      [
+       2,
+       4
+      ],
+      [
+       4,
+       8
+      ],
+      [
+       3,
+       6
+      ]
+     ]
+    },
+    "mid": {
+     "pairs": [
+      [
+       2,
+       4
+      ],
+      [
+       4,
+       8
+      ],
+      [
+       3,
+       6
+      ],
+      [
+       5,
+       10
+      ],
+      [
+       6,
+       12
+      ],
+      [
+       3,
+       12
+      ]
+     ]
+    },
+    "high": {
+     "pairs": [
+      [
+       8,
+       4
+      ],
+      [
+       12,
+       6
+      ],
+      [
+       3,
+       12
+      ],
+      [
+       4,
+       12
+      ],
+      [
+       5,
+       10
+      ]
+     ],
+     "reverse": true,
+     "non_unit_scaling": true
+    }
+   },
+   "hints": {
+    "zoom": "Show the finer cuts lightly on the second bar",
+    "nudge": "Re-cut the bar; leave the shaded edge to the player",
+    "show": "Show the matching shade faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "same-edge",
+     "condition": "Reached equivalence by re-cutting only (rule `recut-only`) three items in a row"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nf.decompose-fractions",
+   "engine": "manipulate",
+   "instrument": "fraction-bar",
+   "target": "partition",
+   "representations": [
+    "visual",
+    "symbolic",
+    "physical"
+   ],
+   "frame": "Splitting a chocolate bar for a group",
+   "generator": {
+    "low": {
+     "denominators": [
+      2,
+      3,
+      4
+     ],
+     "numerator_max": 4,
+     "parts": 2
+    },
+    "mid": {
+     "denominators": [
+      4,
+      6,
+      8
+     ],
+     "numerator_max": 7,
+     "parts": [
+      2,
+      3
+     ]
+    },
+    "high": {
+     "denominators": [
+      8,
+      10,
+      12
+     ],
+     "mixed_numbers": true,
+     "parts": [
+      2,
+      3
+     ]
+    }
+   },
+   "hints": {
+    "zoom": "Show the unit cuts",
+    "nudge": "Make the first cut",
+    "show": "Show one valid partition faintly"
+   },
+   "strategies": {},
+   "secret_goals": [],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nf.add-sub-like-denominators",
+   "engine": "manipulate",
+   "instrument": "fraction-bar",
+   "target": "value",
+   "representations": [
+    "visual",
+    "symbolic",
+    "physical"
+   ],
+   "frame": "Pouring two measures into one jug",
+   "generator": {
+    "low": {
+     "denominators": [
+      2,
+      4,
+      8
+     ],
+     "operations": [
+      "add"
+     ],
+     "sum_max": 1
+    },
+    "mid": {
+     "denominators": [
+      3,
+      6,
+      8,
+      10
+     ],
+     "operations": [
+      "add",
+      "subtract"
+     ],
+     "sum_max": 2
+    },
+    "high": {
+     "denominators": [
+      5,
+      8,
+      12
+     ],
+     "operations": [
+      "add",
+      "subtract"
+     ],
+     "mixed_numbers": true
+    }
+   },
+   "strategies": {
+    "regroup-a-whole": "regroup-whole"
+   },
+   "hints": {
+    "zoom": "Show the cuts on the result bar",
+    "nudge": "Slide the first addend onto the result bar",
+    "show": "Show the result shade faintly"
+   },
+   "secret_goals": [],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nf.tenths-and-hundredths",
+   "engine": "manipulate",
+   "instrument": "grid",
+   "target": "value",
+   "representations": [
+    "visual",
+    "symbolic"
+   ],
+   "frame": "Tiling a courtyard in strips and single stones",
+   "generator": {
+    "low": {
+     "tenths": [
+      1,
+      9
+     ],
+     "hundredths": 0
+    },
+    "mid": {
+     "tenths": [
+      1,
+      9
+     ],
+     "hundredths": [
+      1,
+      9
+     ]
+    },
+    "high": {
+     "tenths": [
+      1,
+      9
+     ],
+     "hundredths": [
+      1,
+      9
+     ],
+     "express_as": [
+      "fraction",
+      "decimal"
+     ]
+    }
+   },
+   "hints": {
+    "zoom": "Outline the tenths columns",
+    "nudge": "Shade the tenths",
+    "show": "Show the full shading faintly"
+   },
+   "strategies": {},
+   "secret_goals": [],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.nf.decimal-notation",
+   "engine": "manipulate",
+   "instrument": "number-line",
+   "instrument2": "grid",
+   "target": "match",
+   "representations": [
+    "visual",
+    "symbolic",
+    "verbal"
+   ],
+   "frame": "Finding a spot on a trail by its mile marker",
+   "generator": {
+    "low": {
+     "granularity": "tenths"
+    },
+    "mid": {
+     "granularity": "hundredths"
+    },
+    "high": {
+     "granularity": "hundredths",
+     "direction": [
+      "line-to-grid",
+      "grid-to-line"
+     ],
+     "confusables": true
+    }
+   },
+   "strategies": {},
+   "hints": {
+    "zoom": "Reveal the hundredths ticks",
+    "nudge": "Move the marker to the right tenth",
+    "show": "Show the target position faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "tenths-first",
+     "condition": "Placed the marker at the tenth before zooming, every item in the level"
+    }
+   ],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.md.angles-concept",
+   "engine": "manipulate",
+   "instrument": "angle",
+   "target": "value",
+   "representations": [
+    "visual",
+    "physical",
+    "symbolic"
+   ],
+   "frame": "Turning a ship's wheel by fractions of a turn",
+   "generator": {
+    "low": {
+     "turns": [
+      "1/4",
+      "1/2",
+      "3/4",
+      "1"
+     ]
+    },
+    "mid": {
+     "turns": [
+      "1/4",
+      "1/2",
+      "3/4",
+      "1"
+     ],
+     "also_degrees": [
+      90,
+      180,
+      270,
+      360
+     ]
+    },
+    "high": {
+     "fractions_of_turn": [
+      [
+       1,
+       12
+      ],
+      [
+       1,
+       8
+      ],
+      [
+       1,
+       6
+      ],
+      [
+       1,
+       3
+      ]
+     ],
+     "ask_degrees": true
+    }
+   },
+   "hints": {
+    "zoom": "Show the quarter-turn marks",
+    "nudge": "Rotate to the nearest quarter turn",
+    "show": "Show the target arm faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "full-circle",
+     "condition": "Rotated a full turn and read 360\u00b0 on a low-band item"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  },
+  {
+   "node": "w04.md.measure-angles",
+   "engine": "manipulate",
+   "instrument": "angle",
+   "target": "value",
+   "representations": [
+    "visual",
+    "symbolic",
+    "physical"
+   ],
+   "frame": "Checking the angle of a ramp with a protractor",
+   "generator": {
+    "low": {
+     "degrees": "multiples-of-10",
+     "range": [
+      20,
+      160
+     ],
+     "mode": "read"
+    },
+    "mid": {
+     "degrees": "multiples-of-5",
+     "range": [
+      10,
+      170
+     ],
+     "mode": [
+      "read",
+      "set"
+     ]
+    },
+    "high": {
+     "degrees": "any",
+     "range": [
+      5,
+      355
+     ],
+     "mode": [
+      "read",
+      "set"
+     ],
+     "reflex": true
+    }
+   },
+   "tolerance": {
+    "degrees": 2,
+    "high_band_degrees": 1
+   },
+   "hints": {
+    "zoom": "Show the 10\u00b0 marks on the protractor",
+    "nudge": "Align the protractor's zero to an arm",
+    "show": "Show the reading faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "zero-first",
+     "condition": "Aligned the protractor's zero line to an arm before reading, every item in the level"
+    }
+   ],
+   "strategies": {}
+  },
+  {
+   "node": "w04.md.additive-angles",
+   "engine": "manipulate",
+   "instrument": "angle",
+   "target": "unknown",
+   "representations": [
+    "visual",
+    "symbolic"
+   ],
+   "frame": "Setting the second hinge so the two add up",
+   "generator": {
+    "low": {
+     "total": [
+      90,
+      180
+     ],
+     "known": "multiples-of-10"
+    },
+    "mid": {
+     "total": [
+      90,
+      180,
+      360
+     ],
+     "known": "multiples-of-5"
+    },
+    "high": {
+     "total": "any",
+     "parts": 3,
+     "known": "any"
+    }
+   },
+   "hints": {
+    "zoom": "Show the total as an arc",
+    "nudge": "Set the known angle for the player",
+    "show": "Show the unknown arm faintly"
+   },
+   "strategies": {},
+   "secret_goals": [],
+   "tolerance": {}
+  },
+  {
+   "node": "w04.g.line-symmetry",
+   "engine": "manipulate",
+   "instrument": "grid",
+   "target": "symmetric",
+   "representations": [
+    "visual",
+    "physical"
+   ],
+   "frame": "Placing a mirror so the pattern matches itself",
+   "generator": {
+    "low": {
+     "figures": "one-vertical-line"
+    },
+    "mid": {
+     "figures": [
+      "diagonal-line",
+      "two-lines"
+     ]
+    },
+    "high": {
+     "figures": [
+      "regular-polygons",
+      "no-line"
+     ],
+     "ask_all_lines": true
+    }
+   },
+   "hints": {
+    "zoom": "Show the reflection of one vertex",
+    "nudge": "Rotate the mirror to the right orientation",
+    "show": "Show the mirror line faintly"
+   },
+   "secret_goals": [
+    {
+     "id": "all-the-lines",
+     "condition": "Locked in every distinct line of symmetry of a regular polygon in one item"
+    }
+   ],
+   "strategies": {},
+   "tolerance": {}
+  }
+ ]
+}

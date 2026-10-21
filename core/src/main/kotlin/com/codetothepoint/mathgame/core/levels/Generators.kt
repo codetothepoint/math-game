@@ -1,0 +1,317 @@
+package com.codetothepoint.mathgame.core.levels
+
+import com.codetothepoint.mathgame.core.curriculum.Engine
+import com.codetothepoint.mathgame.core.curriculum.Representation
+import com.codetothepoint.mathgame.core.engines.Fraction
+import com.codetothepoint.mathgame.core.engines.MirrorLine
+import com.codetothepoint.mathgame.core.engines.Pt
+import com.codetothepoint.mathgame.core.engines.build.BuildTarget
+import com.codetothepoint.mathgame.core.engines.isPrime
+import com.codetothepoint.mathgame.core.engines.manipulate.AngleState
+import com.codetothepoint.mathgame.core.engines.manipulate.FractionBarState
+import com.codetothepoint.mathgame.core.engines.manipulate.GridState
+import com.codetothepoint.mathgame.core.engines.manipulate.ManipulateTarget
+import com.codetothepoint.mathgame.core.engines.manipulate.MatchState
+import com.codetothepoint.mathgame.core.engines.manipulate.MirrorState
+import com.codetothepoint.mathgame.core.engines.manipulate.NumberLineState
+import com.codetothepoint.mathgame.core.engines.manipulate.PlaceChartState
+import com.codetothepoint.mathgame.core.recipes.Band
+import com.codetothepoint.mathgame.core.recipes.Params
+import com.codetothepoint.mathgame.core.recipes.Recipe
+import com.codetothepoint.mathgame.core.recipes.RecipeKey
+import kotlin.random.Random
+
+/** Makes one item for a recipe, band, and representation. */
+fun interface ItemGenerator {
+    fun generate(params: Params, band: Band, representation: Representation, rng: Random): GeneratedItem
+}
+
+/**
+ * Generators for every world-4 recipe (specs/mechanics/recipes/world-04.yaml), keyed by node and engine.
+ * The engine specs' worked examples (§10) say what each band should produce; the recipe's parameters
+ * say the ranges. Every generated item is solvable by construction; GeneratorPropertyTest checks it.
+ */
+object Generators {
+    fun forRecipe(recipe: Recipe): ItemGenerator = TABLE[recipe.key] ?: throw IllegalArgumentException("No generator for ${recipe.node}/${recipe.engine.key}")
+    fun has(recipe: Recipe): Boolean = recipe.key in TABLE
+
+    private fun build(node: String, gen: (Params, Band, Random) -> BuildTarget) =
+        RecipeKey(node, Engine.BUILD) to ItemGenerator { p, b, r, rng -> GeneratedItem.Build(b, r, gen(p, b, rng)) }
+
+    private fun manipulate(node: String, gen: (Params, Band, Random) -> Pair<ManipulateTarget, com.codetothepoint.mathgame.core.engines.manipulate.InstrumentState>) =
+        RecipeKey(node, Engine.MANIPULATE) to ItemGenerator { p, b, r, rng -> gen(p, b, rng).let { (t, s) -> GeneratedItem.Manipulate(b, r, t, s) } }
+
+    private fun Random.pick(range: IntRange): Int = range.first + nextInt(range.last - range.first + 1)
+    private fun <T> Random.pick(list: List<T>): T = list[nextInt(list.size)]
+
+    private val TABLE: Map<RecipeKey, ItemGenerator> = mapOf(
+        // ---------------------------------------------------------------- build
+        build("w04.oa.factors-multiples-primes") { p, _, rng ->
+            val areas = p.range("areas")
+            val wantPrime = rng.nextInt(8) < p.int("primes_per_level")   // about primes_per_level of eight items
+            val wantSquare = !wantPrime && p.bool("include_squares") && rng.nextInt(6) == 0
+            val candidates = areas.filter { n ->
+                when {
+                    wantPrime -> isPrime(n)
+                    wantSquare -> n > 1 && isSquare(n)
+                    else -> n > 1 && !isPrime(n)
+                }
+            }.ifEmpty { areas.filter { it > 1 } }
+            BuildTarget.FactorPairs(rng.pick(candidates))
+        },
+        build("w04.oa.patterns-and-rules") { p, _, rng ->
+            val ops = p.strings("rules")
+            val terms = p.int("terms_shown")
+            val gearCount = if (p.int("max_gears") >= 2 && rng.nextBoolean()) 2 else 1
+            val chosen = List(gearCount) { rng.pick(ops) }.toMutableList()
+            if (chosen.count { it == "multiply" } == 2) chosen[1] = "add"
+            val hasMultiply = "multiply" in chosen
+            if (hasMultiply) chosen.replaceAll { if (it == "subtract") "add" else it }   // keeps the sequence increasing
+            var steps: List<Step>
+            do {
+                steps = chosen.map { op ->
+                    when (op) {
+                        "add" -> Step.Add(rng.pick(2..9))
+                        "subtract" -> Step.Subtract(rng.pick(1..5))
+                        else -> Step.Multiply(if (terms >= 6) 2 else rng.pick(2..3))
+                    }
+                }
+            } while (steps.fold(0) { v, s -> s.apply(v) } == 0 && steps.none { it is Step.Multiply })   // add 3 then subtract 3 is no rule at all
+            val start = if (hasMultiply) rng.pick(1..4) else if (steps.any { it is Step.Subtract }) rng.pick(60..90) else rng.pick(1..12)
+            val seq = mutableListOf(start)
+            while (seq.size < terms) seq += steps.fold(seq.last()) { v, s -> s.apply(v) }
+            BuildTarget.Sequence(seq, minimalGears = minimalGears(steps))
+        },
+        build("w04.nbt.place-value-ten-times") { p, _, rng ->
+            val digits = rng.pick(p.ints("base_digits"))
+            BuildTarget.Quantity(rng.pick(pow10(digits - 1)..(pow10(digits) - 1)) * p.int("multiplier"))
+        },
+        build("w04.nbt.multiply-multidigit") { p, _, rng ->
+            val ranges = if (p.has("also") && rng.nextInt(3) == 0) p.ranges("also") else p.ranges("factors")
+            BuildTarget.Product(rng.pick(ranges[0]), rng.pick(ranges[1]))
+        },
+        build("w04.nbt.divide-by-one-digit") { p, _, rng ->
+            val divisor = rng.pick(p.range("divisor"))
+            val range = p.range("dividend")
+            var dividend = rng.pick(range)
+            if (!p.bool("remainder")) dividend -= dividend % divisor
+            if (dividend < maxOf(range.first, divisor)) dividend += divisor
+            BuildTarget.Quotient(dividend, divisor)
+        },
+        build("w04.nf.decompose-fractions") { p, _, rng ->
+            val den = rng.pick(p.ints("denominators"))
+            val maxNum = if (p.bool("mixed_numbers")) den + den / 2 else minOf(p.intOr("numerator_max", den - 1), den - 1)
+            BuildTarget.TwoWays(Fraction.of(rng.pick(2..maxOf(2, maxNum)), den), listOf(den))
+        },
+        build("w04.nf.multiply-fraction-by-whole") { p, _, rng ->
+            val den = rng.pick(p.ints("denominators"))
+            BuildTarget.FractionQuantity(Fraction.of(rng.pick(1 until den) * rng.pick(p.range("whole")), den), listOf(den))
+        },
+        build("w04.nf.tenths-and-hundredths") { p, _, rng ->
+            BuildTarget.Quantity(rng.pick(p.range("tenths")) * 10 + rng.pick(p.range("hundredths")), scale = 100)
+        },
+        build("w04.md.unit-conversion") { p, _, rng ->
+            val (big, small, factor) = rng.pick(CONVERSIONS.getValue(rng.pick(p.strings("systems"))))
+            val rows = p.int("rows")
+            val chosen = if (p.bool("skip_rows")) (1..rows + 2).shuffled(rng).take(rows).sorted() else (1..rows).toList()
+            BuildTarget.Table(big, small, factor, chosen)
+        },
+        build("w04.md.area-perimeter-formulas") { p, _, rng ->
+            val constraints = p.strings("constraints")
+            if ("area" in constraints) {
+                val area = rng.pick(composites(p.range("area")))
+                if ("perimeter" in constraints) {
+                    val w = rng.pick((1..area).filter { it * it <= area && area % it == 0 })
+                    BuildTarget.RectConstraint(area = area, perimeter = 2 * (w + area / w))
+                } else BuildTarget.RectConstraint(area = area)
+            } else {
+                val perimeter = rng.pick(p.range("perimeter").filter { it % 2 == 0 && it >= 8 })
+                val side = rng.pick(1 until perimeter / 2)
+                BuildTarget.RectConstraint(perimeter = perimeter, givenSide = if (p.bool("unknown_side")) side else null)
+            }
+        },
+        build("w04.md.line-plots-fractions") { p, _, rng ->
+            val tick = Fraction.parse(p.string("tick"))
+            val maxTicks = 4 * tick.den   // values up to 4 units
+            BuildTarget.Plot(List(p.int("values")) { Fraction.of(rng.pick(1..maxTicks) * tick.num, tick.den) }, tick)
+        },
+        build("w04.md.measure-angles") { p, _, rng -> BuildTarget.Angle(pickDegrees(p, rng), toleranceDegrees = 2) },
+        build("w04.g.lines-and-angles") { p, _, rng -> BuildTarget.ShapeConstraint(rng.pick(p.strings("constraints"))) },
+        build("w04.g.classify-by-lines-angles") { p, _, rng -> BuildTarget.ShapeConstraint(rng.pick(p.strings("constraints"))) },
+        build("w04.g.line-symmetry") { p, _, rng ->
+            val line = when (rng.pick(p.strings("line"))) {
+                "vertical" -> MirrorLine.vertical(rng.pick(4..8))
+                "horizontal" -> MirrorLine.horizontal(rng.pick(4..8))
+                else -> if (rng.nextBoolean()) MirrorLine.diagonalUp(rng.pick(-1..1)) else MirrorLine.diagonalDown(rng.pick(4..7))
+            }
+            BuildTarget.SymmetricCompletion(line, halfFigure(line, rng))
+        },
+        // ---------------------------------------------------------------- manipulate
+        manipulate("w04.nbt.place-value-ten-times") { p, _, rng ->
+            val digits = rng.pick(p.ints("base_digits"))
+            val base = rng.pick(pow10(digits - 1)..(pow10(digits) - 1)).toLong()
+            val (start, target) = if (rng.pick(p.strings("operation")) == "divide-by-ten") base * 10 to base else base to base * 10
+            ManipulateTarget.ChartValue(target) to PlaceChartState(start)
+        },
+        manipulate("w04.nbt.round-multidigit") { p, _, rng ->
+            val digits = rng.pick(p.ints("digits"))
+            val place = when (val pl = p.string("place")) {
+                "tens" -> 10L; "hundreds" -> 100L; "thousands" -> 1000L
+                "any" -> rng.pick(listOf(10L, 100L, 1000L, 10_000L)).coerceAtMost(pow10(digits - 1).toLong())
+                else -> throw IllegalArgumentException("place $pl")
+            }
+            var number = rng.pick(pow10(digits - 1)..(pow10(digits) - 1)).toLong()
+            if (p.bool("near_midpoint")) {
+                val lower = number / place * place
+                number = lower + place / 2 + rng.pick(-5..5).toLong().coerceIn(-(place / 2 - 1), place / 2 - 1)
+            }
+            ManipulateTarget.Nearest(number, place) to NumberLineState(null, Fraction.whole(place.toInt()))
+        },
+        manipulate("w04.nf.fraction-equivalence") { p, _, rng ->
+            var (from, to) = rng.pick(p.pairs("pairs"))
+            if (p.bool("reverse") && from < to && rng.nextBoolean()) { val t = from; from = to; to = t }
+            val numerators = (1 until from).filter { Fraction.of(it, from).withDenominator(to) != null }
+            val num = rng.pick(numerators)
+            ManipulateTarget.Equal(Fraction.of(num, from), to) to FractionBarState(from, listOf(num), initialDen = from)
+        },
+        manipulate("w04.nf.decompose-fractions") { p, _, rng ->
+            val den = rng.pick(p.ints("denominators"))
+            val parts = rng.pick(p.ints("parts"))
+            val maxNum = if (p.bool("mixed_numbers")) den + den / 2 else minOf(p.intOr("numerator_max", den - 1), den - 1)
+            val num = rng.pick(maxOf(parts, 2)..maxOf(parts, maxNum))
+            ManipulateTarget.Partition(Fraction.of(num, den), den, parts) to FractionBarState(den, listOf(num), initialDen = den)
+        },
+        manipulate("w04.nf.add-sub-like-denominators") { p, _, rng ->
+            val den = rng.pick(p.ints("denominators"))
+            val maxTotal = if (p.bool("mixed_numbers")) 2 * den else p.int("sum_max") * den
+            val value = if (rng.pick(p.strings("operations")) == "add") {
+                val a = rng.pick(1..maxTotal - 1)
+                Fraction.of(a + rng.pick(1..maxTotal - a), den)
+            } else {
+                val a = rng.pick(2..maxTotal)
+                Fraction.of(a - rng.pick(1 until a), den)
+            }
+            ManipulateTarget.BarValue(value, den) to FractionBarState(den, emptyList(), initialDen = den)
+        },
+        manipulate("w04.nf.tenths-and-hundredths") { p, _, rng ->
+            ManipulateTarget.GridValue(rng.pick(p.range("tenths")) * 10 + rng.pick(p.range("hundredths"))) to GridState(0)
+        },
+        manipulate("w04.nf.decimal-notation") { p, _, rng ->
+            val value = if (p.string("granularity") == "tenths") rng.pick(1..9) * 10 else rng.pick(1..99)
+            val givenOnGrid = !p.has("direction") || rng.pick(p.strings("direction")) == "grid-to-line"
+            val tenths = Fraction.of(1, 10)   // the line always opens at tenths; the player zooms
+            val initial = MatchState(NumberLineState(if (givenOnGrid) null else Fraction.of(value, 100), tenths), GridState(if (givenOnGrid) value else 0))
+            ManipulateTarget.Match(value, givenOnGrid) to initial
+        },
+        manipulate("w04.md.angles-concept") { p, _, rng ->
+            val degrees = if (p.has("fractions_of_turn")) {
+                val (n, d) = rng.pick(p.pairs("fractions_of_turn"))
+                360 * n / d
+            } else {
+                val turn = Fraction.parse(rng.pick(p.strings("turns")))
+                360 * turn.num / turn.den
+            }
+            ManipulateTarget.AngleValue(degrees, 2) to AngleState(0.0)
+        },
+        manipulate("w04.md.measure-angles") { p, b, rng ->
+            val degrees = pickDegrees(p, rng)
+            val initial = if (rng.pick(p.strings("mode")) == "read") AngleState(degrees.toDouble(), reading = 0.0) else AngleState(0.0)
+            ManipulateTarget.AngleValue(degrees, if (b == Band.HIGH) 1 else 2) to initial
+        },
+        manipulate("w04.md.additive-angles") { p, _, rng ->
+            val total = rng.pick(p.strings("total")).let { if (it == "any") rng.pick(60..180) else it.toInt() }
+            val parts = p.intOr("parts", 2)
+            val step = when (p.string("known")) { "multiples-of-10" -> 10; "multiples-of-5" -> 5; else -> 1 }
+            val units = total / step
+            val minUnits = (5 + step - 1) / step   // every angle at least 5°, clear of the tolerance
+            val unknownUnits = rng.pick(minUnits..units - (parts - 1) * minUnits)
+            var remaining = units - unknownUnits
+            val known = mutableListOf<Int>()
+            repeat(parts - 1) { i ->
+                val left = parts - 1 - i
+                val k = if (left == 1) remaining else rng.pick(minUnits..remaining - (left - 1) * minUnits)
+                known += k * step
+                remaining -= k
+            }
+            ManipulateTarget.AngleUnknown(total, known, 2) to AngleState(0.0)
+        },
+        manipulate("w04.g.line-symmetry") { p, _, rng ->
+            val figure = rng.pick(FIGURES.getValue(rng.pick(p.strings("figures"))))
+            ManipulateTarget.Symmetric(figure, askAll = p.bool("ask_all_lines")) to MirrorState(null)
+        },
+    )
+
+    private sealed interface Step {
+        fun apply(v: Int): Int
+        data class Add(val n: Int) : Step { override fun apply(v: Int) = v + n }
+        data class Subtract(val n: Int) : Step { override fun apply(v: Int) = v - n }
+        data class Multiply(val n: Int) : Step { override fun apply(v: Int) = v * n }
+    }
+
+    /** The composed step is affine, v → a·v + b; one gear suffices when a = 1 or b = 0. */
+    private fun minimalGears(steps: List<Step>): Int {
+        var a = 1; var b = 0
+        for (s in steps) when (s) {
+            is Step.Add -> b += s.n
+            is Step.Subtract -> b -= s.n
+            is Step.Multiply -> { a *= s.n; b *= s.n }
+        }
+        return if (a == 1 || b == 0) 1 else 2
+    }
+
+    private fun pow10(n: Int): Int = (1..n).fold(1) { acc, _ -> acc * 10 }
+    private fun isSquare(n: Int): Boolean = kotlin.math.sqrt(n.toDouble()).toInt().let { it * it == n }
+    private fun composites(range: IntRange): List<Int> = range.filter { it > 1 && !isPrime(it) }.ifEmpty { range.toList() }
+
+    private fun pickDegrees(p: Params, rng: Random): Int {
+        val range = p.range("range")
+        return when (p.string("degrees")) {
+            "multiples-of-10" -> rng.pick(range.filter { it % 10 == 0 })
+            "multiples-of-5" -> rng.pick(range.filter { it % 5 == 0 })
+            else -> rng.pick(range)
+        }
+    }
+
+    private val CONVERSIONS: Map<String, List<Triple<String, String, Int>>> = mapOf(
+        "length-customary" to listOf(Triple("foot", "inch", 12), Triple("yard", "foot", 3)),
+        "length-metric" to listOf(Triple("meter", "centimeter", 100), Triple("kilometer", "meter", 1000)),
+        "mass-metric" to listOf(Triple("kilogram", "gram", 1000)),
+        "volume-metric" to listOf(Triple("liter", "milliliter", 1000)),
+        "time" to listOf(Triple("hour", "minute", 60), Triple("minute", "second", 60), Triple("day", "hour", 24)),
+    )
+
+    /** Figures on the dot grid by family, for the symmetry instrument. */
+    private val FIGURES: Map<String, List<Set<Pt>>> = mapOf(
+        "one-vertical-line" to listOf(
+            setOf(Pt(1, 0), Pt(3, 0), Pt(2, 3)),                       // isosceles triangle
+            setOf(Pt(0, 0), Pt(4, 0), Pt(3, 2), Pt(1, 2)),             // isosceles trapezoid
+            setOf(Pt(2, 0), Pt(4, 2), Pt(2, 5), Pt(0, 2)),             // kite
+        ),
+        "diagonal-line" to listOf(
+            setOf(Pt(0, 0), Pt(3, 0), Pt(0, 3)),                       // right isosceles: y = -x + 3
+            setOf(Pt(0, 0), Pt(2, 1), Pt(1, 2)),                       // kite on y = x
+        ),
+        "two-lines" to listOf(
+            setOf(Pt(0, 0), Pt(4, 0), Pt(4, 2), Pt(0, 2)),             // rectangle
+            setOf(Pt(2, 0), Pt(4, 2), Pt(2, 4), Pt(0, 2)),             // rhombus
+        ),
+        "regular-polygons" to listOf(
+            setOf(Pt(0, 0), Pt(2, 0), Pt(2, 2), Pt(0, 2)),             // square: four lines
+        ),
+        "no-line" to listOf(
+            setOf(Pt(0, 0), Pt(4, 0), Pt(1, 3)),                       // scalene
+            setOf(Pt(0, 0), Pt(4, 0), Pt(5, 2), Pt(1, 2)),             // parallelogram
+        ),
+    )
+
+    /** Two or three points strictly on one side of [line]; the player draws their mirror images. */
+    private fun halfFigure(line: MirrorLine, rng: Random): List<Pt> {
+        val base = when (line.kind) {
+            MirrorLine.Kind.VERTICAL -> listOf(Pt(line.c2 / 2 - 2, 0), Pt(line.c2 / 2 - 1, 2), Pt(line.c2 / 2 - 2, 4))
+            MirrorLine.Kind.HORIZONTAL -> listOf(Pt(0, line.c2 / 2 - 2), Pt(2, line.c2 / 2 - 1), Pt(4, line.c2 / 2 - 2))
+            MirrorLine.Kind.DIAGONAL_UP -> listOf(Pt(3, line.c2), Pt(5, 2 + line.c2), Pt(6, 1 + line.c2))     // below y = x + c
+            MirrorLine.Kind.DIAGONAL_DOWN -> listOf(Pt(0, 0), Pt(1, 2), Pt(2, 1))                               // below y = -x + c, c ≥ 4
+        }
+        return base.take(rng.pick(2..3))
+    }
+}

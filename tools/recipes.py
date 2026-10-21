@@ -19,6 +19,7 @@ Then prints coverage: which (node, engine) pairs in the world still lack a recip
 """
 from __future__ import annotations
 
+import json
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -35,6 +36,7 @@ except ImportError:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parents[1]
 RECIPES = ROOT / "specs" / "mechanics" / "recipes"
+GENERATED = RECIPES / "generated"
 SCHEMA = RECIPES / "recipe.schema.yaml"
 
 # What each engine spec defines. Keep in step with engine-*.md.
@@ -133,6 +135,19 @@ def main() -> int:
         print("RECIPES INVALID", file=sys.stderr)
         print("\n".join(problems), file=sys.stderr)
         return 1
+
+    # Emit JSON for the game: core reads JSON only (specs/build-plan.md M2).
+    GENERATED.mkdir(parents=True, exist_ok=True)
+    for path in files:
+        data = yaml.safe_load(path.read_text())
+        for r in data["recipes"]:
+            r.setdefault("strategies", {})
+            r.setdefault("secret_goals", [])
+            r.setdefault("tolerance", {})
+            r.setdefault("frame", "")
+        out = GENERATED / (path.stem + ".json")
+        out.write_text(json.dumps(data, indent=1) + "\n")
+    print(f"wrote {GENERATED.relative_to(ROOT)}/world-NN.json")
 
     # Coverage per world present in the recipe files.
     worlds = sorted({int(p.stem.split("-")[1]) for p in files})
