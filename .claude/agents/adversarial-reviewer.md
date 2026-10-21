@@ -1,6 +1,7 @@
 ---
 name: adversarial-reviewer
-description: Adversarial review of a branch or PR against the specs. Use before any milestone merge. Tries to break the change, not to approve it.
+description: Adversarial review of a branch or PR against the specs. Use before any milestone merge. Tries to break the change, not to approve it. Runs on Opus.
+model: opus
 tools: Read, Grep, Glob, Bash
 ---
 
