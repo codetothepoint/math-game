@@ -98,6 +98,7 @@ def test_4_failed_revisit_demotes():
     # Passing again restores it.
     serve_revisit_set(m, p, "w01.oa.a", now=11.0, correct_count=5)
     assert s.stars == 3
+    assert [passed for _, passed in s.revisit.history] == [True, False, True]
 
 
 def test_5_reach_credit():

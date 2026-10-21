@@ -16,28 +16,28 @@ Spec sources, in the order a session should read them: `constitution.md` → `ga
 
 ## M0 — Scaffold
 **Scope:** Gradle multi-module Android project per `platform/android/README.md`; the validators wired into the build.
-- [ ] Modules `app`, `core` (Kotlin JVM, no Android), `engines`, `identity`, `ui`; version catalog; Compose BOM; minSdk 26
-- [ ] `core` depends on nothing Android; a test proves it (`core` compiles with the Kotlin JVM plugin only)
-- [ ] Bundle `specs/curriculum/generated/curriculum.json` and `specs/mechanics/recipes/*.yaml` as `core` test resources and `app` assets; a Gradle task copies them from `specs/` so there is one source
-- [ ] CI: `python3 tools/curriculum.py --check`, `python3 tools/recipes.py`, `python3 tools/test_mastery.py`, then `./gradlew :core:test`
-- [ ] A dev launcher activity in `app` that lists screens for M3/M4 (no map yet)
+- [x] Modules `app`, `core` (Kotlin JVM, no Android), `engines`, `identity`, `ui`; version catalog; Compose BOM; minSdk 26
+- [x] `core` depends on nothing Android; a test proves it (`core` compiles with the Kotlin JVM plugin only)
+- [x] Bundle `specs/curriculum/generated/curriculum.json` and `specs/mechanics/recipes/*.yaml` as `core` test resources and `app` assets; a Gradle task copies them from `specs/` so there is one source
+- [x] CI: `python3 tools/curriculum.py --check`, `python3 tools/recipes.py`, `python3 tools/test_mastery.py`, then `./gradlew :core:test`
+- [x] A dev launcher activity in `app` that lists screens for M3/M4 (no map yet)
 
 **Gate:** `./gradlew :core:test` runs (zero tests) and CI passes.
-**Note:** `core` builds and tests without an Android SDK; the rest needs Android Studio on a workstation.
+**Note:** `core` builds and tests without an Android SDK; the rest needs Android Studio on a workstation. Where Maven Central is unreachable, `tools/core-check.sh` compiles and tests `core` with a kotlinc distribution and the jars Gradle bundles.
 
 ## M1 — Core: curriculum and mastery
 **Scope:** `mastery.md` in Kotlin, byte-for-byte on the numbers.
-- [ ] Curriculum model and loader from `curriculum.json`; validation (ids, prerequisites, acyclic) as a unit test over the bundled file
-- [ ] `NodeState`, `Profile`, `ItemResult`, `LevelResult`, `RevisitState` (`mastery.md` §2–3)
-- [ ] Evidence and score update (§4); stars (§5); availability, reach credit, starting world and assumed nodes (§6); revisits, transfer representation, sets (§7); representation rotation helper (§8); milestones (§10); map state (§11)
-- [ ] Session log (`parent-portal.md` §9) and the stats computations (`parent-portal.md` §6) as pure functions
-- [ ] Tests: the 12 scenarios from `mastery.md` §12 with identical expected values; a property test that availability is monotonic; a test that the world-4 frontier on day one matches scenario 6
+- [x] Curriculum model and loader from `curriculum.json`; validation (ids, prerequisites, acyclic) as a unit test over the bundled file
+- [x] `NodeState`, `Profile`, `ItemResult`, `LevelResult`, `RevisitState` (`mastery.md` §2–3)
+- [x] Evidence and score update (§4); stars (§5); availability, reach credit, starting world and assumed nodes (§6); revisits, transfer representation, sets (§7); representation rotation helper (§8); milestones (§10); map state (§11)
+- [x] Session log (`parent-portal.md` §9) and the stats computations (`parent-portal.md` §6) as pure functions
+- [x] Tests: the 12 scenarios from `mastery.md` §12 with identical expected values; a property test that availability is monotonic; a test that the world-4 frontier on day one matches scenario 6
 
 **Gate:** all tests green; numbers equal to `tools/test_mastery.py` to three decimals.
 
 ## M2 — Core: levels and engine logic
 **Scope:** everything an engine needs that does not touch a screen.
-- [ ] Recipe model and loader for `world-04.yaml`; validation mirroring `tools/recipes.py`
+- [ ] Recipe model and loader; `tools/recipes.py` emits `specs/mechanics/recipes/generated/world-NN.json` (core reads JSON only, like the curriculum); validation mirroring `tools/recipes.py`
 - [ ] Difficulty bands (`mechanics/README.md`); level assembly: core items + revisit slots + one assumed-node item (`mastery.md` §7.2, §7.5)
 - [ ] Generators for all 26 world-4 recipes: each band's parameters produce solvable items within range; property tests per recipe (ranges, denominators, constraint satisfiability, prime counts)
 - [ ] `build` satisfaction for every target type in `engine-build.md` §4 and strategy detection for every rule in §7; the six engine-logic cases in §12

@@ -56,6 +56,8 @@ What this model has to deliver (from the constitution and GDD):
 | `representation` | Representation chosen for the current set (§7.3). |
 | `served`, `correct`, `hints` | Progress of the current set. |
 | `passed` | Count of sets passed since `twoStarAt`. |
+| `lastSetPassed` | Outcome of the most recent completed set; null before the first. |
+| `history` | List of (at, passed) for every completed set, so the portal can count recent passes. |
 
 ## 3. Signals from engines
 
