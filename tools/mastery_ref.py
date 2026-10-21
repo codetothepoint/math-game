@@ -291,7 +291,8 @@ class Mastery:
             if rep is None or rep not in nd.representations:
                 continue
             if can_host is not None and not can_host(nid, engine, rep):
-                rv.representation = None  # a representation no recipe serves is never kept (§7.3): a later call re-chooses
+                if rv.served == 0:  # never kept if unservable (§7.3); a set under way keeps its representation (§7.4)
+                    rv.representation = None
                 continue
             out.append((rv.due_at, nid, rep))
         out.sort()

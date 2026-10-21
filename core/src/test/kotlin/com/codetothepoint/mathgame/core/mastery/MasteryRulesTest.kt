@@ -409,4 +409,31 @@ class MasteryRulesTest {
         model.applyItem(p, ItemResult("w01.oa.a", SYMBOLIC, Engine.BUILD, true, responseMs = 1000, strategy = ""))
         assertTrue(p.nodes.getValue("w01.oa.a").strategies.isEmpty())
     }
+
+    @Test
+    fun aSetUnderWayKeepsItsRepresentationWhenAnotherEngineCannotHostIt() {
+        val model = MasteryModel(tiny()); val p = model.newProfile(1)
+        twoStars(model, p, "w01.oa.a", at = day(0.0))
+        val rv = assertNotNull(p.nodes.getValue("w01.oa.a").revisit)
+        // Start the set in VISUAL on the build engine and serve one item of it.
+        val visualOnly = object : RevisitHosting {
+            override fun servable(nodeId: String): Set<Representation>? = null
+            override fun canHost(nodeId: String, engine: Engine, rep: Representation) = rep == VISUAL
+        }
+        val first = model.dueRevisits(p, day(3.0), Engine.BUILD, hosting = visualOnly).single()
+        assertEquals(VISUAL, first.second)
+        model.applyItem(p, ItemResult("w01.oa.a", VISUAL, Engine.BUILD, true, responseMs = 1000, kind = ItemKind.REVISIT, at = day(3.0)))
+        assertEquals(1, rv.served)
+        // Another engine that cannot host VISUAL must not throw the set's representation away.
+        val symbolicOnly = object : RevisitHosting {
+            override fun servable(nodeId: String): Set<Representation>? = null
+            override fun canHost(nodeId: String, engine: Engine, rep: Representation) = rep == SYMBOLIC
+        }
+        assertEquals(emptyList(), model.dueRevisits(p, day(3.0), Engine.MANIPULATE, hosting = symbolicOnly))
+        assertEquals(VISUAL, rv.representation)
+        // An unstarted set is re-chosen as before.
+        rv.served = 0
+        assertEquals(emptyList(), model.dueRevisits(p, day(3.0), Engine.MANIPULATE, hosting = symbolicOnly))
+        assertNull(rv.representation)
+    }
 }

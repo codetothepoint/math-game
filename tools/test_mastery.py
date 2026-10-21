@@ -421,6 +421,21 @@ def test_rule_a_representation_no_recipe_hosts_is_dropped_so_a_later_call_re_cho
     assert len(again) == 1 and again[0][0] == nid and again[0][1] in {"symbolic", "visual"}, again
 
 
+
+def test_rule_set_under_way_keeps_its_representation():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    _two_stars(m, p, "w01.oa.a", at=0.0)
+    rv = p.nodes["w01.oa.a"].revisit
+    first = m.due_revisits(p, 3.0, "build", can_host=lambda n, e, r: r == "visual")
+    assert first == [("w01.oa.a", "visual")], first
+    m.apply_item(p, ItemResult("w01.oa.a", "visual", "build", True, response_ms=1000, kind="revisit", at=3.0))
+    assert rv.served == 1
+    assert m.due_revisits(p, 3.0, "manipulate", can_host=lambda n, e, r: r == "symbolic") == []
+    assert rv.representation == "visual"
+    rv.served = 0
+    assert m.due_revisits(p, 3.0, "manipulate", can_host=lambda n, e, r: r == "symbolic") == []
+    assert rv.representation is None
+
 if __name__ == "__main__":
     tests = [(k, v) for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

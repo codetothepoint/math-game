@@ -235,7 +235,7 @@ object Generators {
             val parts = rng.pick(p.ints("parts"))
             val maxNum = if (mixed) den + den / 2 else minOf(p.intOr("numerator_max", den - 1), den - 1)
             val num = rng.pick(maxOf(parts, 2)..maxOf(parts, maxNum))
-            ManipulateTarget.Partition(Fraction.of(num, den), den, parts) to FractionBarState(den, listOf(num), initialDen = den)
+            ManipulateTarget.Partition(Fraction(num, den), den, parts) to FractionBarState(den, listOf(num), initialDen = den)   // keeps its denomination, like the other displayed targets
         },
         manipulate("w04.nf.add-sub-like-denominators") { p, _, _, rng ->
             val den = rng.pick(p.ints("denominators"))

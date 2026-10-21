@@ -191,7 +191,7 @@ Revisit items are served inside other levels. When an engine builds a level of `
 The cap applies **after** these filters, most overdue first, so a due node this engine cannot host never takes a slot from one it can. Items are mixed into the level, never grouped at the end, never labelled. If no due node fits the engine, the revisit waits for one that does.
 
 ### 7.3 Transfer representation
-When a set starts, its representation is the one, among the node's `representations` that **some recipe for the node can serve**, with the fewest entries in `repItems`. Ties go to the representation not used in the node's most recent level. The point is to check the idea, not the drill. A representation no recipe serves is never chosen, because a set in it could never be delivered.
+When a set starts, its representation is the one, among the node's `representations` that **some recipe for the node can serve**, with the fewest entries in `repItems`. Ties go to the representation not used in the node's most recent level. The point is to check the idea, not the drill. A representation no recipe serves is never chosen, because a set in it could never be delivered. Once a set has served its first item, its representation is fixed until the set completes (§7.4), whichever engine serves the rest.
 
 ### 7.4 Sets and outcomes
 A set is `REVISIT_SET_SIZE` (5) items. It completes when the fifth item is answered, however many levels that spans.

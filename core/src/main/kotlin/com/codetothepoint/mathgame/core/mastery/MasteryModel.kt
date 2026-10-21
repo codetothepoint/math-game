@@ -228,7 +228,9 @@ class MasteryModel(val curriculum: Curriculum) {
             val rep = rv.representation ?: continue
             if (rep !in nd.representations) continue
             if (!hosting.canHost(nd.id, engine, rep)) {
-                rv.representation = null   // a representation no recipe serves is never kept (§7.3): a later call re-chooses
+                // A representation no recipe serves is never kept (§7.3), but a set already under way keeps
+                // its representation until it completes (§7.4): only an unstarted set is re-chosen.
+                if (rv.served == 0) rv.representation = null
                 continue
             }
             out += Triple(rv.dueAt, nd.id, rep)
