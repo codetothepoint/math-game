@@ -32,11 +32,21 @@ sealed interface ManipulateTarget {
     /** The result bar reads [value] (den fixed by the item). */
     data class BarValue(val value: Fraction, val den: Int) : ManipulateTarget { override val kind get() = "value" }
 
-    /** Shade [value] of a hundredths grid ([value] in hundredths). */
-    data class GridValue(val hundredths: Int) : ManipulateTarget { override val kind get() = "value" }
+    /** Pour [a] and [b] together (or take [b] from [a]); the result bar must read the answer over [den]. */
+    data class BarSum(val a: Fraction, val b: Fraction, val op: Op, val den: Int) : ManipulateTarget {
+        override val kind get() = "value"
+        enum class Op { ADD, SUBTRACT }
+        val value: Fraction get() = if (op == Op.ADD) a + b else a - b
+    }
 
-    /** Set the arms to [degrees]. */
-    data class AngleValue(val degrees: Int, val toleranceDegrees: Int) : ManipulateTarget { override val kind get() = "value" }
+    /** Shade [hundredths] of a hundredths grid; [expressAs] says whether the prompt reads as a fraction or a decimal. */
+    data class GridValue(val hundredths: Int, val expressAs: String = "fraction") : ManipulateTarget { override val kind get() = "value" }
+
+    /**
+     * Set the arms to [degrees]. [turn] is the fraction of a full turn the prompt shows (null: the prompt
+     * shows degrees); with [askDegrees] the prompt shows the turn and asks for its degrees.
+     */
+    data class AngleValue(val degrees: Int, val toleranceDegrees: Int, val turn: Fraction? = null, val askDegrees: Boolean = false) : ManipulateTarget { override val kind get() = "value" }
 
     /** Two or more adjacent angles total [total]; the [known] ones are given; set the unknown. */
     data class AngleUnknown(val total: Int, val known: List<Int>, val toleranceDegrees: Int) : ManipulateTarget {
@@ -44,10 +54,13 @@ sealed interface ManipulateTarget {
         val unknown: Int get() = total - known.sum()
     }
 
-    /** The place-value chart reads [value]. */
-    data class ChartValue(val value: Long) : ManipulateTarget { override val kind get() = "value" }
+    /** The place-value chart reads [value], starting from [start]; [compareDigit] is a digit to follow between the two. */
+    data class ChartValue(val value: Long, val start: Long, val compareDigit: Int? = null) : ManipulateTarget { override val kind get() = "value" }
 
-    /** A grid shading of [hundredths] cells and a number-line marker at the same value must agree. */
+    /**
+     * A grid shading of [hundredths] cells and a number-line marker at the same value must agree.
+     * One instrument is given and fixed ([givenOnGrid] says which); the player sets the other.
+     */
     data class Match(val hundredths: Int, val givenOnGrid: Boolean) : ManipulateTarget { override val kind get() = "match" }
 
     /** Place the mirror so [figure] reflects onto itself; with [askAll], lock in every line of symmetry. [lines] may be empty. */

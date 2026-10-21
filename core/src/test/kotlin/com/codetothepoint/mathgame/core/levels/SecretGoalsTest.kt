@@ -71,7 +71,7 @@ class SecretGoalsTest {
 
     @Test
     fun manipulateGoals() {
-        val chart = ItemRecord(manip(ManipulateTarget.ChartValue(3400)), true, true, 0, state = PlaceChartState(3400, leverPulls = 1))
+        val chart = ItemRecord(manip(ManipulateTarget.ChartValue(3400, 340)), true, true, 0, state = PlaceChartState(3400, leverPulls = 1))
         assertTrue(SecretGoals.holds("one-shift", listOf(chart)))
         assertFalse(SecretGoals.holds("one-shift", listOf(chart.copy(state = PlaceChartState(3400, leverPulls = 1, digitShifts = 1)))))
 

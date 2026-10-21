@@ -56,7 +56,7 @@ object CurriculumLoader {
                 twoStar = m.double("two_star"),
                 threeStar = m.double("three_star"),
                 revisitDays = m.array("revisit_days").map { it.asInt },
-                fluencyMs = m.get("fluency_ms")?.takeUnless { it.isJsonNull }?.asInt,
+                fluencyMs = m.get("fluency_ms")?.takeUnless { it.isJsonNull }?.asInt?.takeIf { it > 0 },
             ),
             strategies = n.array("strategies").map { it.asString },
             secretGoals = n.array("secret_goals").map { it.asJsonObject }.map { g ->

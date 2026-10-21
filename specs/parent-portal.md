@@ -87,7 +87,7 @@ For each visited world: a row per region with a small bar of its sites by state 
 Tapping a site shows:
 - its description from the curriculum, in plain words
 - flags, with what each one meant
-- **how it's going**: one of *building* (score below two-star), *got it*, *owns it*, in words; never the number
+- **how it's going**: one of *building* (fewer than two flags), *got it* (two flags), *owns it* (three), in words; it follows the flags, which already carry the star hysteresis, so it never flickers; never the number
 - **hints lately**: none · some · lots, from the hint rate over the last ten items
 - **ways it was practiced**: the representations with at least three items, named plainly (with blocks, as numbers, in words, from a picture)
 - **strategies seen**: the node's strategies the game observed, with a one-line definition each

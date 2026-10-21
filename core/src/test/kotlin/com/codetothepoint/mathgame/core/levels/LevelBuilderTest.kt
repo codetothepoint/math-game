@@ -13,6 +13,7 @@ import com.codetothepoint.mathgame.core.recipes.RecipeLoader
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -70,6 +71,30 @@ class LevelBuilderTest {
         assertEquals(node, plan.items.last().nodeId)
         assertTrue(plan.items.first().nodeId == node)
         assertEquals(9, plan.items.size)
+    }
+
+    @Test
+    fun anAssumedPrerequisiteIsInterleavedOnceAndClearsTheFlag() {
+        // specs/mastery.md §7.5. Starting in world 5 assumes world 4, so place-value-ten-times (a direct prerequisite
+        // with a build recipe) is assumed; the world-3 prerequisites have no build recipe, so exactly one candidate exists.
+        val p = model.newProfile(5)
+        val prerequisite = "w04.nbt.place-value-ten-times"
+        assertTrue(p.nodes.getValue(prerequisite).assumed)
+        val plan = builder.build(p, node, Engine.BUILD, now = 0L, rng = Random(5))
+        assertEquals(9, plan.items.size)                                   // eight core items plus one
+        val extras = plan.items.withIndex().filter { it.value.nodeId != node }
+        assertEquals(1, extras.size)
+        val (index, extra) = extras.single()
+        assertEquals(prerequisite, extra.nodeId)
+        assertEquals(ItemKind.CORE, extra.kind)                            // it counts as a core item for that node
+        assertTrue(index > 0 && index < plan.items.lastIndex, "mixed in, never first or last: $index")
+        model.applyItem(p, ItemResult(extra.nodeId, extra.item.representation, Engine.BUILD, true, responseMs = 1000, kind = extra.kind))
+        assertEquals(false, p.nodes.getValue(prerequisite).assumed)
+    }
+
+    @Test
+    fun aLevelNeedsAtLeastTwoCoreItems() {
+        assertFailsWith<IllegalArgumentException> { LevelBuilder(model, recipes, 1) }
     }
 
     @Test

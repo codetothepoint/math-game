@@ -2,7 +2,8 @@
 *.log
 .idea/
 .vscode/
-build/
+/build/
+/*/build/
 .gradle/
 .kotlin/
 local.properties

@@ -98,38 +98,71 @@ class Polygon(val vertices: List<Pt>) {
     }
 
     companion object {
-        /** Builds the polygon when [segments] form exactly one closed loop with no stray strokes; otherwise null. */
+        /**
+         * Builds the polygon when [segments] form exactly one simple closed loop with no stray or repeated
+         * strokes; otherwise null. Never throws: a half-built or odd construction is "not yet", not a crash.
+         */
         fun from(segments: List<Stroke.Segment>): Polygon? {
-            if (segments.size < 3) return null
+            // A segment drawn twice, in either direction, is one segment.
+            val unique = segments.filter { it.a != it.b }.map { setOf(it.a, it.b) }.distinct().map { it.toList() }
+            if (unique.size < 3) return null
             val adj = mutableMapOf<Pt, MutableList<Pt>>()
-            for (s in segments) {
-                if (s.a == s.b) return null
-                adj.getOrPut(s.a) { mutableListOf() } += s.b
-                adj.getOrPut(s.b) { mutableListOf() } += s.a
+            for ((a, b) in unique) {
+                adj.getOrPut(a) { mutableListOf() } += b
+                adj.getOrPut(b) { mutableListOf() } += a
             }
             if (adj.values.any { it.size != 2 }) return null
-            if (adj.size != segments.size) return null
-            val start = segments.first().a
+            if (adj.size != unique.size) return null
+            val start = unique.first()[0]
             val order = mutableListOf(start)
             var prev: Pt? = null
             var cur = start
             while (true) {
-                val next = adj.getValue(cur).first { it != prev }
+                val next = adj.getValue(cur).firstOrNull { it != prev } ?: return null
                 if (next == start) break
                 if (next in order) return null
                 order += next
                 prev = cur
                 cur = next
-                if (order.size > segments.size) return null
+                if (order.size > unique.size) return null
             }
-            if (order.size != segments.size) return null
-            // Drop collinear vertices (a side drawn as two strokes is still one side).
-            val cleaned = order.filterIndexed { i, p ->
+            if (order.size != unique.size) return null
+            // Drop collinear vertices that continue forward (a side drawn as two strokes is still one side).
+            // A collinear vertex where the path doubles back is a spike, not a side: the strokes overlap, so no polygon.
+            val cleaned = mutableListOf<Pt>()
+            for (i in order.indices) {
                 val a = order[(i + order.size - 1) % order.size]
+                val p = order[i]
                 val b = order[(i + 1) % order.size]
-                (p - a).cross(b - p) != 0
+                val into = p - a
+                val out = b - p
+                if (into.cross(out) != 0) cleaned += p
+                else if (into.dot(out) <= 0) return null
             }
-            return if (cleaned.size >= 3) Polygon(cleaned) else null
+            if (cleaned.size < 3) return null
+            val poly = Polygon(cleaned)
+            return if (poly.isSimple()) poly else null
         }
+    }
+
+    /** No two non-adjacent sides touch or cross: a bow-tie is not a quadrilateral. */
+    fun isSimple(): Boolean {
+        for (i in 0 until n) for (j in i + 1 until n) {
+            if (j == i + 1 || (i == 0 && j == n - 1)) continue
+            if (segmentsIntersect(vertices[i], vertices[(i + 1) % n], vertices[j], vertices[(j + 1) % n])) return false
+        }
+        return true
+    }
+
+    private fun segmentsIntersect(p1: Pt, p2: Pt, q1: Pt, q2: Pt): Boolean {
+        fun orient(a: Pt, b: Pt, c: Pt): Int = (b - a).cross(c - a).let { if (it > 0) 1 else if (it < 0) -1 else 0 }
+        fun onSegment(a: Pt, b: Pt, c: Pt): Boolean = c.x in minOf(a.x, b.x)..maxOf(a.x, b.x) && c.y in minOf(a.y, b.y)..maxOf(a.y, b.y)
+        val o1 = orient(p1, p2, q1); val o2 = orient(p1, p2, q2); val o3 = orient(q1, q2, p1); val o4 = orient(q1, q2, p2)
+        if (o1 != o2 && o3 != o4) return true
+        if (o1 == 0 && onSegment(p1, p2, q1)) return true
+        if (o2 == 0 && onSegment(p1, p2, q2)) return true
+        if (o3 == 0 && onSegment(q1, q2, p1)) return true
+        if (o4 == 0 && onSegment(q1, q2, p2)) return true
+        return false
     }
 }

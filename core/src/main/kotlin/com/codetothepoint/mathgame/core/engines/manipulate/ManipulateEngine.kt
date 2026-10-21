@@ -21,12 +21,14 @@ object ManipulateEngine {
         is ManipulateTarget.Partition -> s is FractionBarState && s.den == target.den && s.shadedPieces.size == target.parts &&
             s.shadedPieces.all { it > 0 } && s.amount.compareTo(target.value) == 0
         is ManipulateTarget.BarValue -> s is FractionBarState && s.den == target.den && s.amount.compareTo(target.value) == 0
+        is ManipulateTarget.BarSum -> s is FractionBarState && s.den == target.den && s.amount.compareTo(target.value) == 0
         is ManipulateTarget.GridValue -> s is GridState && s.shaded == target.hundredths
         is ManipulateTarget.AngleValue -> s is AngleState && abs((s.reading ?: s.degrees) - target.degrees) <= target.toleranceDegrees
         is ManipulateTarget.AngleUnknown -> s is AngleState && abs(s.degrees - target.unknown) <= target.toleranceDegrees
         is ManipulateTarget.ChartValue -> s is PlaceChartState && s.value == target.value
+        // The player's instrument must be set exactly; the given one is fixed and only has to show the value (review #3).
         is ManipulateTarget.Match -> s is MatchState && s.grid.shaded == target.hundredths && s.line.marker != null &&
-            onTick(s.line.marker, s.line.tick) && s.line.marker.compareTo(Fraction.of(target.hundredths, 100)) == 0
+            (!target.givenOnGrid || onTick(s.line.marker, s.line.tick)) && s.line.marker.compareTo(Fraction.of(target.hundredths, 100)) == 0
         is ManipulateTarget.Symmetric -> s is MirrorState && symmetricSatisfied(target, s)
     }
 
