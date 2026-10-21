@@ -29,6 +29,20 @@ data class TilesConstruction(
 /** Place-value pieces by denomination in base units (1, 10, 100, 1000; decimal mode 1, 10, 100 hundredths). */
 data class BlocksConstruction(val pieces: Map<Int, Int>, val bundles: Int = 0, val unbundles: Int = 0) : BuildConstruction {
     val total: Int get() = pieces.entries.sumOf { (denom, count) -> denom * count }
+
+    /**
+     * [total] with the fewest pieces over [denominations], greedy from the largest; zero counts are omitted
+     * (engine-build.md §12 case 4: 34 hundreds is 3 thousands and 4 hundreds). Include 1 to keep the whole total.
+     */
+    fun normalized(denominations: List<Int> = listOf(1000, 100, 10, 1)): Map<Int, Int> {
+        var left = total
+        val out = mutableMapOf<Int, Int>()
+        for (d in denominations.sortedDescending()) {
+            if (left / d > 0) out[d] = left / d
+            left %= d
+        }
+        return out
+    }
 }
 
 /** Fraction pieces, grouped into one or more "ways"; each way is the list of pieces it holds. */

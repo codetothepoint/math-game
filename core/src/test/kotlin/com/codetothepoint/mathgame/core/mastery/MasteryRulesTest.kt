@@ -91,6 +91,48 @@ class MasteryRulesTest {
         assertEquals(2, q.nodes.getValue("w01.oa.a").stars)
     }
 
+    /**
+     * 15 clean items in one representation: ★ with a score far past two_star, but only one representation has evidence,
+     * so ★★ waits for the final level (one level of [clean] clean and [hinted] hinted items in [rep]).
+     */
+    private fun heldAtOneStarThenFinalLevel(model: MasteryModel, rep: Representation, clean: Int, hinted: Int): NodeState {
+        val p = model.newProfile(1)
+        val nid = "w01.oa.a"
+        play(model, p, nid, 15, SYMBOLIC, strategy = "make-ten")
+        val s = p.nodes.getValue(nid)
+        assertEquals(1, s.stars)
+        assertTrue(s.score >= 0.75)
+        val last = items(nid, clean, rep) + items(nid, hinted, rep, hints = 1)
+        last.forEach { model.applyItem(p, it) }
+        model.finishLevel(p, LevelResult(nid, Engine.BUILD, rep, true, last, observesStrategies = true, startedAt = 0L, endedAt = 0L))
+        assertTrue(s.score >= 0.75, "score ${s.score} must not be what blocks the star")
+        return s
+    }
+
+    @Test
+    fun hintRateOfExactlyThirtyPercentStillEarnsTwoStarsAndFortyDoesNot() {
+        val model = MasteryModel(tiny())
+        val three = heldAtOneStarThenFinalLevel(model, VISUAL, clean = 7, hinted = 3)   // recent holds exactly these ten
+        assertEquals(10, three.recent.size)
+        assertEquals(3, three.recent.count { it.hints > 0 })
+        assertEquals(2, three.stars)
+        val four = heldAtOneStarThenFinalLevel(model, VISUAL, clean = 6, hinted = 4)
+        assertEquals(10, four.recent.size)
+        assertEquals(4, four.recent.count { it.hints > 0 })
+        assertEquals(1, four.stars)
+    }
+
+    @Test
+    fun twoStarsNeedsThreeItemsInTheSecondRepresentationNotTwo() {
+        val model = MasteryModel(tiny())
+        val two = heldAtOneStarThenFinalLevel(model, VISUAL, clean = 2, hinted = 0)
+        assertEquals(2, two.repItems.getValue(VISUAL))
+        assertEquals(1, two.stars)
+        val three = heldAtOneStarThenFinalLevel(model, VISUAL, clean = 3, hinted = 0)
+        assertEquals(3, three.repItems.getValue(VISUAL))
+        assertEquals(2, three.stars)
+    }
+
     @Test
     fun twoStarDemotionOnlyBelowTheHysteresisLine() {
         val model = MasteryModel(tiny()); val p = model.newProfile(1)
@@ -267,6 +309,45 @@ class MasteryRulesTest {
         }
         assertEquals(listOf("w01.oa.a"), model.dueRevisits(p, day(3.0), Engine.BUILD, coreItems = 8, hosting = onlyA).map { it.first })
         assertNull(model.chooseTransferRepresentation(p, "w02.oa.sort", servable = emptySet()))
+    }
+
+    @Test
+    fun eachSetReChoosesItsRepresentation() {
+        val model = MasteryModel(tiny()); val p = model.newProfile(1)
+        val nid = "w01.oa.a"
+        twoStars(model, p)   // 8 symbolic, 7 visual: visual is the least drilled
+        val first = model.dueRevisits(p, day(2.0), Engine.BUILD).single().second
+        assertEquals(VISUAL, first)
+        revisitSet(model, p, nid, day(2.0), correct = 5)
+        val rv = assertNotNull(p.nodes.getValue(nid).revisit)
+        assertEquals(1, rv.passed)
+        assertNull(rv.representation)   // the set is over, so the choice is dropped
+        play(model, p, nid, 20, first, at = day(3.0))   // drill the first set's representation, the other not at all
+        val other = if (first == VISUAL) SYMBOLIC else VISUAL
+        assertEquals(listOf(nid to other), model.dueRevisits(p, day(9.0), Engine.BUILD))
+    }
+
+    @Test
+    fun aRepresentationNoRecipeHostsIsDroppedSoALaterCallReChooses() {
+        val model = MasteryModel(tiny()); val p = model.newProfile(1)
+        val nid = "w02.oa.sort"   // lists physical, which no recipe serves
+        play(model, p, nid, 8, SYMBOLIC)
+        play(model, p, nid, 7, VISUAL)
+        assertEquals(2, p.nodes.getValue(nid).stars)
+        // Without hosting information the least-drilled representation (physical) is chosen and fixed for the set.
+        assertEquals(listOf(nid to PHYSICAL), model.dueRevisits(p, day(3.0), Engine.BUILD, hosting = RevisitHosting.ALL))
+        assertEquals(PHYSICAL, assertNotNull(p.nodes.getValue(nid).revisit).representation)
+        val hosting = object : RevisitHosting {
+            override fun servable(nodeId: String): Set<Representation> = setOf(SYMBOLIC, VISUAL)
+            override fun canHost(nodeId: String, engine: Engine, rep: Representation) = rep != PHYSICAL
+        }
+        // The rejected choice is skipped and forgotten...
+        assertEquals(emptyList(), model.dueRevisits(p, day(3.0), Engine.BUILD, hosting = hosting))
+        assertNull(assertNotNull(p.nodes.getValue(nid).revisit).representation)
+        // ...so the next call chooses among what is servable.
+        val again = model.dueRevisits(p, day(3.0), Engine.BUILD, hosting = hosting).single()
+        assertEquals(nid, again.first)
+        assertTrue(again.second in setOf(SYMBOLIC, VISUAL))
     }
 
     private fun copyInto(model: MasteryModel, from: Profile, to: Profile) {

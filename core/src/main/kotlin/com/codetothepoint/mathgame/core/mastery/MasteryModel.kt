@@ -226,7 +226,11 @@ class MasteryModel(val curriculum: Curriculum) {
             val rv = p.nodes.getValue(nd.id).revisit!!
             if (rv.representation == null) rv.representation = chooseTransferRepresentation(p, nd.id, hosting.servable(nd.id))
             val rep = rv.representation ?: continue
-            if (rep !in nd.representations || !hosting.canHost(nd.id, engine, rep)) continue
+            if (rep !in nd.representations) continue
+            if (!hosting.canHost(nd.id, engine, rep)) {
+                rv.representation = null   // a representation no recipe serves is never kept (§7.3): a later call re-chooses
+                continue
+            }
             out += Triple(rv.dueAt, nd.id, rep)
         }
         out.sortWith(compareBy({ it.first }, { it.second }))

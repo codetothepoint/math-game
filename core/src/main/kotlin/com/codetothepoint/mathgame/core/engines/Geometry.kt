@@ -127,11 +127,17 @@ class Polygon(val vertices: List<Pt>) {
                 if (order.size > unique.size) return null
             }
             if (order.size != unique.size) return null
-            // Drop collinear vertices (a side drawn as two strokes is still one side).
-            val cleaned = order.filterIndexed { i, p ->
+            // Drop collinear vertices that continue forward (a side drawn as two strokes is still one side).
+            // A collinear vertex where the path doubles back is a spike, not a side: the strokes overlap, so no polygon.
+            val cleaned = mutableListOf<Pt>()
+            for (i in order.indices) {
                 val a = order[(i + order.size - 1) % order.size]
+                val p = order[i]
                 val b = order[(i + 1) % order.size]
-                (p - a).cross(b - p) != 0
+                val into = p - a
+                val out = b - p
+                if (into.cross(out) != 0) cleaned += p
+                else if (into.dot(out) <= 0) return null
             }
             if (cleaned.size < 3) return null
             val poly = Polygon(cleaned)

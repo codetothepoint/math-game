@@ -4,6 +4,7 @@ import com.codetothepoint.mathgame.core.engines.Fraction
 import com.codetothepoint.mathgame.core.engines.MirrorLine
 import com.codetothepoint.mathgame.core.engines.Pt
 import com.codetothepoint.mathgame.core.engines.Stroke
+import com.codetothepoint.mathgame.core.engines.angleDegrees
 import com.codetothepoint.mathgame.core.engines.build.BlocksConstruction
 import com.codetothepoint.mathgame.core.engines.build.BuildConstruction
 import com.codetothepoint.mathgame.core.engines.build.BuildTarget
@@ -25,6 +26,7 @@ import com.codetothepoint.mathgame.core.engines.manipulate.MatchState
 import com.codetothepoint.mathgame.core.engines.manipulate.MirrorState
 import com.codetothepoint.mathgame.core.engines.manipulate.NumberLineState
 import com.codetothepoint.mathgame.core.engines.manipulate.PlaceChartState
+import kotlin.math.abs
 
 /**
  * One satisfying construction or setting for any target. Used by the hint ladder's last rung
@@ -41,7 +43,7 @@ object Solutions {
         is BuildTarget.RectConstraint -> TilesConstruction(listOf(rectFor(t)))
         is BuildTarget.ShapeConstraint -> StrokesConstruction(SHAPES.getValue(t.constraint))
         is BuildTarget.SymmetricCompletion -> symmetricFigure(t)
-        is BuildTarget.Angle -> StrokesConstruction(listOf(Stroke.Ray(Pt(0, 0), Pt(100, 0)), Stroke.Ray(Pt(0, 0), rayEnd(t.degrees))))
+        is BuildTarget.Angle -> angleRays(t.degrees)
         is BuildTarget.Plot -> MarksConstruction(t.values)
         is BuildTarget.Sequence -> GearsConstruction(t.terms[0], gearsFor(t.terms))
         is BuildTarget.Table -> UnitsConstruction(t.rows.associateWith { it * t.factor })
@@ -75,12 +77,7 @@ object Solutions {
         }
     }
 
-    private fun decompose(value: Int, denominations: List<Int>): Map<Int, Int> {
-        var left = value
-        val out = mutableMapOf<Int, Int>()
-        for (d in denominations) { if (left / d > 0) out[d] = left / d; left %= d }
-        return out
-    }
+    private fun decompose(value: Int, denominations: List<Int>): Map<Int, Int> = BlocksConstruction(mapOf(1 to value)).normalized(denominations)
 
     private fun rectFor(t: BuildTarget.RectConstraint): TileRect = when {
         t.area != null && t.perimeter != null -> {
@@ -106,9 +103,9 @@ object Solutions {
         "one-line" to listOf(Stroke.Line(Pt(0, 0), Pt(3, 1))),
         "acute-angle" to listOf(Stroke.Ray(Pt(0, 0), Pt(4, 0)), Stroke.Ray(Pt(0, 0), Pt(3, 2))),
         "right-angle" to listOf(Stroke.Ray(Pt(0, 0), Pt(4, 0)), Stroke.Ray(Pt(0, 0), Pt(0, 3))),
-        "obtuse-angle" to listOf(Stroke.Ray(Pt(0, 0), Pt(4, 0)), Stroke.Ray(Pt(0, 0), Pt(-2, 3))),
+        "obtuse-angle" to listOf(Stroke.Ray(Pt(3, 0), Pt(6, 0)), Stroke.Ray(Pt(3, 0), Pt(0, 2))),   // about 146°
         "parallel-pair" to listOf(Stroke.Line(Pt(0, 0), Pt(3, 1)), Stroke.Line(Pt(0, 2), Pt(3, 3))),
-        "perpendicular-pair" to listOf(Stroke.Line(Pt(0, 0), Pt(3, 1)), Stroke.Line(Pt(0, 0), Pt(-1, 3))),
+        "perpendicular-pair" to listOf(Stroke.Line(Pt(0, 0), Pt(3, 1)), Stroke.Line(Pt(3, 1), Pt(2, 4))),
         "two-rays-sharing-endpoint" to listOf(Stroke.Ray(Pt(1, 1), Pt(4, 1)), Stroke.Ray(Pt(1, 1), Pt(2, 4))),
         "parallel-pair-with-transversal" to listOf(Stroke.Line(Pt(0, 0), Pt(4, 0)), Stroke.Line(Pt(0, 3), Pt(4, 3)), Stroke.Line(Pt(0, 0), Pt(2, 3))),
         "perpendicular-through-point" to listOf(Stroke.Line(Pt(0, 0), Pt(4, 0)), Stroke.Point(Pt(2, 2)), Stroke.Line(Pt(2, 2), Pt(2, 0))),
@@ -120,7 +117,7 @@ object Solutions {
         "parallelogram" to poly(0 to 0, 4 to 0, 5 to 2, 1 to 2),
         "rectangle-not-square" to poly(0 to 0, 3 to 0, 3 to 2, 0 to 2),
         "trapezoid-exactly-one-pair" to poly(0 to 0, 4 to 0, 3 to 2, 1 to 2),
-        "rhombus-not-square" to poly(0 to 0, 5 to 0, 8 to 4, 3 to 4),
+        "rhombus-not-square" to poly(0 to 0, 2 to 1, 3 to 3, 1 to 2),
         "quadrilateral-perpendicular-no-parallel" to poly(0 to 0, 4 to 0, 3 to 3, 0 to 2),
     )
 
@@ -137,9 +134,33 @@ object Solutions {
         return StrokesConstruction(strokes)
     }
 
-    private fun rayEnd(degrees: Int): Pt {
-        val r = Math.toRadians(degrees.toDouble())
-        return Pt((1000 * Math.cos(r)).toInt(), (1000 * Math.sin(r)).toInt())
+    /**
+     * Two rays whose angle is as close to [degrees] as the dot grid allows (engine-build.md §10: a 7×7 dot grid).
+     * Both end points and the vertex are grid points, so the answer is one a player could draw. The vertex is searched
+     * too, centre first so ties go to the centre: from (3, 3) alone the grid misses 5°, 40°, 130° and 175° by more than ±2°.
+     */
+    private fun angleRays(degrees: Int): StrokesConstruction = angleCache.getOrPut(degrees) {
+        var best = RAY_PAIRS[0]
+        var bestError = Double.MAX_VALUE
+        for (pair in RAY_PAIRS) {
+            val error = abs(pair.degrees - degrees)
+            if (error < bestError) { bestError = error; best = pair }
+        }
+        StrokesConstruction(listOf(Stroke.Ray(best.vertex, best.a), Stroke.Ray(best.vertex, best.b)))
+    }
+
+    private class RayPair(val vertex: Pt, val a: Pt, val b: Pt, val degrees: Double)
+
+    private val angleCache = java.util.concurrent.ConcurrentHashMap<Int, StrokesConstruction>()
+
+    /** Every pair of distinct-from-the-vertex grid points as ray ends, from every grid vertex, the centre first. */
+    private val RAY_PAIRS: List<RayPair> by lazy {
+        val grid = Generators.GRID.flatMap { x -> Generators.GRID.map { y -> Pt(x, y) } }
+        val centre = Pt(3, 3)
+        (listOf(centre) + grid.filter { it != centre }).flatMap { v ->
+            val ends = grid.filter { it != v }
+            ends.flatMap { a -> ends.map { b -> RayPair(v, a, b, angleDegrees(v, a, b)) } }
+        }
     }
 
     private fun gearsFor(terms: List<Int>): List<Gear> {

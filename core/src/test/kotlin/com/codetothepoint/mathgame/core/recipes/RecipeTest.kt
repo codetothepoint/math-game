@@ -4,6 +4,7 @@ import com.codetothepoint.mathgame.core.curriculum.CurriculumLoader
 import com.codetothepoint.mathgame.core.curriculum.Engine
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -33,7 +34,8 @@ class RecipeTest {
         assertEquals("product", r.target)
         assertEquals(listOf(12..49, 2..5), r.params(Band.LOW).ranges("factors"))
         assertEquals(listOf(11..99, 11..29), r.params(Band.HIGH).ranges("factors"))
-        assertTrue(r.params(Band.MID).has("also"))
+        assertEquals(listOf(11..99, 2..9), r.params(Band.MID).ranges("factors"))
+        assertFalse(r.params(Band.MID).has("also"))   // no 3-digit × 1-digit products: sides cap at 99 (engine-build §13)
         assertEquals(mapOf("area-model" to "split-place-value", "distributive" to "split-one-dimension"), r.strategies)
         assertEquals("area-model", r.strategyForRule["split-place-value"])
         assertTrue(r.observesStrategies)

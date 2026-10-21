@@ -64,6 +64,21 @@ class StatsTest {
     }
 
     @Test
+    fun progressFollowsTheFlagsNotTheScore() {
+        // specs/parent-portal.md §6.3: "building" is fewer than two flags. One representation earns ★ but never ★★,
+        // however high the score climbs, so the site stays "building" even with score at or above two_star.
+        val p = model.newProfile(4)
+        val nid = "w04.nbt.multiply-multidigit"
+        play(p, nid, 15, SYMBOLIC, 1000L, strategy = "area-model")
+        val s = p.nodes.getValue(nid)
+        assertTrue(s.score >= model.curriculum[nid].mastery.twoStar, "score ${s.score} should be past two_star")
+        assertEquals(1, s.stars)
+        val d = stats.site(p, nid)
+        assertEquals(1, d.stars)
+        assertEquals(Progress.BUILDING, d.progress)
+    }
+
+    @Test
     fun siteDetailUsesWordsNotNumbers() {
         val p = model.newProfile(4)
         val nid = "w04.nbt.multiply-multidigit"

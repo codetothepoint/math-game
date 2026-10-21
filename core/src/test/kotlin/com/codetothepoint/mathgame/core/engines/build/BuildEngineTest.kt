@@ -2,6 +2,7 @@ package com.codetothepoint.mathgame.core.engines.build
 
 import com.codetothepoint.mathgame.core.engines.Fraction
 import com.codetothepoint.mathgame.core.engines.MirrorLine
+import com.codetothepoint.mathgame.core.engines.Polygon
 import com.codetothepoint.mathgame.core.engines.Pt
 import com.codetothepoint.mathgame.core.engines.Stroke
 import com.codetothepoint.mathgame.core.engines.placeValueCuts
@@ -74,6 +75,12 @@ class BuildEngineTest {
         assertFalse(BuildEngine.satisfied(t, BlocksConstruction(mapOf(1000 to 3, 10 to 4))))
         assertEquals("bundle", BuildEngine.detectStrategy(t, BlocksConstruction(mapOf(1000 to 3, 100 to 4), bundles = 2), setOf("bundle")))
         assertNull(BuildEngine.detectStrategy(t, BlocksConstruction(mapOf(100 to 34)), setOf("bundle")))
+        // Normalization (§12 case 4, second half): 34 hundreds is 3 thousands and 4 hundreds, with the fewest pieces.
+        assertEquals(mapOf(1000 to 3, 100 to 4), BlocksConstruction(mapOf(100 to 34)).normalized())
+        assertEquals(mapOf(1000 to 3), BlocksConstruction(mapOf(100 to 30)).normalized())                 // zero counts are omitted
+        assertEquals(mapOf(1000 to 3, 100 to 4, 10 to 5, 1 to 6), BlocksConstruction(mapOf(1 to 3456)).normalized())
+        assertEquals(mapOf(100 to 34), BlocksConstruction(mapOf(10 to 340)).normalized(listOf(100, 10, 1)))   // decimal mode has no 1000 piece
+        assertEquals(emptyMap(), BlocksConstruction(emptyMap()).normalized())
     }
 
     @Test
@@ -189,6 +196,19 @@ class BuildEngineTest {
         assertFalse(BuildEngine.satisfied(BuildTarget.ShapeConstraint("quadrilateral-perpendicular-no-parallel"), bowTie))
         // A concave simple quadrilateral is still a quadrilateral.
         assertTrue(BuildEngine.satisfied(BuildTarget.ShapeConstraint("quadrilateral-perpendicular-no-parallel"), shape(0 to 0, 4 to 0, 1 to 1, 0 to 3)))
+    }
+
+    @Test
+    fun reReview4_aBackTrackingSpikeIsNotACollinearContinuation() {
+        val rightTriangle = BuildTarget.ShapeConstraint("right-triangle")
+        // (2,0) → (0,0) → (4,0) doubles back along the base: the strokes overlap, so this is not a triangle.
+        val spike = StrokesConstruction(listOf(seg(0, 0, 4, 0), seg(4, 0, 4, 4), seg(4, 4, 2, 0), seg(2, 0, 0, 0)))
+        assertNull(Polygon.from(spike.segments))
+        assertFalse(BuildEngine.satisfied(rightTriangle, spike))
+        // A side drawn as two strokes that continue the same way is still one side.
+        val twoStrokeSide = StrokesConstruction(listOf(seg(0, 0, 2, 0), seg(2, 0, 4, 0), seg(4, 0, 4, 3), seg(4, 3, 0, 0)))
+        assertEquals(3, Polygon.from(twoStrokeSide.segments)?.n)
+        assertTrue(BuildEngine.satisfied(rightTriangle, twoStrokeSide))
     }
 
     @Test

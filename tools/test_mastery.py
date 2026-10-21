@@ -365,6 +365,62 @@ def test_rule_reach_credit_only_unmet_and_fluency_needs_three():
     m.apply_item(p, ItemResult(nid, "symbolic", "fluency", True, response_ms=1000))
     assert p.nodes[nid].fluency_ms == 1000
 
+# ---- Re-review F9, F10: §5 boundaries, §7.3 per-set re-choice and unhostable choices. Mirrors MasteryRulesTest.kt.
+
+def _held_at_one_star_then_final_level(m, rep, clean, hinted):
+    """15 clean items in one representation (★, score past two_star), then one level of `clean` clean and `hinted` hinted items."""
+    p = m.new_profile(1)
+    nid = "w01.oa.a"
+    play_level(m, p, nid, 15, "symbolic", now=0.0, strategy="make-ten")
+    s = p.nodes[nid]
+    assert s.stars == 1 and s.score >= 0.75
+    last = [ItemResult(nid, rep, "build", True, first_try=True, hints=0, response_ms=1000, at=0.0) for _ in range(clean)]
+    last += [ItemResult(nid, rep, "build", True, first_try=True, hints=1, response_ms=1000, at=0.0) for _ in range(hinted)]
+    for it in last:
+        m.apply_item(p, it)
+    m.finish_level(p, LevelResult(nid, "build", rep, True, last, observes_strategies=True, started_at=0.0, ended_at=0.0))
+    assert s.score >= 0.75, s.score  # the score is not what blocks the star
+    return s
+
+
+def test_rule_hint_rate_of_thirty_percent_still_earns_two_stars_and_forty_does_not():
+    m = Mastery(_rules_curriculum())
+    three = _held_at_one_star_then_final_level(m, "visual", clean=7, hinted=3)
+    assert len(three.recent) == 10 and sum(1 for i in three.recent if i.hints > 0) == 3 and three.stars == 2
+    four = _held_at_one_star_then_final_level(m, "visual", clean=6, hinted=4)
+    assert len(four.recent) == 10 and sum(1 for i in four.recent if i.hints > 0) == 4 and four.stars == 1
+
+
+def test_rule_each_set_re_chooses_its_representation():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    nid = "w01.oa.a"
+    _two_stars(m, p)  # 8 symbolic, 7 visual: visual is the least drilled
+    first = m.due_revisits(p, 2.0, "build")[0][1]
+    assert first == "visual"
+    _set(m, p, nid, 2.0, correct=5)
+    rv = p.nodes[nid].revisit
+    assert rv.passed == 1 and rv.representation is None
+    play_level(m, p, nid, 20, first, now=3.0)  # drill the first set's representation, the other not at all
+    other = "symbolic" if first == "visual" else "visual"
+    assert m.due_revisits(p, 9.0, "build") == [(nid, other)]
+
+
+def test_rule_a_representation_no_recipe_hosts_is_dropped_so_a_later_call_re_chooses():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    nid = "w02.oa.sort"  # lists physical, which no recipe serves
+    play_level(m, p, nid, 8, "symbolic", now=0.0)
+    play_level(m, p, nid, 7, "visual", now=0.0)
+    assert p.nodes[nid].stars == 2
+    assert m.due_revisits(p, 3.0, "build") == [(nid, "physical")]       # no hosting information: physical is fixed for the set
+    assert p.nodes[nid].revisit.representation == "physical"
+    servable = lambda n: {"symbolic", "visual"}
+    can_host = lambda n, e, r: r != "physical"
+    assert m.due_revisits(p, 3.0, "build", servable=servable, can_host=can_host) == []   # rejected, skipped, forgotten
+    assert p.nodes[nid].revisit.representation is None
+    again = m.due_revisits(p, 3.0, "build", servable=servable, can_host=can_host)
+    assert len(again) == 1 and again[0][0] == nid and again[0][1] in {"symbolic", "visual"}, again
+
+
 if __name__ == "__main__":
     tests = [(k, v) for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0
@@ -372,8 +428,8 @@ if __name__ == "__main__":
         try:
             fn()
             print(f"ok   {name}")
-        except AssertionError as e:
+        except Exception as e:  # an unexpected error is a failure too, not a crash that hides the summary
             failed += 1
-            print(f"FAIL {name}: {e}")
+            print(f"FAIL {name}: {type(e).__name__}: {e}")
     print(f"{len(tests) - failed}/{len(tests)} passed")
     sys.exit(1 if failed else 0)

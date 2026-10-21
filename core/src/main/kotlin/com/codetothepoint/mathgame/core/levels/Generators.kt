@@ -45,7 +45,7 @@ object Generators {
         RecipeKey("w04.oa.factors-multiples-primes", Engine.BUILD) to setOf("areas", "primes_per_level", "include_squares"),
         RecipeKey("w04.oa.patterns-and-rules", Engine.BUILD) to setOf("rules", "terms_shown", "max_gears", "hidden_terms"),
         RecipeKey("w04.nbt.place-value-ten-times", Engine.BUILD) to setOf("multiplier", "base_digits", "digit_moves"),
-        RecipeKey("w04.nbt.multiply-multidigit", Engine.BUILD) to setOf("factors", "also"),
+        RecipeKey("w04.nbt.multiply-multidigit", Engine.BUILD) to setOf("factors"),
         RecipeKey("w04.nbt.divide-by-one-digit", Engine.BUILD) to setOf("dividend", "divisor", "remainder", "max_side"),
         RecipeKey("w04.nf.decompose-fractions", Engine.BUILD) to setOf("denominators", "numerator_max", "mixed_numbers"),
         RecipeKey("w04.nf.multiply-fraction-by-whole", Engine.BUILD) to setOf("denominators", "whole", "read_as_mixed"),
@@ -135,7 +135,7 @@ object Generators {
             BuildTarget.Quantity(base * p.int("multiplier"), base = base, digitMoves = p.bool("digit_moves"))
         },
         build("w04.nbt.multiply-multidigit") { p, _, _, rng ->
-            val ranges = if (p.has("also") && rng.nextInt(3) == 0) p.ranges("also") else p.ranges("factors")
+            val ranges = p.ranges("factors")
             BuildTarget.Product(rng.pick(ranges[0]), rng.pick(ranges[1]))
         },
         build("w04.nbt.divide-by-one-digit") { p, _, _, rng ->
@@ -151,13 +151,14 @@ object Generators {
             val mixed = p.bool("mixed_numbers")
             val den = rng.pick(p.ints("denominators").filter { mixed || it >= 3 })   // a half has no two ways over halves
             val maxNum = if (mixed) den + den / 2 else minOf(p.intOr("numerator_max", den - 1), den - 1)
-            BuildTarget.TwoWays(Fraction.of(rng.pick(2..maxOf(2, maxNum)), den), listOf(den))
+            BuildTarget.TwoWays(Fraction(rng.pick(2..maxOf(2, maxNum)), den), listOf(den))   // 6/8 stays 6/8: a piece keeps its denomination
         },
         build("w04.nf.multiply-fraction-by-whole") { p, _, _, rng ->
             val den = rng.pick(p.ints("denominators"))
-            val each = Fraction.of(rng.pick(1 until den), den)
+            val num = rng.pick(1 until den)
             val groups = rng.pick(p.range("whole"))
-            BuildTarget.FractionQuantity(each * groups, listOf(den), groups = groups, each = each, readAsMixed = p.bool("read_as_mixed"))
+            // 2/8 × 3 reads "six eighths", not three quarters: both the piece and the total keep the denominator.
+            BuildTarget.FractionQuantity(Fraction(num * groups, den), listOf(den), groups = groups, each = Fraction(num, den), readAsMixed = p.bool("read_as_mixed"))
         },
         build("w04.nf.tenths-and-hundredths") { p, _, _, rng ->
             BuildTarget.Quantity(rng.pick(p.range("tenths")) * 10 + rng.pick(p.range("hundredths")), scale = 100)
@@ -226,7 +227,7 @@ object Generators {
             if (p.bool("reverse") && from < to && rng.nextBoolean()) { val t = from; from = to; to = t }
             val numerators = (1 until from).filter { Fraction.of(it, from).withDenominator(to) != null }
             val num = rng.pick(numerators)
-            ManipulateTarget.Equal(Fraction.of(num, from), to) to FractionBarState(from, listOf(num), initialDen = from)
+            ManipulateTarget.Equal(Fraction(num, from), to) to FractionBarState(from, listOf(num), initialDen = from)   // "3/4 = ?/8" shows 3/4 even when num/from reduces
         },
         manipulate("w04.nf.decompose-fractions") { p, _, _, rng ->
             val mixed = p.bool("mixed_numbers")

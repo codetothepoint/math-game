@@ -70,7 +70,7 @@ GENERATOR_KEYS = {
     ("w04.oa.factors-multiples-primes", "build"): {"areas", "primes_per_level", "include_squares"},
     ("w04.oa.patterns-and-rules", "build"): {"rules", "terms_shown", "max_gears", "hidden_terms"},
     ("w04.nbt.place-value-ten-times", "build"): {"multiplier", "base_digits", "digit_moves"},
-    ("w04.nbt.multiply-multidigit", "build"): {"factors", "also"},
+    ("w04.nbt.multiply-multidigit", "build"): {"factors"},
     ("w04.nbt.divide-by-one-digit", "build"): {"dividend", "divisor", "remainder", "max_side"},
     ("w04.nf.decompose-fractions", "build"): {"denominators", "numerator_max", "mixed_numbers"},
     ("w04.nf.multiply-fraction-by-whole", "build"): {"denominators", "whole", "read_as_mixed"},

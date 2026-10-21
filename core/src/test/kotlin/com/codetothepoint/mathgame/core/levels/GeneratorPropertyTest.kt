@@ -2,9 +2,14 @@ package com.codetothepoint.mathgame.core.levels
 
 import com.codetothepoint.mathgame.core.curriculum.CurriculumLoader
 import com.codetothepoint.mathgame.core.engines.Fraction
+import com.codetothepoint.mathgame.core.engines.Pt
+import com.codetothepoint.mathgame.core.engines.Stroke
 import com.codetothepoint.mathgame.core.engines.build.BuildEngine
 import com.codetothepoint.mathgame.core.engines.build.BuildTarget
+import com.codetothepoint.mathgame.core.engines.build.Constraints
+import com.codetothepoint.mathgame.core.engines.build.StrokesConstruction
 import com.codetothepoint.mathgame.core.engines.isPrime
+import com.codetothepoint.mathgame.core.engines.manipulate.FractionBarState
 import com.codetothepoint.mathgame.core.engines.manipulate.ManipulateEngine
 import com.codetothepoint.mathgame.core.engines.manipulate.ManipulateTarget
 import com.codetothepoint.mathgame.core.engines.manipulate.MatchState
@@ -12,6 +17,7 @@ import com.codetothepoint.mathgame.core.recipes.Band
 import com.codetothepoint.mathgame.core.recipes.RecipeLoader
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -49,11 +55,45 @@ class GeneratorPropertyTest {
                             playerHalfSolves(item)                                     // the given instrument stays as generated (review #3)
                     }
                     if (!ok) failures += "${recipe.node}/${recipe.engine.key} $band #$i unsolvable: $item"
+                    if (item is GeneratedItem.Build) (Solutions.forBuild(item.target) as? StrokesConstruction)?.let { s ->
+                        offGrid(s)?.let { failures += "${recipe.node}/${recipe.engine.key} $band #$i solution leaves the 7×7 grid at $it: ${item.target}" }
+                    }
                     rangeCheck(recipe.node, band, item)?.let { failures += "${recipe.node}/${recipe.engine.key} $band #$i $it" }
                 }
             }
         }
         if (failures.isNotEmpty()) fail(failures.take(25).joinToString("\n") + if (failures.size > 25) "\n… ${failures.size} failures" else "")
+    }
+
+    /** The first point of any stroke outside [Generators.GRID], or null when the whole construction fits (engine-build §10). */
+    private fun offGrid(c: StrokesConstruction): Pt? = c.strokes.flatMap { s ->
+        when (s) {
+            is Stroke.Segment -> listOf(s.a, s.b)
+            is Stroke.Ray -> listOf(s.from, s.through)
+            is Stroke.Line -> listOf(s.a, s.b)
+            is Stroke.Point -> listOf(s.at)
+        }
+    }.firstOrNull { it.x !in Generators.GRID || it.y !in Generators.GRID }
+
+    @Test
+    fun everyNamedShapeSolutionFitsTheGridAndSatisfiesItsConstraint() {
+        for (name in Constraints.ALL) {
+            val target = BuildTarget.ShapeConstraint(name)
+            val solution = Solutions.forBuild(target) as StrokesConstruction
+            assertNull(offGrid(solution), "$name leaves the 7×7 grid: $solution")
+            assertTrue(BuildEngine.satisfied(target, solution), "$name reference solution is rejected: $solution")
+        }
+    }
+
+    @Test
+    fun everyAngleOnTheGridIsReachableWithinTheTolerance() {
+        // The reference solution for an angle target is two grid rays; the grid must reach every angle the build recipe can ask for (5°–175°, ±2°).
+        for (degrees in 5..175) {
+            val target = BuildTarget.Angle(degrees, toleranceDegrees = 2)
+            val solution = Solutions.forBuild(target) as StrokesConstruction
+            assertNull(offGrid(solution), "$degrees° leaves the 7×7 grid: $solution")
+            assertTrue(BuildEngine.satisfied(target, solution), "$degrees° is not reachable on the grid within ±2°: $solution")
+        }
     }
 
     /** Band-specific expectations from the engine specs' worked examples (§10). Null when fine. */
@@ -62,9 +102,10 @@ class GeneratorPropertyTest {
         val m = (item as? GeneratedItem.Manipulate)?.target
         return when (node) {
             "w04.nbt.multiply-multidigit" -> (t as BuildTarget.Product).let {
-                when (band) {
+                if (maxOf(it.a, it.b) > 99) "a side over the 99-tile cap (engine-build §13): $it"
+                else when (band) {
                     Band.LOW -> if (it.a !in 12..49 || it.b !in 2..5) "out of low range: $it" else null
-                    Band.MID -> if (!((it.a in 11..99 && it.b in 2..9) || (it.a in 101..399 && it.b in 2..5))) "out of mid range: $it" else null
+                    Band.MID -> if (!(it.a in 11..99 && it.b in 2..9)) "out of mid range: $it" else null
                     Band.HIGH -> if (it.a !in 11..99 || it.b !in 11..29) "out of high range: $it" else null
                 }
             }
@@ -88,7 +129,8 @@ class GeneratorPropertyTest {
             }
             "w04.md.angles-concept", "w04.md.additive-angles" -> {
                 val tol = (m as? ManipulateTarget.AngleValue)?.toleranceDegrees ?: (m as ManipulateTarget.AngleUnknown).toleranceDegrees
-                if (tol != (if (band == Band.HIGH) 1 else 2)) "tolerance by band: got $tol at $band" else null
+                val degenerate = (m as? ManipulateTarget.AngleUnknown)?.let { if (it.unknown < 1 || it.known.any { k -> k < 1 }) "degenerate: $it" else null }
+                if (tol != (if (band == Band.HIGH) 1 else 2)) "tolerance by band: got $tol at $band" else degenerate
             }
             "w04.g.line-symmetry" -> (t as? BuildTarget.SymmetricCompletion)?.let { sc ->
                 val all = sc.given + sc.given.map { sc.line.reflect(it) }
@@ -98,13 +140,19 @@ class GeneratorPropertyTest {
                 if (it.value.num <= 0 || it.a.den != it.den || it.b.den != it.den) "degenerate sum: $it" else null
             }
             "w04.nf.fraction-equivalence" -> (m as ManipulateTarget.Equal).let {
-                if (it.reference.withDenominator(it.targetDen) == null) "not expressible: $it" else null
+                val bar = (item as GeneratedItem.Manipulate).initial as FractionBarState
+                if (it.reference.withDenominator(it.targetDen) == null) "not expressible: $it"
+                else if (it.reference.den != bar.initialDen) "reference lost the bar's denomination (${bar.initialDen}): $it" else null
             }
-            "w04.md.additive-angles" -> (m as ManipulateTarget.AngleUnknown).let {
-                if (it.unknown < 1 || it.known.any { k -> k < 1 }) "degenerate: $it" else null
+            "w04.nf.multiply-fraction-by-whole" -> (t as BuildTarget.FractionQuantity).let {
+                if (it.each!!.den !in it.denominators) "each lost its denomination: $it"
+                else if (it.value.den !in it.denominators) "total lost its denomination: $it" else null
             }
             "w04.nf.decompose-fractions" -> when (item) {
-                is GeneratedItem.Build -> (t as BuildTarget.TwoWays).let { if (it.value < Fraction.of(2, it.denominators[0])) "too small for two ways: $it" else null }
+                is GeneratedItem.Build -> (t as BuildTarget.TwoWays).let {
+                    if (it.value < Fraction.of(2, it.denominators[0])) "too small for two ways: $it"
+                    else if (it.value.den !in it.denominators) "value lost its denomination: $it" else null
+                }
                 is GeneratedItem.Manipulate -> (m as ManipulateTarget.Partition).let { if (it.value.withDenominator(it.den)!!.num < it.parts) "fewer eighths than parts: $it" else null }
             }
             "w04.oa.patterns-and-rules" -> (t as BuildTarget.Sequence).let {
