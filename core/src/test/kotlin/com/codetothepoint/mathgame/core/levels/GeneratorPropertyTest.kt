@@ -1,0 +1,115 @@
+package com.codetothepoint.mathgame.core.levels
+
+import com.codetothepoint.mathgame.core.curriculum.CurriculumLoader
+import com.codetothepoint.mathgame.core.engines.Fraction
+import com.codetothepoint.mathgame.core.engines.build.BuildEngine
+import com.codetothepoint.mathgame.core.engines.build.BuildTarget
+import com.codetothepoint.mathgame.core.engines.isPrime
+import com.codetothepoint.mathgame.core.engines.manipulate.ManipulateEngine
+import com.codetothepoint.mathgame.core.engines.manipulate.ManipulateTarget
+import com.codetothepoint.mathgame.core.recipes.Band
+import com.codetothepoint.mathgame.core.recipes.RecipeLoader
+import kotlin.random.Random
+import kotlin.test.Test
+import kotlin.test.assertTrue
+import kotlin.test.fail
+
+/**
+ * The M2 gate (specs/build-plan.md): every recipe generates 1,000 items per band without an invalid one.
+ * "Valid" means: the engine accepts the reference solution for the item, and the item respects its band's ranges.
+ */
+class GeneratorPropertyTest {
+    private val curriculum = CurriculumLoader.fromResource()
+    private val recipes = RecipeLoader.fromResources()
+    private val perBand = 1000
+
+    @Test
+    fun everyRecipeHasAGenerator() {
+        val missing = recipes.all.filter { !Generators.has(it) }.map { "${it.node}/${it.engine.key}" }
+        assertTrue(missing.isEmpty(), "no generator for $missing")
+    }
+
+    @Test
+    fun everyGeneratedItemIsSolvable() {
+        val failures = mutableListOf<String>()
+        for (recipe in recipes.all) {
+            val gen = Generators.forRecipe(recipe)
+            for (band in Band.entries) {
+                val rng = Random("${recipe.node}/${recipe.engine.key}/$band".hashCode())
+                repeat(perBand) { i ->
+                    val rep = recipe.representations[i % recipe.representations.size]
+                    val item = try { gen.generate(recipe.params(band), band, rep, rng) } catch (e: Exception) {
+                        failures += "${recipe.node}/${recipe.engine.key} $band #$i threw ${e::class.simpleName}: ${e.message}"; return@repeat
+                    }
+                    val ok = when (item) {
+                        is GeneratedItem.Build -> BuildEngine.satisfied(item.target, Solutions.forBuild(item.target))
+                        is GeneratedItem.Manipulate -> ManipulateEngine.satisfied(item.target, Solutions.forManipulate(item.target, item.initial)) &&
+                            !ManipulateEngine.satisfied(item.target, item.initial)   // the item is not already done
+                    }
+                    if (!ok) failures += "${recipe.node}/${recipe.engine.key} $band #$i unsolvable: $item"
+                    rangeCheck(recipe.node, band, item)?.let { failures += "${recipe.node}/${recipe.engine.key} $band #$i $it" }
+                }
+            }
+        }
+        if (failures.isNotEmpty()) fail(failures.take(25).joinToString("\n") + if (failures.size > 25) "\n… ${failures.size} failures" else "")
+    }
+
+    /** Band-specific expectations from the engine specs' worked examples (§10). Null when fine. */
+    private fun rangeCheck(node: String, band: Band, item: GeneratedItem): String? {
+        val t = (item as? GeneratedItem.Build)?.target
+        val m = (item as? GeneratedItem.Manipulate)?.target
+        return when (node) {
+            "w04.nbt.multiply-multidigit" -> (t as BuildTarget.Product).let {
+                when (band) {
+                    Band.LOW -> if (it.a !in 12..49 || it.b !in 2..5) "out of low range: $it" else null
+                    Band.MID -> if (!((it.a in 11..99 && it.b in 2..9) || (it.a in 101..399 && it.b in 2..5))) "out of mid range: $it" else null
+                    Band.HIGH -> if (it.a !in 11..99 || it.b !in 11..29) "out of high range: $it" else null
+                }
+            }
+            "w04.nbt.divide-by-one-digit" -> (t as BuildTarget.Quotient).let {
+                if (band == Band.LOW && it.remainder != 0) "low band must divide evenly: $it" else if (it.quotient < 1) "quotient under 1: $it" else null
+            }
+            "w04.oa.factors-multiples-primes" -> (t as BuildTarget.FactorPairs).let {
+                if (band == Band.LOW && it.area !in 6..30) "out of range: $it" else null
+            }
+            "w04.nbt.round-multidigit" -> (m as ManipulateTarget.Nearest).let {
+                if (it.number < 0 || it.rounded < 0) "negative: $it" else if (band == Band.LOW && it.place != 10L) "low rounds to tens: $it" else null
+            }
+            "w04.md.measure-angles" -> {
+                val deg = (t as? BuildTarget.Angle)?.degrees ?: (m as ManipulateTarget.AngleValue).degrees
+                if (band == Band.LOW && deg % 10 != 0) "low band needs multiples of 10: $deg" else null
+            }
+            "w04.nf.fraction-equivalence" -> (m as ManipulateTarget.Equal).let {
+                if (it.reference.withDenominator(it.targetDen) == null) "not expressible: $it" else null
+            }
+            "w04.md.additive-angles" -> (m as ManipulateTarget.AngleUnknown).let {
+                if (it.unknown < 1 || it.known.any { k -> k < 1 }) "degenerate: $it" else null
+            }
+            "w04.nf.decompose-fractions" -> when (item) {
+                is GeneratedItem.Build -> (t as BuildTarget.TwoWays).let { if (it.value < Fraction.of(2, it.denominators[0])) "too small for two ways: $it" else null }
+                is GeneratedItem.Manipulate -> (m as ManipulateTarget.Partition).let { if (it.value.withDenominator(it.den)!!.num < it.parts) "fewer eighths than parts: $it" else null }
+            }
+            "w04.oa.patterns-and-rules" -> (t as BuildTarget.Sequence).let {
+                val diffs = it.terms.zipWithNext().map { (a, b) -> b - a }
+                if (diffs.any { d -> d == 0 } || (diffs.any { d -> d > 0 } && diffs.any { d -> d < 0 })) "not monotonic: $it"
+                else if (it.terms.any { v -> v > 5000 || v < 0 }) "out of range: $it" else null
+            }
+            else -> null
+        }
+    }
+
+    @Test
+    fun primesAppearInFactorLevels() {
+        val recipe = recipes.all.first { it.node == "w04.oa.factors-multiples-primes" }
+        val gen = Generators.forRecipe(recipe)
+        val rng = Random(7)
+        val areas = List(400) { (gen.generate(recipe.params(Band.MID), Band.MID, recipe.representations[0], rng) as GeneratedItem.Build).target as BuildTarget.FactorPairs }
+        val primes = areas.count { isPrime(it.area) }
+        assertTrue(primes in 50..150, "expected roughly a quarter primes, got $primes of 400")
+    }
+
+    @Test
+    fun recipeNodesAllExist() {
+        for (r in recipes.all) assertTrue(r.node in curriculum.nodes, r.node)
+    }
+}

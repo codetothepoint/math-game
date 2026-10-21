@@ -201,3 +201,5 @@ Engine-logic test cases:
 - `number-line` zoom on a phone: pinch is natural but conflicts with page pinch-zoom in some containers; the tier spec may add zoom buttons. v1: pinch plus buttons.
 - Whether `physical` items (match a fixed instrument with no notation) should be the default first representation for every W4 recipe, since they are the most "feel it" form. v1: yes, where the node lists `physical`.
 - Reflex angles in the `angle` instrument need a convention for which side the protractor reads. v1: the protractor reads the smaller angle; reflex targets show the arc explicitly.
+- `additive-angles` generators keep every angle at least 5°, so an unset arm (0°) is never already within tolerance of the unknown.
+- `fraction-bar` items start with the shade already at the reference amount in the starting denominator, which is what makes `recut-only` possible; `add-sub` items start with an empty result bar.
