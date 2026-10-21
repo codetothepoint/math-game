@@ -11,6 +11,7 @@ data class Fraction(val num: Int, val den: Int) : Comparable<Fraction> {
     operator fun plus(o: Fraction): Fraction = of(num * o.den + o.num * den, den * o.den)
     operator fun minus(o: Fraction): Fraction = of(num * o.den - o.num * den, den * o.den)
     operator fun times(k: Int): Fraction = of(num * k, den)
+    /** Orders by amount only: `Fraction(2, 8).compareTo(Fraction.of(1, 4)) == 0`. */
     override fun compareTo(other: Fraction): Int = (num.toLong() * other.den).compareTo(other.num.toLong() * den)
     fun toDouble(): Double = num.toDouble() / den
     val isUnit: Boolean get() = num == 1

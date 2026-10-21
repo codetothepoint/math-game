@@ -168,4 +168,51 @@ class BuildEngineTest {
         assertFalse(BuildEngine.satisfied(t, TilesConstruction(emptyList())))
         assertTrue(BuildEngine.satisfied(BuildTarget.RectConstraint(perimeter = 20, givenSide = 7), TilesConstruction(listOf(TileRect(7, 3)))))
     }
+
+    // ---- Findings from the first adversarial review
+
+    @Test
+    fun review5_doubledSegmentsDoNotCrashAndStillMakeTheShape() {
+        val t = BuildTarget.ShapeConstraint("parallelogram")
+        val doubled = StrokesConstruction(listOf(seg(0, 0, 4, 0), seg(0, 0, 4, 0), seg(4, 0, 5, 2), seg(5, 2, 1, 2), seg(1, 2, 0, 0), seg(4, 0, 0, 0)))
+        assertTrue(BuildEngine.satisfied(t, doubled))   // AB twice, BA once: still the same four sides
+        val onlyDoubles = StrokesConstruction(listOf(seg(0, 0, 1, 0), seg(0, 0, 1, 0), seg(2, 2, 3, 3), seg(2, 2, 3, 3)))
+        assertFalse(BuildEngine.satisfied(t, onlyDoubles))
+        assertFalse(BuildEngine.satisfied(t, StrokesConstruction(listOf(seg(0, 0, 0, 0)))))
+    }
+
+    @Test
+    fun review6_bowTieIsNotAQuadrilateral() {
+        val bowTie = shape(0 to 0, 2 to 2, 2 to 0, 0 to 2)
+        assertFalse(BuildEngine.satisfied(BuildTarget.ShapeConstraint("trapezoid-exactly-one-pair"), bowTie))
+        assertFalse(BuildEngine.satisfied(BuildTarget.ShapeConstraint("parallelogram"), bowTie))
+        assertFalse(BuildEngine.satisfied(BuildTarget.ShapeConstraint("quadrilateral-perpendicular-no-parallel"), bowTie))
+        // A concave simple quadrilateral is still a quadrilateral.
+        assertTrue(BuildEngine.satisfied(BuildTarget.ShapeConstraint("quadrilateral-perpendicular-no-parallel"), shape(0 to 0, 4 to 0, 1 to 1, 0 to 3)))
+    }
+
+    @Test
+    fun review11_plotMarksCompareByAmount() {
+        val plot = BuildTarget.Plot(listOf(Fraction.of(1, 2), Fraction.of(3, 4)), Fraction.of(1, 8))
+        assertTrue(BuildEngine.satisfied(plot, MarksConstruction(listOf(Fraction(6, 8), Fraction(4, 8)))))
+        assertFalse(BuildEngine.satisfied(plot, MarksConstruction(listOf(Fraction(6, 8), Fraction(3, 8)))))
+    }
+
+    @Test
+    fun review15_twoWaysIsNotFooledByReorderingEqualPieces() {
+        val t = BuildTarget.TwoWays(Fraction.of(5, 8), listOf(4, 8))
+        val a = listOf(Fraction(1, 4), Fraction(2, 8), Fraction(1, 8))
+        val b = listOf(Fraction(2, 8), Fraction(1, 4), Fraction(1, 8))
+        assertFalse(BuildEngine.satisfied(t, PartsConstruction(listOf(a, b))))
+        assertTrue(BuildEngine.satisfied(t, PartsConstruction(listOf(a, listOf(Fraction(1, 4), Fraction(3, 8))))))
+    }
+
+    @Test
+    fun review17_cutsOnASubsetOfPlaceValueLinesStillCount() {
+        val t = BuildTarget.Product(345, 4)
+        val partial = TilesConstruction(listOf(TileRect(345, 4, cutsAlongW = setOf(300))))
+        assertEquals("split-place-value", BuildEngine.detectStrategy(t, partial, productRules))
+        val mixed = TilesConstruction(listOf(TileRect(345, 4, cutsAlongW = setOf(300, 7))))
+        assertNull(BuildEngine.detectStrategy(t, mixed, productRules))
+    }
 }

@@ -31,7 +31,7 @@ object BuildEngine {
         is BuildTarget.ShapeConstraint -> c is StrokesConstruction && Constraints.holds(target.constraint, c)
         is BuildTarget.SymmetricCompletion -> c is StrokesConstruction && symmetricCompletion(target, c)
         is BuildTarget.Angle -> c is StrokesConstruction && angleSatisfied(target, c)
-        is BuildTarget.Plot -> c is MarksConstruction && c.marks.sorted() == target.values.sorted()
+        is BuildTarget.Plot -> c is MarksConstruction && sameAmounts(c.marks, target.values)
         is BuildTarget.Sequence -> c is GearsConstruction && c.gears.isNotEmpty() && c.terms(target.terms.size) == target.terms
         is BuildTarget.Table -> c is UnitsConstruction && target.rows.all { c.rows[it] == it * target.factor } && c.rows.keys.all { it in target.rows }
         is BuildTarget.TwoWays -> c is PartsConstruction && c.ways.size == 2 && c.sums.all { it.compareTo(target.value) == 0 } &&
@@ -72,8 +72,8 @@ object BuildEngine {
         val pvH = placeValueCuts(r.h)
         val wCut = r.cutsAlongW.isNotEmpty()
         val hCut = r.cutsAlongH.isNotEmpty()
-        val wOnPv = pvW.isNotEmpty() && r.cutsAlongW == pvW
-        val hOnPv = pvH.isNotEmpty() && r.cutsAlongH == pvH
+        val wOnPv = wCut && r.cutsAlongW.all { it in pvW }   // every cut on a place-value line (a subset is fine: 345 cut at 300 only)
+        val hOnPv = hCut && r.cutsAlongH.all { it in pvH }
         // Any cut off the place-value lines means no place-value strategy.
         if ((wCut && !wOnPv) || (hCut && !hOnPv)) return Split.NONE
         val dimsWithPv = listOf(pvW.isNotEmpty(), pvH.isNotEmpty()).count { it }
@@ -128,7 +128,13 @@ object BuildEngine {
         return segs.chunked(2).all { (a, b) -> setOf(line.reflect(a.a), line.reflect(a.b)) == setOf(b.a, b.b) }
     }
 
-    private fun sameMultiset(a: List<Fraction>, b: List<Fraction>): Boolean = a.sorted() == b.sorted()
+    /** Pieces compared by denomination and count: a quarter and a two-eighths piece are different pieces. */
+    private fun sameMultiset(a: List<Fraction>, b: List<Fraction>): Boolean =
+        a.map { it.den to it.num }.sortedWith(compareBy({ it.first }, { it.second })) == b.map { it.den to it.num }.sortedWith(compareBy({ it.first }, { it.second }))
+
+    /** The same amounts regardless of how each mark is written (4/8 is 1/2). */
+    private fun sameAmounts(a: List<Fraction>, b: List<Fraction>): Boolean =
+        a.size == b.size && a.sorted().zip(b.sorted()).all { (x, y) -> x.compareTo(y) == 0 }
 }
 
 /** Named figure constraints a `strokes` recipe can ask for (engine-build.md §10; recipes/world-04.yaml). */
