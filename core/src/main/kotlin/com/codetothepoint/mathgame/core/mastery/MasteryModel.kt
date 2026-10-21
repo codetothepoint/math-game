@@ -5,6 +5,21 @@ import com.codetothepoint.mathgame.core.curriculum.Engine
 import com.codetothepoint.mathgame.core.curriculum.Representation
 import com.codetothepoint.mathgame.core.curriculum.SkillNode
 
+/** What the recipes can serve, for revisit delivery (§7.2, §7.3). The level layer supplies one backed by its recipes. */
+interface RevisitHosting {
+    /** Representations any recipe for the node serves; null means all of the node's. */
+    fun servable(nodeId: String): Set<Representation>?
+    /** Whether this engine's recipe for the node serves the representation. */
+    fun canHost(nodeId: String, engine: Engine, rep: Representation): Boolean
+
+    companion object {
+        val ALL: RevisitHosting = object : RevisitHosting {
+            override fun servable(nodeId: String): Set<Representation>? = null
+            override fun canHost(nodeId: String, engine: Engine, rep: Representation) = true
+        }
+    }
+}
+
 /** Tuning knobs (specs/mastery.md §13). Values must match tools/mastery_ref.py. */
 object Knobs {
     const val ALPHA_CORE = 0.15
@@ -44,6 +59,10 @@ class MasteryModel(val curriculum: Curriculum) {
                 s.assumed = true
                 s.score = nd.mastery.unlock
                 s.stars = 0
+            } else if (nd.world >= world && s.assumed) {
+                s.assumed = false
+                s.score = 0.0
+                s.stars = 0
             }
         }
     }
@@ -76,7 +95,7 @@ class MasteryModel(val curriculum: Curriculum) {
         while (s.recent.size > Knobs.RECENT_N) s.recent.removeFirst()
         s.repItems[item.representation] = (s.repItems[item.representation] ?: 0) + 1
         s.lastSeen = item.at
-        item.strategy?.let { s.strategies += it }
+        item.strategy?.takeIf { it.isNotBlank() }?.let { s.strategies += it }
         if (item.correct && item.hints == 0 && item.responseMs != null) {
             s.cleanTimes.addLast(item.responseMs)
             while (s.cleanTimes.size > Knobs.RECENT_N) s.cleanTimes.removeFirst()
@@ -182,27 +201,33 @@ class MasteryModel(val curriculum: Curriculum) {
         return rv != null && now >= rv.dueAt
     }
 
-    /** The representation with the fewest items; ties go to the one not used in the last level (§7.3). */
-    fun chooseTransferRepresentation(p: Profile, nid: String): Representation {
+    /**
+     * The least-drilled representation among those some recipe for the node serves (§7.3); ties go to
+     * the one not used in the last level. Null when nothing is servable, so no set can start.
+     */
+    fun chooseTransferRepresentation(p: Profile, nid: String, servable: Set<Representation>? = null): Representation? {
         val nd = curriculum[nid]
         val s = p.nodes.getValue(nid)
-        return nd.representations.sortedWith(
-            compareBy<Representation>({ s.repItems[it] ?: 0 }, { it == s.lastLevelRepresentation }),
-        ).first()
+        val allowed = nd.representations.filter { servable == null || it in servable }
+        if (allowed.isEmpty()) return null
+        return allowed.sortedWith(compareBy<Representation>({ s.repItems[it] ?: 0 }, { it == s.lastLevelRepresentation })).first()
     }
 
     /**
      * Nodes due for a revisit that [engine] can host, most overdue first, with the representation
-     * for the current set (§7.2). With [coreItems] > 0 the list is capped at the interleave limit.
+     * for the current set (§7.2). [hosting] says which representations recipes serve; its filters
+     * run before the interleave cap, so an un-hostable node never takes a slot. With [coreItems] > 0
+     * the list is capped at the interleave limit.
      */
-    fun dueRevisits(p: Profile, now: Long, engine: Engine, exclude: String? = null, coreItems: Int = 0): List<Pair<String, Representation>> {
+    fun dueRevisits(p: Profile, now: Long, engine: Engine, exclude: String? = null, coreItems: Int = 0, hosting: RevisitHosting = RevisitHosting.ALL): List<Pair<String, Representation>> {
         val out = mutableListOf<Triple<Long, String, Representation>>()
         for (nd in curriculum.nodes.values) {
             if (nd.id == exclude || engine !in nd.engines || !isDue(p, nd.id, now)) continue
             val rv = p.nodes.getValue(nd.id).revisit!!
-            if (rv.representation == null) rv.representation = chooseTransferRepresentation(p, nd.id)
-            val rep = rv.representation!!
-            if (rep in nd.representations) out += Triple(rv.dueAt, nd.id, rep)
+            if (rv.representation == null) rv.representation = chooseTransferRepresentation(p, nd.id, hosting.servable(nd.id))
+            val rep = rv.representation ?: continue
+            if (rep !in nd.representations || !hosting.canHost(nd.id, engine, rep)) continue
+            out += Triple(rv.dueAt, nd.id, rep)
         }
         out.sortWith(compareBy({ it.first }, { it.second }))
         val limit = if (coreItems > 0) maxOf(1, (Knobs.INTERLEAVE_MAX * coreItems).toInt()) else out.size
@@ -224,7 +249,7 @@ class MasteryModel(val curriculum: Curriculum) {
         } else {
             if (s.stars == 3) s.stars = 2
             rv.intervalIndex = 0
-            s.score = move(s.score, rv.correct.toDouble() / Knobs.REVISIT_SET_SIZE, Knobs.ALPHA_REVISIT)
+            s.score = s.score + Knobs.ALPHA_REVISIT * Knobs.MISS_DAMPING * (rv.correct.toDouble() / Knobs.REVISIT_SET_SIZE - s.score)
         }
         rv.lastSetPassed = passed
         rv.history += RevisitOutcome(item.at, passed)

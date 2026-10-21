@@ -139,6 +139,10 @@ class Mastery:
                 s.assumed = True
                 s.score = nd.mastery["unlock"]
                 s.stars = 0
+            elif nd.world >= world and s.assumed:
+                s.assumed = False
+                s.score = 0.0
+                s.stars = 0
 
     # ---- Evidence and score (§4) ----
     def evidence(self, nd: NodeDef, item: ItemResult) -> float:
@@ -259,22 +263,36 @@ class Mastery:
         rv = p.nodes[nid].revisit
         return rv is not None and now >= rv.due_at
 
-    def choose_transfer_representation(self, p: Profile, nid: str) -> str:
+    def choose_transfer_representation(self, p: Profile, nid: str, servable: Optional[set] = None) -> Optional[str]:
+        """Least-drilled representation among those some recipe for the node serves (§7.3); None if none is servable."""
         nd, s = self.c[nid], p.nodes[nid]
-        reps = sorted(nd.representations, key=lambda r: (s.rep_items.get(r, 0), r == s.last_level_representation))
+        allowed = [r for r in nd.representations if servable is None or r in servable]
+        if not allowed:
+            return None
+        reps = sorted(allowed, key=lambda r: (s.rep_items.get(r, 0), r == s.last_level_representation))
         return reps[0]
 
-    def due_revisits(self, p: Profile, now: float, engine: str, exclude: Optional[str] = None, core_items: int = 0) -> list[tuple[str, str]]:
-        """Nodes due for a revisit that this engine can host, most overdue first, as (node_id, representation)."""
+    def due_revisits(self, p: Profile, now: float, engine: str, exclude: Optional[str] = None, core_items: int = 0,
+                     servable=None, can_host=None) -> list[tuple[str, str]]:
+        """Nodes due for a revisit that this engine can host, most overdue first, as (node_id, representation).
+
+        servable(nid) -> set of representations any recipe for the node serves (default: all of the node's).
+        can_host(nid, engine, rep) -> whether this engine's recipe serves rep (default: True).
+        Both filters run before the interleave cap (§7.2).
+        """
         out = []
         for nid, nd in self.c.items():
             if nid == exclude or engine not in nd.engines or not self.is_due(p, nid, now):
                 continue
             rv = p.nodes[nid].revisit
             if rv.representation is None:
-                rv.representation = self.choose_transfer_representation(p, nid)
-            if rv.representation in nd.representations:
-                out.append((rv.due_at, nid, rv.representation))
+                rv.representation = self.choose_transfer_representation(p, nid, servable(nid) if servable else None)
+            rep = rv.representation
+            if rep is None or rep not in nd.representations:
+                continue
+            if can_host is not None and not can_host(nid, engine, rep):
+                continue
+            out.append((rv.due_at, nid, rep))
         out.sort()
         limit = max(1, int(K["INTERLEAVE_MAX"] * core_items)) if core_items else len(out)
         return [(nid, rep) for _, nid, rep in out[:limit]]
@@ -298,7 +316,7 @@ class Mastery:
             if s.stars == 3:
                 s.stars = 2
             rv.interval_index = 0
-            s.score = self._move(s.score, rv.correct / K["REVISIT_SET_SIZE"], K["ALPHA_REVISIT"])
+            s.score = s.score + K["ALPHA_REVISIT"] * K["MISS_DAMPING"] * (rv.correct / K["REVISIT_SET_SIZE"] - s.score)
         rv.last_set_passed = passed
         rv.history.append((item.at, passed))
         rv.due_at = item.at + days[rv.interval_index]

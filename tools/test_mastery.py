@@ -201,6 +201,170 @@ def test_12_milestones():
     assert m.secret_goal_count(p) == 1 and m.secret_goal_count(p, world=2) == 0
 
 
+
+# ---- Scenarios 13–15 and the §5–§8 rule tests (specs/mastery.md §12). Mirrors core/src/test/.../MasteryRulesTest.kt.
+
+def _rules_curriculum():
+    c = tiny_curriculum()
+    c["w01.oa.plain"] = NodeDef("w01.oa.plain", 1, [], ["symbolic", "visual"], ["build"], [], M)
+    c["w02.oa.c"] = NodeDef("w02.oa.c", 2, ["w01.oa.b", "w01.oa.plain"], ["symbolic", "visual"], ["build"], [], M)
+    c["w02.oa.sort"] = NodeDef("w02.oa.sort", 2, [], ["symbolic", "visual", "physical"], ["sort", "build"], [], M)
+    return c
+
+
+def _two_stars(m, p, nid="w01.oa.a", at=0.0):
+    play_level(m, p, nid, 8, "symbolic", now=at, strategy="make-ten")
+    play_level(m, p, nid, 7, "visual", now=at)
+    assert p.nodes[nid].stars == 2
+
+
+def _set(m, p, nid, at, correct, hints=0, engine="build", response_ms=1000):
+    due = m.due_revisits(p, at, engine, exclude="w01.oa.b", core_items=25)
+    rep = next(r for n, r in due if n == nid)
+    for i in range(5):
+        ok = i < correct
+        m.apply_item(p, ItemResult(nid, rep, engine, ok, first_try=ok, hints=hints if ok else 0, response_ms=response_ms if ok else None, kind="revisit", at=at))
+    m.finish_level(p, LevelResult("w01.oa.b", engine, "symbolic", True, [], started_at=at, ended_at=at))
+    m.recompute_stars(p, nid, at)
+
+
+def test_13_failed_set_above_the_score_is_damped():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    _two_stars(m, p)
+    p.nodes["w01.oa.a"].score = 0.6
+    _set(m, p, "w01.oa.a", 2.0, correct=4, hints=1)
+    assert approx(p.nodes["w01.oa.a"].score, 0.62), p.nodes["w01.oa.a"].score
+
+
+def test_14_starting_world_moved_down_keeps_evidence():
+    m = Mastery(load_curriculum()); p = m.new_profile(4)
+    played = "w03.oa.multiply-fluently-100"
+    m.apply_item(p, ItemResult(played, "symbolic", "fluency", True, response_ms=1500))
+    score = p.nodes[played].score
+    m.set_starting_world(p, 2)
+    for nid, nd in m.c.items():
+        if nd.world == 3:
+            s = p.nodes[nid]
+            assert not s.assumed
+            assert s.score == (score if nid == played else 0.0), nid
+    assert all(p.nodes[nid].assumed for nid, nd in m.c.items() if nd.world == 1)
+    m.set_starting_world(p, 4)
+    assert p.nodes[played].score == score
+    assert p.nodes["w03.nbt.round-to-10-100"].assumed
+
+
+def test_15_unhostable_representation_never_starves_the_queue():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    play_level(m, p, "w02.oa.sort", 8, "symbolic", now=0.0)
+    play_level(m, p, "w02.oa.sort", 7, "visual", now=0.0)
+    _two_stars(m, p, "w01.oa.a", at=0.5)
+    servable = lambda nid: {"symbolic", "visual"} if nid == "w02.oa.sort" else None
+    served = m.due_revisits(p, 3.0, "build", core_items=8, servable=servable)
+    assert len(served) == 1 and served[0][0] == "w02.oa.sort" and served[0][1] in {"symbolic", "visual"}, served
+    only_a = lambda nid, engine, rep: nid == "w01.oa.a"
+    assert [n for n, _ in m.due_revisits(p, 3.0, "build", core_items=8, can_host=only_a)] == ["w01.oa.a"]
+    assert m.choose_transfer_representation(p, "w02.oa.sort", servable=set()) is None
+
+
+def test_rule_two_stars_needs_score():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    play_level(m, p, "w01.oa.a", 3, "symbolic", now=0.0, strategy="make-ten")
+    play_level(m, p, "w01.oa.a", 3, "visual", now=0.0)
+    assert p.nodes["w01.oa.a"].stars == 1
+
+
+def test_rule_strategy_gate_only_when_observable():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    play_level(m, p, "w01.oa.a", 8, "symbolic", now=0.0, observes=True)
+    play_level(m, p, "w01.oa.a", 7, "visual", now=0.0, observes=True)
+    assert p.nodes["w01.oa.a"].stars == 1
+    q = m.new_profile(1)
+    play_level(m, q, "w01.oa.a", 8, "symbolic", now=0.0, observes=False)
+    play_level(m, q, "w01.oa.a", 7, "visual", now=0.0, observes=False)
+    assert q.nodes["w01.oa.a"].stars == 2
+
+
+def test_rule_demotions_with_hysteresis():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    _two_stars(m, p)
+    s = p.nodes["w01.oa.a"]
+    s.score = 0.61; m.recompute_stars(p, "w01.oa.a", 0.0); assert s.stars == 2
+    s.score = 0.59; m.recompute_stars(p, "w01.oa.a", 0.0); assert s.stars == 1
+    s.score = 0.9; m.recompute_stars(p, "w01.oa.a", 0.0); assert s.stars == 2
+    _set(m, p, "w01.oa.a", 2.0, correct=5)
+    assert s.stars == 3
+    s.score = 0.81; m.recompute_stars(p, "w01.oa.a", 2.0); assert s.stars == 3
+    s.score = 0.79; m.recompute_stars(p, "w01.oa.a", 2.0); assert s.stars == 2
+
+
+def test_rule_three_stars_needs_score_zero_hints_and_fluency():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    _two_stars(m, p)
+    s = p.nodes["w01.oa.a"]
+    s.score = 0.8
+    _set(m, p, "w01.oa.a", 2.0, correct=5)
+    assert s.revisit.passed == 1 and s.stars == 2          # score under three_star
+    q = m.new_profile(1)
+    _two_stars(m, q)
+    play_level(m, q, "w01.oa.a", 1, "symbolic", now=1.0, hints=1)
+    q.nodes["w01.oa.a"].score = 0.95
+    _set(m, q, "w01.oa.a", 2.0, correct=5)
+    assert q.nodes["w01.oa.a"].stars == 2                   # a hinted item in recent
+    r = m.new_profile(1); nid = "w02.oa.fast"
+    play_level(m, r, nid, 8, "symbolic", now=0.0, engine="fluency", response_ms=4000)
+    play_level(m, r, nid, 7, "verbal", now=0.0, engine="fluency", response_ms=4000)
+    _set(m, r, nid, 2.0, correct=5, engine="fluency", response_ms=4000)
+    assert r.nodes[nid].stars == 2 and r.nodes[nid].fluency_ms == 4000
+    r.nodes[nid].fluency_ms = 2500; m.recompute_stars(r, nid, 2.0)
+    assert r.nodes[nid].stars == 3
+
+
+def test_rule_hinted_set_fails_and_interval_caps():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    _two_stars(m, p)
+    _set(m, p, "w01.oa.a", 2.0, correct=5, hints=1)
+    rv = p.nodes["w01.oa.a"].revisit
+    assert rv.passed == 0 and rv.last_set_passed is False and rv.due_at == 4.0
+    for at in (4.0, 11.0, 32.0, 53.0):
+        _set(m, p, "w01.oa.a", at, correct=5)
+    assert rv.interval_index == 2 and rv.due_at == 74.0 and rv.passed == 4
+
+
+def test_rule_re_earning_two_stars_keeps_schedule():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    _two_stars(m, p)
+    s = p.nodes["w01.oa.a"]; first_due = s.revisit.due_at
+    s.score = 0.3; m.recompute_stars(p, "w01.oa.a", 1.0); assert s.stars == 1
+    s.score = 0.9; m.recompute_stars(p, "w01.oa.a", 1.5); assert s.stars == 2
+    assert s.two_star_at == 0.0 and s.revisit.due_at == first_due
+
+
+def test_rule_due_revisits_engine_exclude_order_cap():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    _two_stars(m, p, "w01.oa.a", at=0.0)
+    _two_stars(m, p, "w01.oa.plain", at=1.0)
+    assert m.due_revisits(p, 5.0, "sort") == []
+    assert [n for n, _ in m.due_revisits(p, 5.0, "build")] == ["w01.oa.a", "w01.oa.plain"]
+    assert [n for n, _ in m.due_revisits(p, 5.0, "build", exclude="w01.oa.a")] == ["w01.oa.plain"]
+    assert len(m.due_revisits(p, 5.0, "build", core_items=8)) == 1
+    assert len(m.due_revisits(p, 5.0, "build", core_items=10)) == 2
+
+
+def test_rule_reach_credit_only_unmet_and_fluency_needs_three():
+    m = Mastery(_rules_curriculum()); p = m.new_profile(1)
+    p.nodes["w01.oa.a"].score = 0.7
+    p.nodes["w01.oa.b"].score = 0.5
+    p.nodes["w01.oa.plain"].score = 0.7
+    assert m.availability(p, "w02.oa.c") == "reach"
+    m.apply_item(p, ItemResult("w02.oa.c", "symbolic", "build", True, response_ms=900, kind="reach"))
+    assert approx(p.nodes["w01.oa.b"].score, 0.54) and p.nodes["w01.oa.plain"].score == 0.7
+    nid = "w02.oa.fast"
+    for _ in range(2):
+        m.apply_item(p, ItemResult(nid, "symbolic", "fluency", True, response_ms=1000))
+    assert p.nodes[nid].fluency_ms is None
+    m.apply_item(p, ItemResult(nid, "symbolic", "fluency", True, response_ms=1000))
+    assert p.nodes[nid].fluency_ms == 1000
+
 if __name__ == "__main__":
     tests = [(k, v) for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

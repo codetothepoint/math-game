@@ -169,6 +169,7 @@ Misses on a reach node do not touch prerequisites. A player who can already mult
 ### 6.3 Starting world and assumed nodes
 When a parent sets `startingWorld = W`:
 - every node in a world `< W` with no evidence (`items = 0`) becomes `assumed`: `score = its mastery.unlock`, `stars = 0`.
+- every node in a world `≥ W` that is `assumed` (a leftover from an earlier, higher start) stops being assumed: `score = 0`, `stars = 0`. It has no evidence, so nothing is lost.
 - nodes with evidence are left alone.
 - moving the starting world later re-runs this rule; it never removes evidence.
 
@@ -182,18 +183,18 @@ When ★★ is first earned at time `t`: `revisit = { dueAt: t + revisit_days[0]
 ### 7.2 Delivery
 Revisit items are served inside other levels. When an engine builds a level of `n` core items for target `T`, the scheduler offers up to `max(1, floor(INTERLEAVE_MAX × n))` revisit items (`INTERLEAVE_MAX = 0.2`), from due nodes that:
 - list this engine in `engines`, and
-- list the set's chosen representation in `representations`, and
+- have a recipe on this engine that serves the set's chosen representation, and
 - are not `T` itself.
 
-Most overdue first. Items are mixed into the level, never grouped at the end, never labelled. If no due node fits the engine, the revisit waits for one that does.
+The cap applies **after** these filters, most overdue first, so a due node this engine cannot host never takes a slot from one it can. Items are mixed into the level, never grouped at the end, never labelled. If no due node fits the engine, the revisit waits for one that does.
 
 ### 7.3 Transfer representation
-When a set starts, its representation is the one in the node's `representations` with the fewest entries in `repItems`. Ties go to the representation not used in the node's most recent level. The point is to check the idea, not the drill.
+When a set starts, its representation is the one, among the node's `representations` that **some recipe for the node can serve**, with the fewest entries in `repItems`. Ties go to the representation not used in the node's most recent level. The point is to check the idea, not the drill. A representation no recipe serves is never chosen, because a set in it could never be delivered.
 
 ### 7.4 Sets and outcomes
 A set is `REVISIT_SET_SIZE` (5) items. It completes when the fifth item is answered, however many levels that spans.
 - **Pass**: `correct ≥ REVISIT_PASS_CORRECT` (4) and `hints = 0`. Then `passed += 1`, `intervalIndex = min(intervalIndex + 1, len(revisit_days) − 1)`, `dueAt = now + revisit_days[intervalIndex]`, and the score takes one clean step at revisit weight: `score += ALPHA_REVISIT × (1 − score)`. After the last interval, revisits repeat at that interval.
-- **Fail**: otherwise. If `stars = 3`, demote to 2. `intervalIndex = 0`, `dueAt = now + revisit_days[0]`, and the score takes one damped step toward the set's accuracy: `score += ALPHA_REVISIT × MISS_DAMPING × (correct ÷ size − score)`. The player earns the star back by passing again.
+- **Fail**: otherwise. If `stars = 3`, demote to 2. `intervalIndex = 0`, `dueAt = now + revisit_days[0]`, and the score takes one damped step toward the set's accuracy: `score += ALPHA_REVISIT × MISS_DAMPING × (correct ÷ size − score)`. The damping is unconditional: a failed set is a miss even when its accuracy happens to exceed the score. The player earns the star back by passing again.
 
 Individual revisit items do not move the score (§4); everything else about them (`recent`, `repItems`, `fluencyMs`, strategies) is recorded normally, so a hinted revisit item still counts against the zero-hints rule for ★★★.
 
@@ -248,6 +249,11 @@ Each is an executable test in `tools/test_mastery.py`.
 10. **One sitting is not enough** — twenty clean items in one session → ★★, and nothing is due that day, so ★★★ is unreachable.
 11. **Fluency gate** — on a node with `fluency_ms 3000`, twenty slow correct items (10 s each) cap at `e = 0.8`, so the score stays under 0.81 at ★★; fifteen fast items raise `score ≥ 0.9` and `fluencyMs = 1500`, but the star still waits for the revisit.
 12. **Milestones** — two world-1 nodes at ★★ → `world_stars(1) = 4`, `world_complete(1)` true, `world_complete(2)` false; a secret goal reported by a level is counted.
+13. **Failed set above the score** — a ★★ node at `score 0.6`; a set at 4/5 with one hint fails; `score → 0.62` (the damped step applies even though 0.8 > 0.6).
+14. **Starting world moved down** — start 4, then start 2: world-3 nodes with no evidence lose `assumed` and return to `score 0`; a world-3 node that was played keeps its evidence.
+15. **Un-hostable transfer representation** — a node whose least-drilled representation no recipe serves gets its set in the least-drilled representation that one does, and a due node this engine cannot host never blocks one it can.
+
+**Rule tests.** Beyond the scenarios, every rule in §5–§8 has a test that fails when the rule is removed (the first review found most of them untested): ★★ needs `score ≥ two_star`; the strategy gate; ★★→★ demotion at `two_star − 0.15` and not above it; ★★★ needs `score ≥ three_star`, zero hints in `recent`, and the fluency gate; ★★★→★★ at `three_star − 0.10`; a 5/5 set with a hint fails; `intervalIndex` caps at the last interval; reach credit goes only to unmet prerequisites; `dueRevisits` honors the engine, the exclusion, most-overdue-first, and the interleave cap (`8 → 1`, `10 → 2`); re-running the starting world keeps evidence; `fluencyMs` needs three clean items; re-earning ★★ keeps the original revisit schedule.
 
 ## 13. Tuning knobs and open questions
 

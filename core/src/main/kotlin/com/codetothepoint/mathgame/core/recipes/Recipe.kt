@@ -93,6 +93,7 @@ class Recipes(list: List<Recipe>) {
     private val byKey: Map<RecipeKey, Recipe> = list.associateBy { it.key }
 
     operator fun get(node: String, engine: Engine): Recipe? = byKey[RecipeKey(node, engine)]
+    fun getValue(node: String, engine: Engine): Recipe = get(node, engine) ?: throw NoSuchElementException("No recipe for $node/${engine.key}")
     fun forNode(node: String): List<Recipe> = all.filter { it.node == node }
     fun forEngine(engine: Engine): List<Recipe> = all.filter { it.engine == engine }
 
